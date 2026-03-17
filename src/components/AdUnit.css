@@ -1,0 +1,76 @@
+/* ============================
+   Ad Unit Styles
+   ============================ */
+
+.ad-unit-wrapper {
+  width: 100%;
+  margin: 1.5rem auto;
+  overflow: hidden;
+  text-align: center;
+}
+
+.ad-unit-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #999;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+/* Auto (responsive) format */
+.ad-unit--auto {
+  max-width: 100%;
+  min-height: 100px;
+}
+
+/* Horizontal banner */
+.ad-unit--horizontal {
+  max-width: 728px;
+  min-height: 90px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Vertical / sidebar */
+.ad-unit--vertical {
+  max-width: 300px;
+  min-height: 250px;
+}
+
+/* In-article native ad */
+.ad-unit--in-article {
+  max-width: 100%;
+  margin: 2rem auto;
+  min-height: 200px;
+}
+
+/* Content sections ad spacing */
+.ad-between-sections {
+  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ad-unit-wrapper {
+    margin: 1rem auto;
+  }
+
+  .ad-unit--horizontal {
+    max-width: 100%;
+    min-height: 50px;
+  }
+
+  .ad-unit--vertical {
+    max-width: 100%;
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ad-unit-wrapper {
+    margin: 0.75rem auto;
+  }
+}

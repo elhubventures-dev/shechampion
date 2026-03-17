@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AdUnit from './components/AdUnit';
 import Home from './pages/Home';
 import Challenge from './pages/Challenge';
 import Programs from './pages/Programs';
@@ -15,6 +16,10 @@ function App() {
     <div className="app-container">
       <ScrollToTop />
       <Header />
+      {/* Site-wide Ad Banner */}
+      <div className="ad-between-sections">
+        <AdUnit format="horizontal" />
+      </div>
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />

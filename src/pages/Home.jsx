@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Target, TrendingUp, Globe, Users, ArrowRight, BookOpen, UserCheck } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
+import AdUnit from '../components/AdUnit';
 import './Home.css';
 
 const Home = () => {
@@ -63,6 +64,11 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* Ad Unit - Between Intro and Pillars */}
+            <div className="ad-between-sections">
+                <AdUnit format="horizontal" />
+            </div>
+
             {/* Pillars Section */}
             <section className="py-section pillars-section bg-light">
                 <div className="container">
@@ -100,6 +106,11 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Ad Unit - Between Pillars and Seminars */}
+            <div className="ad-between-sections">
+                <AdUnit format="in-article" />
+            </div>
 
             {/* Seminars Info */}
             <section className="py-section bg-secondary text-center">
@@ -152,6 +163,11 @@ const Home = () => {
                     </Link>
                 </div>
             </section>
+
+            {/* Ad Unit - Before CTA */}
+            <div className="ad-between-sections">
+                <AdUnit format="horizontal" />
+            </div>
 
             {/* CTA Section */}
             <section className="py-section cta-section bg-primary text-center text-light">
