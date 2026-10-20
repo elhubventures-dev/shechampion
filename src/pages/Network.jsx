@@ -36,7 +36,7 @@ const Network = () => {
             <Hero
                 title="The SheChampions Women Network"
                 subtitle="A robust, pan-African community of women business leaders, ambassadors, and enablers."
-                bgImage="/assets/network_hero.png"
+                bgImage="/assets/network_hero.webp"
                 secondary={true}
             />
 

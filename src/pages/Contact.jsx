@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, MapPin, Phone, Send, CheckCircle } from 'lucide-react';
 import Hero from '../components/Hero';
+import { submitToAppsScript } from '../lib/submitToAppsScript';
 import './Contact.css';
 
 const Contact = () => {
@@ -11,44 +12,65 @@ const Contact = () => {
         message: ''
     });
 
-    const [status, setStatus] = useState('idle'); // idle, loading, success, error
+    // idle | loading | sent | error
+    const [status, setStatus] = useState('idle');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             [name]: value
         }));
+        if (status === 'error') {
+            setStatus('idle');
+            setErrorMessage('');
+        }
+    };
+
+    const validate = () => {
+        if (!formData.name.trim()) {
+            return 'Please enter your full name.';
+        }
+        if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+            return 'Please enter a valid email address.';
+        }
+        if (!formData.message.trim()) {
+            return 'Please enter a message.';
+        }
+        return '';
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setStatus('loading');
+        if (status === 'loading') return;
 
-        try {
-            // Using custom Google Apps Script for 100% free, branded HTML emails
-            const response = await fetch("https://script.google.com/macros/s/AKfycbwZdScWgTk1CqNI0SiOHfzaG6ZhpNVA7ARYLJpJIi84kOlMbof6WArMcRCL1hXzG6Te/exec", {
-                method: "POST",
-                mode: "no-cors", // Required for Google Apps Script Web Apps
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    subject: formData.subject || "New Message from SheChampion Website",
-                    message: formData.message,
-                    type: "Contact Form"
-                }),
-            });
-
-            // With no-cors, we can't read the response body, but the browser will trigger 'success' if the request is sent
-            setStatus('success');
-            setFormData({ name: '', email: '', subject: '', message: '' });
-            setTimeout(() => setStatus('idle'), 5000);
-        } catch (error) {
-            console.error("Form submission error:", error);
+        const validationError = validate();
+        if (validationError) {
             setStatus('error');
+            setErrorMessage(validationError);
+            return;
+        }
+
+        setStatus('loading');
+        setErrorMessage('');
+
+        const result = await submitToAppsScript({
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            subject: formData.subject.trim() || 'New Message from SheChampion Website',
+            message: formData.message.trim(),
+            type: 'Contact Form'
+        });
+
+        if (result === 'sent') {
+            setStatus('sent');
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } else {
+            setStatus('error');
+            setErrorMessage(
+                'We could not send your message from this browser. Please try again or email info@shechampion-bbf.org.'
+            );
         }
     };
 
@@ -71,23 +93,27 @@ const Contact = () => {
                             </p>
 
                             <div className="info-item">
-                                <Phone className="info-icon" />
+                                <Phone className="info-icon" aria-hidden="true" />
                                 <div>
                                     <h4>Phone</h4>
-                                    <p>(+234) 703 631 6083</p>
+                                    <p>
+                                        <a href="tel:+2347036316083">(+234) 703 631 6083</a>
+                                    </p>
                                 </div>
                             </div>
 
                             <div className="info-item">
-                                <Mail className="info-icon" />
+                                <Mail className="info-icon" aria-hidden="true" />
                                 <div>
                                     <h4>Email</h4>
-                                    <p>info@shechampion-bbf.org</p>
+                                    <p>
+                                        <a href="mailto:info@shechampion-bbf.org">info@shechampion-bbf.org</a>
+                                    </p>
                                 </div>
                             </div>
 
                             <div className="info-item">
-                                <MapPin className="info-icon" />
+                                <MapPin className="info-icon" aria-hidden="true" />
                                 <div>
                                     <h4>Location</h4>
                                     <p>Phase 2, Plot 84 Victor B.K. Cres, off Idris Garba Street,Kado, Abuja 900108, FCT, Nigeria</p>
@@ -97,14 +123,30 @@ const Contact = () => {
 
                         {/* Contact Form */}
                         <div className="contact-form-container">
-                            {status === 'success' ? (
-                                <div className="success-message text-center animate-fade-in">
-                                    <CheckCircle size={64} className="text-secondary mx-auto mb-4" />
-                                    <h3 className="text-primary mb-2">Message Sent!</h3>
-                                    <p className="text-dark">Thank you for reaching out to us. We will get back to you shortly.</p>
+                            {status === 'sent' ? (
+                                <div
+                                    className="success-message text-center animate-fade-in"
+                                    role="status"
+                                    aria-live="polite"
+                                >
+                                    <CheckCircle size={64} className="text-secondary mx-auto mb-4" aria-hidden="true" />
+                                    <h3 className="text-primary mb-2">Message submitted</h3>
+                                    <p className="text-dark">
+                                        Your message was submitted from this page. Because of how our form service
+                                        works, we cannot confirm delivery here. If you do not hear from us within
+                                        24 hours, please email{' '}
+                                        <a href="mailto:info@shechampion-bbf.org">info@shechampion-bbf.org</a>.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-primary mt-6"
+                                        onClick={() => setStatus('idle')}
+                                    >
+                                        Send another message
+                                    </button>
                                 </div>
                             ) : (
-                                <form className="contact-form" onSubmit={handleSubmit}>
+                                <form className="contact-form" onSubmit={handleSubmit} noValidate>
                                     <h3 className="text-primary mb-6">Send us a Message</h3>
 
                                     <div className="form-group">
@@ -116,6 +158,7 @@ const Contact = () => {
                                             value={formData.name}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="name"
                                             placeholder="Jane Doe"
                                             disabled={status === 'loading'}
                                         />
@@ -130,6 +173,7 @@ const Contact = () => {
                                             value={formData.email}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="email"
                                             placeholder="jane@example.com"
                                             disabled={status === 'loading'}
                                         />
@@ -162,19 +206,25 @@ const Contact = () => {
                                         ></textarea>
                                     </div>
 
-                                    {status === 'error' && (
-                                        <div className="error-text mb-4">
-                                            Please fill out all required fields correctly.
-                                        </div>
-                                    )}
+                                    <div
+                                        className="form-status"
+                                        role="status"
+                                        aria-live="polite"
+                                        aria-atomic="true"
+                                    >
+                                        {status === 'error' && errorMessage && (
+                                            <p className="error-text mb-4">{errorMessage}</p>
+                                        )}
+                                    </div>
 
                                     <button
                                         type="submit"
                                         className="btn btn-primary submit-btn"
                                         disabled={status === 'loading'}
+                                        aria-busy={status === 'loading'}
                                     >
                                         {status === 'loading' ? 'Sending...' : (
-                                            <>Send Message <Send size={18} className="ml-2" /></>
+                                            <>Send Message <Send size={18} className="ml-2" aria-hidden="true" /></>
                                         )}
                                     </button>
                                 </form>

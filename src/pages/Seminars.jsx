@@ -30,7 +30,7 @@ const Seminars = () => {
             <Hero
                 title="Access-to-Market Seminars"
                 subtitle="Practical knowledge, tools, and networks required to access local, regional, and international markets."
-                bgImage="/assets/seminars_hero.png"
+                bgImage="/assets/seminars_hero.webp"
                 secondary={true}
             />
 

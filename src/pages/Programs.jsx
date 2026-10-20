@@ -22,7 +22,7 @@ const Programs = () => {
             <Hero
                 title="Core Programme Components"
                 subtitle="Identifying innovative, scalable businesses and providing international exposure."
-                bgImage="/assets/programs_hero.png"
+                bgImage="/assets/programs_hero.webp"
                 secondary={true}
             />
 

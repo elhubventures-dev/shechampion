@@ -11,7 +11,7 @@ const Home = () => {
             <Hero
                 title="Elevating Women Entrepreneurs"
                 subtitle="A Women-Led Entrepreneurship, Market Access & Investment Platform. We identify, prepare, and position high-potential women-led businesses for long-term growth."
-                bgImage="/assets/home_hero.png"
+                bgImage="/assets/home_hero.webp"
             >
                 <Link to="/challenge" className="btn btn-primary">
                     Discover The Challenge

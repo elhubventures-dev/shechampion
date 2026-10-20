@@ -1,66 +1,83 @@
 .hero {
-    padding: 10rem 0 6rem;
-    min-height: 60vh;
+    position: relative;
     display: flex;
     align-items: center;
-    position: relative;
+    padding: calc(var(--header-height) + 3.5rem) 0 4.5rem;
+    min-height: clamp(28rem, 72vh, 40rem);
+    background-color: var(--color-navy);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-}
-
-.primary-hero {
-    background-color: var(--primary-color);
-    color: var(--text-light);
+    color: var(--color-text-on-dark);
 }
 
 .secondary-hero {
-    background-color: var(--primary-color);
-    color: var(--white);
-    min-height: 40vh;
-    padding: 8rem 0 4rem;
+    min-height: clamp(20rem, 48vh, 28rem);
+    padding: calc(var(--header-height) + 2.5rem) 0 3.25rem;
+}
+
+.hero-has-media {
+    background-color: var(--color-navy-dark);
 }
 
 .hero-content {
     position: relative;
-    z-index: 10;
-    max-width: 800px;
+    z-index: 2;
+    max-width: 44rem;
 }
 
 .hero h1 {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-    letter-spacing: -1px;
-}
-
-.primary-hero h1,
-.secondary-hero h1 {
-    color: var(--white);
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    margin-bottom: var(--stack-md);
+    color: var(--color-surface);
+    max-width: 18ch;
 }
 
 .hero-subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.4rem);
-    color: var(--white);
-    font-weight: 400;
-    margin-bottom: 2.5rem;
-    max-width: 700px;
-    line-height: 1.6;
-}
-
-.primary-hero .hero-subtitle {
-    font-weight: 500;
+    font-family: var(--font-body);
+    font-size: clamp(1.0625rem, 2vw, 1.25rem);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--leading-body);
+    color: var(--color-text-on-dark-muted);
+    margin-bottom: var(--stack-lg);
+    max-width: 38rem;
 }
 
 .hero-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.hero-actions .btn {
+    min-width: 10rem;
 }
 
 @media (max-width: 768px) {
     .hero {
-        min-height: 50vh;
-        padding: 8rem 0 4rem;
+        min-height: auto;
+        padding: calc(var(--header-height) + 2rem) 0 3rem;
+    }
+
+    .secondary-hero {
+        padding: calc(var(--header-height) + 1.75rem) 0 2.5rem;
+    }
+
+    .hero h1 {
+        max-width: none;
+    }
+
+    .hero-actions {
+        width: 100%;
+    }
+
+    .hero-actions .btn {
+        flex: 1 1 auto;
+        min-width: min(100%, 12rem);
     }
 }

@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(31, 21, 22, 0.7);
+    background-color: rgba(6, 21, 37, 0.72);
     backdrop-filter: blur(4px);
     z-index: 9999;
     display: flex;
@@ -70,13 +70,14 @@
 }
 
 .popup-title {
-    font-size: 1.8rem;
-    color: var(--primary-color);
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    color: var(--color-navy);
     margin-bottom: 0.5rem;
 }
 
 .popup-desc {
-    color: #666;
+    color: var(--color-text-muted);
     margin-bottom: 2rem;
     line-height: 1.5;
 }
@@ -98,9 +99,12 @@
 }
 
 .popup-input:focus {
+    border-color: var(--color-navy);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.popup-input:focus:not(:focus-visible) {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(74, 43, 45, 0.1);
 }
 
 .popup-btn {

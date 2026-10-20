@@ -1,8 +1,29 @@
 import './Hero.css';
 
 const Hero = ({ title, subtitle, bgImage, secondary, children }) => {
-    const heroClass = secondary ? 'hero secondary-hero' : 'hero primary-hero';
-    const customStyles = bgImage ? { backgroundImage: `linear-gradient(rgba(74, 43, 45, 0.8), rgba(74, 43, 45, 0.8)), url(${bgImage})` } : {};
+    const heroClass = [
+        'hero',
+        secondary ? 'secondary-hero' : 'primary-hero',
+        bgImage ? 'hero-has-media' : '',
+    ]
+        .filter(Boolean)
+        .join(' ');
+
+    let customStyles = {};
+    if (bgImage) {
+        // Navy overlay for readable type over photography (replaces prior brown tint)
+        const overlay =
+            'linear-gradient(105deg, rgba(6, 21, 37, 0.88) 0%, rgba(11, 31, 58, 0.72) 55%, rgba(11, 31, 58, 0.55) 100%)';
+        const pngFallback = bgImage.endsWith('.webp')
+            ? bgImage.replace(/\.webp$/i, '.png')
+            : null;
+
+        customStyles = {
+            backgroundImage: pngFallback
+                ? `${overlay}, image-set(url("${bgImage}") type("image/webp"), url("${pngFallback}") type("image/png"))`
+                : `${overlay}, url("${bgImage}")`,
+        };
+    }
 
     return (
         <section className={heroClass} style={customStyles}>

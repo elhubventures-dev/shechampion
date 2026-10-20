@@ -29,7 +29,7 @@
 }
 
 .info-icon {
-    color: var(--secondary-color);
+    color: var(--color-gold);
     margin-right: 1.5rem;
     flex-shrink: 0;
     width: 24px;
@@ -39,7 +39,7 @@
 .info-item h4 {
     margin-bottom: 0.25rem;
     font-size: 1.1rem;
-    color: var(--secondary-color);
+    color: var(--color-gold);
 }
 
 .contact-form-container {
@@ -77,10 +77,30 @@
 
 .form-group input:focus,
 .form-group textarea:focus {
+    border-color: var(--color-navy);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    background-color: var(--color-surface);
+}
+
+.form-group input:focus:not(:focus-visible),
+.form-group textarea:focus:not(:focus-visible) {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(157, 78, 221, 0.1);
-    background-color: var(--white);
+}
+
+.contact-info a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.contact-info a:hover {
+    color: var(--color-gold-soft);
+}
+
+.success-message a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 .submit-btn {

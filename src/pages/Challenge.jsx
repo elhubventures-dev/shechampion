@@ -18,7 +18,7 @@ const Challenge = () => {
             <Hero
                 title="The SheChampions Challenge"
                 subtitle="A national business plan competition and ecosystem support platform designed to identify, prepare, and elevate women entrepreneurs."
-                bgImage="/assets/challenge_hero.png"
+                bgImage="/assets/challenge_hero.webp"
                 secondary={true}
             />
 

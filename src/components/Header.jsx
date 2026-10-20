@@ -8,19 +8,41 @@ const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
+    const [menuPathname, setMenuPathname] = useState(location.pathname);
+
+    // Close the mobile menu when the route changes (including browser back/forward).
+    if (location.pathname !== menuPathname) {
+        setMenuPathname(location.pathname);
+        if (isMobileMenuOpen) {
+            setIsMobileMenuOpen(false);
+        }
+    }
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            setIsScrolled(window.scrollY > 16);
         };
-        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Close mobile menu on route change
     useEffect(() => {
+        if (!isMobileMenuOpen) return undefined;
+
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setIsMobileMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [isMobileMenuOpen]);
+
+    const closeMobileMenu = () => {
         setIsMobileMenuOpen(false);
-    }, [location.pathname]);
+    };
 
     const navLinks = [
         { name: 'Home', path: '/' },
@@ -31,21 +53,28 @@ const Header = () => {
         { name: 'Contact', path: '/contact' },
     ];
 
+    const headerClass = [
+        'header',
+        isScrolled || isMobileMenuOpen ? 'header-scrolled' : '',
+        location.pathname === '/' ? 'header-home' : '',
+    ]
+        .filter(Boolean)
+        .join(' ');
+
     return (
-        <header className={`header ${isScrolled ? 'header-scrolled glass' : ''} ${location.pathname === '/' ? 'header-home' : ''}`}>
+        <header className={headerClass}>
             <div className="container header-container">
-                <Link to="/" className="logo-container">
-                    <img src={logo} alt="She Champions" className="logo-img" />
+                <Link to="/" className="logo-container" onClick={closeMobileMenu}>
+                    <img src={logo} alt="SHE CHAMPIONS" className="logo-img" width="200" height="60" />
                 </Link>
 
-                {/* Desktop Navigation */}
-                <nav className="desktop-nav">
+                <nav className="desktop-nav" aria-label="Primary">
                     <ul>
                         {navLinks.map((link) => (
                             <li key={link.path}>
                                 <Link
                                     to={link.path}
-                                    className={location.pathname === link.path ? 'active' : ''}
+                                    className={location.pathname === link.path ? 'active' : undefined}
                                 >
                                     {link.name}
                                 </Link>
@@ -57,36 +86,44 @@ const Header = () => {
                     </Link>
                 </nav>
 
-                {/* Mobile menu button */}
                 <button
+                    type="button"
                     className="mobile-menu-btn"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    aria-label="Toggle menu"
+                    onClick={() => setIsMobileMenuOpen((open) => !open)}
+                    aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                    aria-expanded={isMobileMenuOpen}
+                    aria-controls="mobile-navigation"
                 >
-                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    {isMobileMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
                 </button>
             </div>
 
-            {/* Mobile Navigation */}
             {isMobileMenuOpen && (
-                <div className="mobile-nav glass">
-                    <ul>
-                        {navLinks.map((link) => (
-                            <li key={link.path}>
+                <div className="mobile-nav" id="mobile-navigation">
+                    <nav aria-label="Mobile primary">
+                        <ul>
+                            {navLinks.map((link) => (
+                                <li key={link.path}>
+                                    <Link
+                                        to={link.path}
+                                        className={location.pathname === link.path ? 'active' : undefined}
+                                        onClick={closeMobileMenu}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                </li>
+                            ))}
+                            <li>
                                 <Link
-                                    to={link.path}
-                                    className={location.pathname === link.path ? 'active' : ''}
+                                    to="/network"
+                                    className="membership-btn-mobile"
+                                    onClick={closeMobileMenu}
                                 >
-                                    {link.name}
+                                    Membership
                                 </Link>
                             </li>
-                        ))}
-                        <li>
-                            <Link to="/network" className="membership-btn-mobile">
-                                Membership
-                            </Link>
-                        </li>
-                    </ul>
+                        </ul>
+                    </nav>
                 </div>
             )}
         </header>
