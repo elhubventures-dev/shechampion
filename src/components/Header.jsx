@@ -111,8 +111,9 @@ const Header = () => {
                             src={logo}
                             alt="SHE CHAMPIONS"
                             className="header-logo__img"
-                            width="220"
-                            height="97"
+                            width="917"
+                            height="406"
+                            decoding="async"
                         />
                     </Link>
 

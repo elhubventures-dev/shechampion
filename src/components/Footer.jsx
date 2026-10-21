@@ -50,8 +50,9 @@ const Footer = () => {
                             src={logo}
                             alt="SHE CHAMPIONS"
                             className="footer-logo__img"
-                            width="200"
-                            height="88"
+                            width="917"
+                            height="406"
+                            decoding="async"
                         />
                     </Link>
                     <p className="footer-brand__text">

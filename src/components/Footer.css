@@ -59,15 +59,18 @@
 .footer-logo {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    min-height: 48px;
     margin-bottom: var(--stack-md);
+    background: transparent;
 }
 
 .footer-logo__img {
-    height: 52px;
+    display: block;
+    height: 56px;
     width: auto;
-    max-width: 220px;
+    max-width: 240px;
     object-fit: contain;
+    background: transparent;
 }
 
 .footer-brand__text {

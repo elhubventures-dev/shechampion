@@ -108,9 +108,9 @@
   --shadow-md: 0 8px 24px rgba(11, 31, 58, 0.08);
   --shadow-lg: 0 16px 40px rgba(11, 31, 58, 0.12);
 
-  /* Utility bar (~2.35rem) + main nav bar (~4.5rem) */
-  --header-height: 6.85rem;
-  --header-height-scrolled: 6.5rem;
+  /* Utility bar (~2.35rem) + main nav bar (~4.75rem) */
+  --header-height: 7.1rem;
+  --header-height-scrolled: 6.85rem;
 
   /* —— Motion —— */
   --duration-fast: 150ms;
