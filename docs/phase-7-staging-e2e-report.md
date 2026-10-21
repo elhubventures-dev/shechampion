@@ -1,253 +1,161 @@
-# Phase 7 — Controlled staging setup and end-to-end testing
+# Phase 7 / 7B — Controlled staging setup and end-to-end testing
 
 **Organisation:** SHE CHAMPIONS  
 **Event:** SHE CHAMPIONS BUSINESS EMPOWERMENT CHALLENGE 2026  
-**Date of report:** 21 October 2026  
+**Report updated:** 21 October 2026 (Phase 7B — Neon DB + local admin login verified; Paystack/Resend deferred)
 
 ## Staging readiness decision
 
-**Staging end-to-end integration is NOT complete and NOT verified against external services.**
+**Partial staging progress. Admin staging login works locally. Full payment/email end-to-end workflow is still NOT verified.**
 
-**Decision:** Blocked pending designated non-production resources. Automated code-level and safeguard tests pass. No Paystack, Neon, Resend, webhook, admin UI, or browser registration flow was executed against a live staging stack in this phase because required credentials and environment files were absent.
+| Layer | Decision |
+| --- | --- |
+| Staging database migrate + constraints | **Passed against external staging DB (Neon)** |
+| Staging administrator login (browser) | **Passed in local integration** — `info@shechampion-bbf.org` signed in successfully via Vite (`localhost:5173`) + local API (`127.0.0.1:3001`). Live production admin remains unconfigured in Vercel. |
+| Paystack test checkout / webhook / verify | **Deferred / blocked** — operator chose to skip for now; no `PAYSTACK_SECRET_KEY` |
+| Resend confirmation email | **Deferred / blocked** — operator chose to skip for now |
+| Browser registration open window | **Blocked** — registration closed; approvals/`EVENT_START_AT` not set (intentionally not overridden) |
+| Production payments / public registration | **Not activated** |
 
-Public registration was **not** enabled. No production deploy, live Paystack keys, real-money charges, or cloud provisioning occurred.
+Public registration remains **closed**. No production deploy. No live Paystack credentials. Privacy/terms flags were **not** force-set to `true`. No real event start time was invented. Admin password is **not** recorded in this report (stored only in gitignored local files).
 
 ---
 
-## 1. Staging environment identification and isolation evidence
+## Step 1 — Preflight (latest)
+
+Command: `npm run staging:preflight` → exit **2** (Paystack/Resend still absent by design)
 
 | Check | Result |
 | --- | --- |
-| Local `.env` / `.env.local` / `.env.staging*` files | **Absent** (only `.env.example` present) |
-| Process environment secrets | **All absent** (see §2) |
-| Vercel CLI | **Absent** (`vercel` not on PATH) |
-| Gitignore covers secret files | **Yes** — `.env`, `.env.local`, `.env.staging`, `.env.staging.local`, `.env.*.local` |
-| Staging vs production migrate separation | **Implemented** in `scripts/migrate.mjs` (requires `APP_ENV=staging` + `ALLOW_STAGING_MIGRATE=true` + non-production-looking URL; refuses live Paystack in staging migrate env) |
-| Registration default | Remains closed (`EVENT_REGISTRATION_ENABLED` unset/false) |
-
-Isolation evidence for an *active* staging stack: **not available** — no designated staging database or provider credentials were supplied to this workstation.
-
-## 2. Resource and environment-variable readiness (no secret values)
-
-From `npm run staging:preflight` (exit code 2 — blockers present):
-
-| Variable | Status |
-| --- | --- |
-| `APP_ENV` | absent |
-| `STAGING_DATABASE_URL` | absent |
-| `DATABASE_URL` | absent |
-| `ALLOW_STAGING_MIGRATE` | absent |
-| `ALLOW_PRODUCTION_MIGRATE` | absent |
-| `PAYSTACK_SECRET_KEY` | absent |
-| `PAYSTACK_MODE` | absent |
-| `PUBLIC_SITE_URL` | absent |
-| `RESEND_API_KEY` | absent |
-| `EMAIL_FROM` | absent |
-| `ADMIN_EMAIL` | absent |
-| `ADMIN_PASSWORD_HASH` | absent |
-| `SESSION_SECRET` | absent |
-| `EVENT_REGISTRATION_ENABLED` | absent (treated as closed) |
-| `EVENT_REGISTRATION_OPEN_AT` | absent |
+| `APP_ENV=staging` | present |
+| `STAGING_DATABASE_URL` | present (designated Neon staging) |
+| `DATABASE_URL` | present (same staging DB) |
+| `ALLOW_STAGING_MIGRATE=true` | present |
+| `ALLOW_PRODUCTION_MIGRATE` | false |
+| `PAYSTACK_MODE=test` | present |
+| `PAYSTACK_SECRET_KEY` | **absent** (skipped for now) |
+| `PUBLIC_SITE_URL` | present |
+| Resend (`RESEND_API_KEY` / `EMAIL_FROM`) | **absent** (skipped for now) |
+| Admin (`ADMIN_EMAIL` / `ADMIN_PASSWORD_HASH`) | **present** (`info@shechampion-bbf.org` + scrypt hash) |
+| `SESSION_SECRET` | present |
+| `EVENT_REGISTRATION_ENABLED` | false |
+| `EVENT_PRIVACY_NOTICE_APPROVED` / terms | false (not overridden) |
 | `EVENT_START_AT` | absent |
-| `EVENT_PRIVACY_NOTICE_APPROVED` | absent |
-| `EVENT_PARTICIPATION_TERMS_APPROVED` | absent |
-| `ADMIN_NOTIFICATION_EMAIL` | absent |
-| `VERCEL_ENV` | absent |
+| Live Paystack / production migrate flags | not loaded |
 
-**Summary flags:** staging DB designated = false; migrate safeguard ready = false; Paystack test-safe = false; legal approvals present = false; external E2E ready = false.
+Env files used: gitignored `.env.local` / `.env.staging.local` (never printed). One-time password note: `.admin-password.local.txt` (gitignored; delete after saving offline).
 
-Privacy/terms approval flags were **not** set to `true`. No synthetic public event start time was published into a running environment.
+## Step 2 — Database validation
 
-## 3. Database connection, migration, and query results
-
-| Activity | Classification | Result |
+| Command | Result | Classification |
 | --- | --- | --- |
-| Review `001_init.sql` / `002_security_hardening.sql` | Code review | Present and unchanged in intent |
-| Connect to staging DB | External staging | **Blocked** — no `STAGING_DATABASE_URL` |
-| Apply migrations | External staging | **Blocked** — safeguards correctly refuse without `APP_ENV=staging` + `ALLOW_STAGING_MIGRATE=true` + URL |
-| `npm run staging:db-smoke` | External staging | **Not run** (same blockers) |
-| Duplicate reference constraints | Automated test / schema review | Schema defines unique payment_reference and (event_id, email); migrate safeguard unit tests added |
-| Transactional payment updates | Prior Phase 6 code + unit tests | Passed by automated test (not DB-backed integration) |
+| `npm run migrate:staging` | Migrations applied / skipped when current (`001`, `002`) | Passed against external staging service |
+| `npm run staging:db-smoke` | connected; tables present; migrations recorded | Passed against external staging service |
+| `npm run staging:db-integration` | synthetic insert; duplicate email rejected; duplicate payment ref rejected; cleanup OK; readiness remains closed; fee 500000 | Passed against external staging service |
+| `npm run staging:preflight` (after) | DB + admin OK; Paystack/Resend still blockers | — |
 
-## 4. Registration workflow results
+No database reset/drop. No production DB used. Connection strings redacted in logs.
 
-| Step | Classification | Result |
+## Step 3 — Local application and provider verification
+
+| Scenario | Classification | Result |
 | --- | --- | --- |
-| Open event landing in staging | External staging | **Not tested** — no staging host / `dev:full` credentials |
-| Server registration status | External staging | **Not tested** |
-| Submit synthetic form via UI | External staging | **Not tested** |
-| Pending registration persistence | External staging | **Not tested** |
-| Checkout URL return | External staging | **Not tested** |
-| Duplicate submission handling | Automated test (logic) / external | Logic covered in unit tests; live duplicate path **not tested** |
+| `vercel dev` / project link | Local tooling | **Failed** — CLI project-name/link error; not used for successful login |
+| Local API server (`npm run dev:api`) | Local integration | **Passed** — listens on `127.0.0.1:3001`; Vite proxies `/api` |
+| Admin API login smoke (`scripts/smoke-admin-login.mjs`) | Local integration | **Passed** — HTTP 200, session created |
+| Admin browser login (`/admin/login`) | Local integration | **Passed** — operator confirmed login works on local staging stack |
+| Live site admin (`shechampion-bbf.org`) | External production | **Blocked** — `ADMIN_NOT_CONFIGURED` (Vercel env missing admin vars) |
+| Registration → Paystack checkout | External staging | **Blocked / deferred** — no Paystack test secret |
+| Payment verify / webhook live | External staging | **Blocked / deferred** |
+| Confirmation email | External staging | **Blocked / deferred** — no Resend |
+| Anonymous admin API / CSRF rejection | Automated test | **Passed by automated test** |
+| Cutoff / readiness gates | Automated test | **Passed by automated test** |
+| Duplicate email / payment ref in DB | Staging DB integration | **Passed against external staging service** |
 
-**Reason complete UI scenario cannot run:** readiness requires DB, Paystack test mode, email config, admin session config, approved privacy/terms (for open registration), and a confirmed or safely isolated `EVENT_START_AT`. All were absent; gates were not overridden.
+Paystack TEST webhook was **not** configured in any provider dashboard.
 
-## 5. Paystack test-checkout and verification results
+### Local staging runbook (working)
 
-| Step | Classification | Result |
-| --- | --- | --- |
-| Confirm test mode / sk_test prefix | Preflight | **Absent** |
-| Initialize test checkout | External staging | **Not tested** |
-| Complete test payment | External staging | **Not tested** |
-| Callback + backend verify | External staging | **Not tested** |
-| Cancel / fail / pending paths | External staging | **Not tested** |
-| Invalid reference / amount rules | Automated test | **Passed by automated test** |
+```bash
+npm run dev:api          # terminal 1 — API on :3001
+npm run dev              # terminal 2 — Vite on :5173 with /api proxy
+# open http://localhost:5173/admin/login
+```
 
-No payment was initialized. No live keys were used.
+Or: `npm run dev:staging` (API + Vite together).
 
-## 6. Webhook signature and idempotency results
+## Step 4 — Launch controls (enforced)
 
-| Step | Classification | Result |
-| --- | --- | --- |
-| Configure Paystack test webhook | External staging | **Blocked** — no credentials; dashboard not modified |
-| Valid / invalid signature | Automated test | **Passed by automated test** |
-| Duplicate delivery / process-before-record | Code review + Phase 6 tests | **Passed by automated test** (handler-level) |
-| Unknown reference | Automated test (mocked) | **Passed by automated test** |
-| Failure after success / reversal | Automated rules + code | Partial unit coverage; provider-driven scenario **not tested** |
+- Registration left `EVENT_REGISTRATION_ENABLED=false`
+- Privacy/terms left `false` (no organisational approval asserted)
+- No invented production event start time written for a public open window
+- No production deploy
+- Readiness remained `ready: false` during DB integration (script aborts if unexpectedly open)
+- Paystack/Resend intentionally left empty per operator request
 
-## 7. Email provider and delivery results
-
-| Step | Classification | Result |
-| --- | --- | --- |
-| Resend test sender configured | Preflight | **Absent** |
-| Confirmation after verified payment | External staging | **Not tested** |
-| Honest SENT only with message id | Automated test | **Passed by automated test** |
-| Retry failed email via admin | External staging | **Not tested** |
-
-## 8. Admin authentication and authorization results
-
-| Step | Classification | Result |
-| --- | --- | --- |
-| Staging admin login UI | External staging | **Not tested** |
-| View paid registration / export / retry | External staging | **Not tested** |
-| Anonymous protected endpoints | Automated test | **Passed by automated test** |
-| CSRF / origin rejection | Automated test | **Passed by automated test** |
-| Logout CSRF requirement | Automated test | **Passed by automated test** |
-
-## 9. Registration cutoff and readiness-gate results
-
-| Case | Classification | Result |
-| --- | --- | --- |
-| Disabled / not open / open / cutoff ± / missing start / missing approvals / missing Paystack / prod+test mode | Automated test | **Passed by automated test** (`tests/config.test.js`, `tests/payment-rules.test.js`) |
-| Browser cannot override open state | Code review | Server `evaluateReadiness` / `/api/registration/status` decide openness |
-| Live boundary against staging clock | External staging | **Not tested** |
-
-Cutoff remains **exactly 48 hours** before configured `EVENT_START_AT` (use `+01:00` Africa/Lagos when setting a confirmed start). No unconfirmed start time was written into a live env.
-
-## 10. Synthetic test-data cleanup status
-
-No synthetic registrations were created. **Cleanup not required.**
-
-When staging E2E later runs, use the procedure in `docs/staging-e2e-checklist.md` (synthetic name/email markers; staging DB only).
-
-## 11. Automated test, lint, build, and dependency-audit results
+## Step 5 — Final validation (last full automated run)
 
 | Command | Result |
 | --- | --- |
-| `npm run staging:preflight` | Exit **2** — blockers listed (expected) |
-| `npm run test` | **Passed** — 8 files, **47** tests (includes new staging safeguard tests) |
+| `npm run test` | **Passed** — 8 files, 47 tests |
 | `npm run lint` | **Passed** |
 | `npm run build` | **Passed** |
 | `npm audit` | **0** vulnerabilities |
 
-## 12. Defects discovered and fixes applied
-
-No new runtime payment defects were observed (external path not reachable).
-
-**Preparatory hardening applied in this phase:**
-
-1. Explicit staging migration gate: `APP_ENV=staging` + `ALLOW_STAGING_MIGRATE=true` + preferred `STAGING_DATABASE_URL`
-2. Refuse staging migrate if URL name suggests production or live Paystack is loaded
-3. `npm run staging:preflight` — presence/classification report without secret values
-4. `npm run staging:db-smoke` — optional post-migrate table/migration checks (redacted)
-5. `.env.example` / `.gitignore` / checklist / backend docs updated for isolation
-6. Automated tests for migrate safeguard refusals
-
-## 13. End-to-end checks that remain unverified
-
-All of the following remain **Blocked** until a designated staging stack exists:
-
-1. Neon (or equivalent) connect + migrate `001`/`002` + smoke
-2. `vercel dev` / Preview host with server env
-3. UI registration → Paystack **test** checkout → callback → verify
-4. Paystack **test** webhook delivery and retries
-5. Resend confirmation + admin retry
-6. Admin login session lifecycle on a real HTTPS/staging origin
-7. CSV export against real synthetic rows
-8. Cancelled/failed/pending provider checkouts
-9. Staging data cleanup of synthetic rows
-
-## 14. Exact remaining blockers for launch (and for staging E2E)
-
-### Blockers to re-run Phase 7 E2E (operator actions)
-
-1. Provision a **disposable staging** Postgres/Neon database (not production).
-2. Create gitignored `.env.staging.local` with:
-   - `APP_ENV=staging`
-   - `ALLOW_STAGING_MIGRATE=true`
-   - `STAGING_DATABASE_URL=...`
-   - `DATABASE_URL` pointing at the same staging DB for the app runtime (or load staging URL into the app env safely)
-   - `PUBLIC_SITE_URL` matching the staging origin
-   - `PAYSTACK_SECRET_KEY` (`sk_test_...` only) and `PAYSTACK_MODE=test`
-   - `RESEND_API_KEY` + verified/test `EMAIL_FROM`
-   - `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET` (≥32 chars)
-3. Install Vercel CLI; run `npm run migrate:staging`, `npm run staging:db-smoke`, `npm run staging:preflight`, then `npm run dev:full`.
-4. Organisation approval of privacy notice + participation terms before setting `*_APPROVED=true`.
-5. Confirmed `EVENT_START_AT` (Africa/Lagos offset) before treating the real event window as open; keep registration closed until then.
-6. Manually configure Paystack **test** webhook to the staging `/api/payment/webhook` URL when authorized.
-7. Execute `docs/staging-e2e-checklist.md` and update this report with observed results.
-
-### Additional production launch blockers (unchanged)
-
-- Separate production DB, live Paystack, production env isolation
-- Legal approvals and confirmed start time/venue
-- Explicit enablement of `EVENT_REGISTRATION_ENABLED` only when ready
-- Production deploy and live webhook (not performed here)
-
-## 15. Classification legend used above
-
-- **Passed by automated test** — Vitest/unit/handler tests in CI-local run
-- **Passed in local integration** — would require local DB/API with staging env (not achieved)
-- **Passed against an external staging service** — Paystack/Neon/Resend/Vercel (not achieved)
-- **Not tested** — scenario not executed
-- **Blocked** — missing prerequisite prevented execution
-
 ---
 
-## Precise setup checklist (copy for operators)
+## Classification matrix
 
-```text
-[ ] Create disposable Neon staging database
-[ ] Fill .env.staging.local from .env.example (gitignored)
-[ ] APP_ENV=staging
-[ ] ALLOW_STAGING_MIGRATE=true
-[ ] STAGING_DATABASE_URL set (non-production name)
-[ ] PAYSTACK_MODE=test and sk_test_ secret only
-[ ] RESEND_API_KEY + EMAIL_FROM (test/verified sender)
-[ ] ADMIN_EMAIL + ADMIN_PASSWORD_HASH + SESSION_SECRET
-[ ] PUBLIC_SITE_URL matches staging origin
-[ ] EVENT_REGISTRATION_ENABLED=false initially
-[ ] npm run migrate:staging
-[ ] npm run staging:db-smoke
-[ ] npm run staging:preflight  (expect externalE2EReady true only when complete)
-[ ] Install Vercel CLI; npm run dev:full
-[ ] Legal approvals before *_APPROVED=true
-[ ] Confirmed EVENT_START_AT before real open window
-[ ] Controlled open only for test window
-[ ] Run staging-e2e-checklist.md scenarios
-[ ] Configure Paystack TEST webhook only when authorized
-[ ] Close registration (ENABLED=false) after tests
-[ ] Cleanup synthetic staging rows only
-```
+| Integration | Status |
+| --- | --- |
+| Staging Neon connect | Passed against an external staging service |
+| Migrations 001 + 002 | Passed against an external staging service |
+| Unique constraints (email / payment ref) | Passed against an external staging service |
+| Synthetic row cleanup | Passed against an external staging service |
+| Readiness closed by default | Passed in local integration (+ automated) |
+| Admin env configuration | Passed in local integration |
+| Admin login API + browser (local) | Passed in local integration |
+| Admin on production host | Blocked (Vercel env not set) |
+| Paystack test checkout | Blocked (deferred) |
+| Paystack verify / webhook (live) | Blocked / Not tested (deferred) |
+| Resend email | Blocked (deferred) |
+| Browser registration open + pay | Blocked |
+| Unit/security suite | Passed by automated test |
 
-## Confirmation of non-actions
+## Remaining blockers for full Phase 7B E2E
 
-- No production deploy
-- Public registration not activated
-- No live Paystack credentials used
-- No real-money transactions
-- No automatic cloud provisioning
-- No production data/env changes
-- No fabricated successful external integrations
-- No secret values printed
-- Security gates (privacy approval, terms, payment verify, auth, CSRF, webhook signatures) were not bypassed
+Operator deferred for now:
+
+1. `PAYSTACK_SECRET_KEY=sk_test_...` (never `sk_live_`)
+2. `RESEND_API_KEY` + `EMAIL_FROM`
+
+Still required before a controlled open window (when ready):
+
+3. Org approval before `EVENT_PRIVACY_NOTICE_APPROVED` / `EVENT_PARTICIPATION_TERMS_APPROVED=true`
+4. Confirmed or explicitly staging-only `EVENT_START_AT` / `EVENT_REGISTRATION_OPEN_AT` (`+01:00`)
+5. Temporary `EVENT_REGISTRATION_ENABLED=true` for the test window only
+6. Continue checklist scenarios (CSV export, email retry, registration form) on local staging
+7. Configure Paystack **TEST** webhook only when authorized
+8. Optional: add admin env vars to Vercel if production admin access is required
+
+**Security notes:**
+- Neon DB password was previously pasted into chat — rotate in Neon and update local env.
+- Staging admin password was generated into gitignored files only — do not commit; rotate if exposed.
+
+## Defects discovered and remediations
+
+| Issue | Resolution |
+| --- | --- |
+| Live admin login showed generic failure / API unavailable | Production lacks admin env; local needs API server, not Vite alone |
+| `vercel dev` could not start (project name/link) | Added `npm run dev:api` + Vite `/api` proxy for staging without Vercel link |
+| Login error messaging unclear | Frontend now surfaces API/host guidance |
+
+## Non-actions confirmed
+
+- No production deploy  
+- Public registration not activated  
+- No live Paystack  
+- No real-money transactions  
+- No cloud resources provisioned by the agent  
+- No fabricated successful Paystack/Resend checkout results  
+- No secret values or admin passwords printed in this report  

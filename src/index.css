@@ -1,27 +1,35 @@
 /* ==========================================================================
-   SHE CHAMPIONS — Design System Tokens (Phase 2B)
-   Premium corporate: deep navy, white, restrained gold.
-   Logo purple is preserved in the logo asset only (--color-brand-mark).
+   SHE CHAMPIONS — Design System Tokens
+   Balanced palette: deep navy for chrome/readability, logo purple for brand/CTAs,
+   lilac accents (replacing gold) for eyebrows and soft highlights.
    ========================================================================== */
 
 :root {
-  /* —— Color: brand & surfaces —— */
+  /* —— Color: navy chrome (dark surfaces / readable text) —— */
   --color-navy: #0b1f3a;
   --color-navy-dark: #061525;
   --color-navy-mid: #16355c;
   --color-navy-soft: #243f66;
 
+  /* —— Color: brand purple (logo-derived) —— */
+  --color-brand: #8b3db8;
+  --color-brand-deep: #6b2a8f;
+  --color-brand-mid: #a855c8;
+  --color-brand-soft: #c589e8;
+  --color-brand-lilac: #e8d4f5;
+
+  /* Legacy mark aliases */
+  --color-brand-mark: var(--color-brand);
+  --color-brand-mark-soft: var(--color-brand-soft);
+
+  /* Accent aliases: gold names map to lilac/brand for existing CSS */
+  --color-gold: var(--color-brand-soft);
+  --color-gold-dark: var(--color-brand-deep);
+  --color-gold-soft: var(--color-brand-lilac);
+
   --color-surface: #ffffff;
-  --color-surface-warm: #f7f5f1;
-  --color-surface-muted: #eef1f5;
-
-  --color-gold: #c4a35a;
-  --color-gold-dark: #a8863d;
-  --color-gold-soft: #e8d9b0;
-
-  /* Logo mark reference (do not use for small body text on white) */
-  --color-brand-mark: #8b3db8;
-  --color-brand-mark-soft: #c589e8;
+  --color-surface-warm: #f7f5fa;
+  --color-surface-muted: #f1eef5;
 
   --color-text: #1a2332;
   --color-text-muted: #5c6675;
@@ -30,10 +38,10 @@
 
   --color-border: #d8dee6;
   --color-border-strong: #b8c2d0;
-  --color-divider: #e4e8ee;
+  --color-divider: #e8e4ee;
 
-  --color-focus: #c4a35a;
-  --color-focus-ring: rgba(196, 163, 90, 0.45);
+  --color-focus: var(--color-brand);
+  --color-focus-ring: rgba(139, 61, 184, 0.45);
 
   --color-success: #2f6f4e;
   --color-success-bg: #e8f2ec;
@@ -47,7 +55,7 @@
   --primary-dark: var(--color-navy-dark);
   --primary-light: var(--color-navy-mid);
   --secondary-color: var(--color-surface-muted);
-  --secondary-dark: var(--color-gold-dark);
+  --secondary-dark: var(--color-brand-deep);
   --text-dark: var(--color-text);
   --text-light: var(--color-text-on-dark);
   --bg-color: var(--color-surface-warm);
@@ -535,14 +543,15 @@ select:focus-visible {
 }
 
 .btn-primary {
-  background-color: var(--color-navy);
-  color: var(--color-text-on-dark);
-  border-color: var(--color-navy);
+  background-color: var(--color-brand);
+  color: #fff;
+  border-color: var(--color-brand);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-navy-mid);
-  border-color: var(--color-navy-mid);
+  background-color: var(--color-brand-deep);
+  border-color: var(--color-brand-deep);
+  color: #fff;
 }
 
 .btn-secondary,
@@ -565,21 +574,21 @@ select:focus-visible {
 }
 
 .btn-light:hover {
-  background-color: var(--color-gold-soft);
-  border-color: var(--color-gold-soft);
+  background-color: var(--color-brand-lilac);
+  border-color: var(--color-brand-lilac);
   color: var(--color-navy-dark);
 }
 
 .btn-accent {
-  background-color: var(--color-gold);
-  color: var(--color-navy-dark);
-  border-color: var(--color-gold);
+  background-color: var(--color-brand-mid);
+  color: #fff;
+  border-color: var(--color-brand-mid);
 }
 
 .btn-accent:hover {
-  background-color: var(--color-gold-dark);
-  border-color: var(--color-gold-dark);
-  color: var(--color-surface);
+  background-color: var(--color-brand-deep);
+  border-color: var(--color-brand-deep);
+  color: #fff;
 }
 
 .btn:disabled {

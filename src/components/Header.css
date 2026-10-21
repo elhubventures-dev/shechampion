@@ -18,7 +18,7 @@
 .header-utility {
     background: var(--color-navy-dark);
     color: var(--color-text-on-dark-muted);
-    border-bottom: 1px solid rgba(196, 163, 90, 0.28);
+    border-bottom: 1px solid rgba(139, 61, 184, 0.35);
 }
 
 .header-utility__inner {
@@ -146,7 +146,7 @@
     right: 0.7rem;
     bottom: 0.4rem;
     height: 2px;
-    background: var(--color-gold);
+    background: var(--color-brand);
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform var(--duration-base) var(--ease-standard);
@@ -178,14 +178,14 @@ a.header-cta {
     min-height: 42px;
     padding: 0.55rem 1.2rem;
     border-radius: var(--radius-sm);
-    background: var(--color-navy);
+    background: var(--color-brand);
     color: #fff;
     font-size: var(--text-caption);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     white-space: nowrap;
-    border: var(--border-strong) solid var(--color-navy);
+    border: var(--border-strong) solid var(--color-brand);
     box-shadow: none;
     transition: background-color var(--duration-base) var(--ease-standard),
         border-color var(--duration-base) var(--ease-standard),
@@ -205,9 +205,9 @@ a.header-cta::after {
 .header-drawer .header-cta:focus-visible,
 a.header-cta:hover,
 a.header-cta:focus-visible {
-    background: var(--color-gold);
-    border-color: var(--color-gold);
-    color: var(--color-navy-dark);
+    background: var(--color-brand-deep);
+    border-color: var(--color-brand-deep);
+    color: #fff;
 }
 
 .header-cta--block {
@@ -278,7 +278,7 @@ a.header-cta:focus-visible {
 
 .header-drawer a.is-active {
     background: var(--color-surface-muted);
-    border-color: rgba(196, 163, 90, 0.55);
+    border-color: rgba(139, 61, 184, 0.45);
     font-weight: var(--font-weight-semibold);
 }
 

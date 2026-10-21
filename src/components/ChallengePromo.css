@@ -1,7 +1,7 @@
 .challenge-promo {
   position: relative;
   background:
-    radial-gradient(ellipse 80% 120% at 100% 0%, rgba(196, 163, 90, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 120% at 100% 0%, rgba(139, 61, 184, 0.22) 0%, transparent 55%),
     linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy) 48%, var(--color-navy-mid) 100%);
   color: var(--color-text-on-dark);
   overflow: hidden;
@@ -15,7 +15,7 @@
     90deg,
     transparent 0%,
     transparent 70%,
-    rgba(196, 163, 90, 0.06) 100%
+    rgba(197, 137, 232, 0.08) 100%
   );
   pointer-events: none;
 }
@@ -136,11 +136,11 @@
 @keyframes challengePromoPulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(232, 217, 176, 0);
+    box-shadow: 0 0 0 0 rgba(139, 61, 184, 0);
   }
 
   50% {
-    box-shadow: 0 0 0 6px rgba(232, 217, 176, 0.18);
+    box-shadow: 0 0 0 6px rgba(139, 61, 184, 0.22);
   }
 }
 

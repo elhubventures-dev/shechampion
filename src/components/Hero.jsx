@@ -1,6 +1,13 @@
 import './Hero.css';
 
-const Hero = ({ title, subtitle, bgImage, secondary, children }) => {
+const Hero = ({
+    title,
+    subtitle,
+    eyebrow,
+    bgImage,
+    secondary,
+    children,
+}) => {
     const heroClass = [
         'hero',
         secondary ? 'secondary-hero' : 'primary-hero',
@@ -9,28 +16,41 @@ const Hero = ({ title, subtitle, bgImage, secondary, children }) => {
         .filter(Boolean)
         .join(' ');
 
-    let customStyles = {};
-    if (bgImage) {
-        // Navy overlay for readable type over photography (replaces prior brown tint)
-        const overlay =
-            'linear-gradient(105deg, rgba(6, 21, 37, 0.88) 0%, rgba(11, 31, 58, 0.72) 55%, rgba(11, 31, 58, 0.55) 100%)';
-        const pngFallback = bgImage.endsWith('.webp')
+    const pngFallback =
+        bgImage && bgImage.endsWith('.webp')
             ? bgImage.replace(/\.webp$/i, '.png')
             : null;
 
-        customStyles = {
-            backgroundImage: pngFallback
-                ? `${overlay}, image-set(url("${bgImage}") type("image/webp"), url("${pngFallback}") type("image/png"))`
-                : `${overlay}, url("${bgImage}")`,
-        };
-    }
-
     return (
-        <section className={heroClass} style={customStyles}>
-            <div className="container hero-content animate-fade-in">
-                <h1>{title}</h1>
-                {subtitle && <p className="hero-subtitle">{subtitle}</p>}
-                {children && <div className="hero-actions">{children}</div>}
+        <section className={heroClass} aria-labelledby="hero-heading">
+            {bgImage && (
+                <div className="hero-media" aria-hidden="true">
+                    <div
+                        className="hero-media__image"
+                        style={{
+                            backgroundImage: pngFallback
+                                ? `image-set(url("${bgImage}") type("image/webp"), url("${pngFallback}") type("image/png"))`
+                                : `url("${bgImage}")`,
+                        }}
+                    />
+                    <div className="hero-media__overlay" />
+                    <div className="hero-media__glow" />
+                </div>
+            )}
+
+            <div className="container hero-content">
+                {eyebrow && (
+                    <p className="hero-eyebrow hero-reveal hero-reveal--1">{eyebrow}</p>
+                )}
+                <h1 id="hero-heading" className="hero-reveal hero-reveal--2">
+                    {title}
+                </h1>
+                {subtitle && (
+                    <p className="hero-subtitle hero-reveal hero-reveal--3">{subtitle}</p>
+                )}
+                {children && (
+                    <div className="hero-actions hero-reveal hero-reveal--4">{children}</div>
+                )}
             </div>
         </section>
     );

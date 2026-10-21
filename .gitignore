@@ -5,6 +5,7 @@ dist
 .env.staging
 .env.staging.local
 .env.*.local
+.admin-password.local.txt
 .vercel
 .artifacts-audit.json
 .eslintcache

@@ -73,18 +73,33 @@ export async function verifyPayment(reference) {
 }
 
 export async function adminLogin(email, password) {
-  const response = await fetch('/api/admin/login', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    credentials: 'same-origin',
-    body: JSON.stringify({ email, password }),
-  });
+  let response;
+  try {
+    response = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ email, password }),
+    });
+  } catch {
+    throw new Error(
+      'Could not reach the login API. Use `npx vercel dev` (not Vite alone) for local admin.'
+    );
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error(
+      'Login API is not available on this host. Local staging needs `npx vercel dev`; production needs admin env vars in Vercel.'
+    );
+  }
+
   const data = await parseJson(response);
   if (!response.ok) {
-    throw new Error(data?.error?.message || 'Login failed.');
+    throw new Error(data?.error?.message || `Login failed (${response.status}).`);
   }
   return data;
 }

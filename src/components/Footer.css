@@ -7,7 +7,7 @@
 .footer-cta-band {
     background:
         linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-mid) 100%);
-    border-bottom: 1px solid rgba(196, 163, 90, 0.35);
+    border-bottom: 1px solid rgba(139, 61, 184, 0.4);
 }
 
 .footer-cta-band__inner {
@@ -106,7 +106,7 @@
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--color-gold);
-    border-bottom: var(--border-width) solid rgba(196, 163, 90, 0.35);
+    border-bottom: var(--border-width) solid rgba(139, 61, 184, 0.4);
 }
 
 .footer-col ul {
@@ -153,7 +153,7 @@
     color: var(--color-text-on-dark);
     text-decoration: underline;
     text-underline-offset: 3px;
-    text-decoration-color: rgba(196, 163, 90, 0.55);
+    text-decoration-color: rgba(197, 137, 232, 0.55);
 }
 
 .footer-contact a:hover,

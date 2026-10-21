@@ -3,16 +3,28 @@
 }
 
 .home-page .hero-btn-ghost {
-    border-color: rgba(255, 255, 255, 0.75);
-    color: var(--color-surface);
+    border-color: rgba(255, 255, 255, 0.78);
+    color: #fff;
     background: transparent;
+    backdrop-filter: blur(2px);
 }
 
 .home-page .hero-btn-ghost:hover,
 .home-page .hero-btn-ghost:focus-visible {
     background: rgba(255, 255, 255, 0.12);
-    border-color: var(--color-gold-soft);
-    color: var(--color-surface);
+    border-color: var(--color-brand-soft);
+    color: #fff;
+}
+
+.home-page .primary-hero .btn-primary {
+    box-shadow: 0 10px 28px rgba(107, 42, 143, 0.35);
+}
+
+.home-page .primary-hero .btn-primary:hover,
+.home-page .primary-hero .btn-primary:focus-visible {
+    background: var(--color-brand-deep);
+    border-color: var(--color-brand-deep);
+    color: #fff;
 }
 
 .home-page .cta-band .hero-btn-ghost {

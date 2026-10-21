@@ -79,12 +79,14 @@ const Home = () => {
             />
 
             <Hero
+                eyebrow="SHE CHAMPIONS"
                 title="Elevating Women Entrepreneurs"
-                subtitle="A Women-Led Entrepreneurship, Market Access & Investment Platform. We identify, prepare, and position high-potential women-led businesses for long-term growth."
+                subtitle="A women-led entrepreneurship, market access, and investment platform preparing high-potential businesses for long-term growth."
                 bgImage="/assets/home_hero.webp"
             >
-                <Link to={EVENT_2026.path} className="btn btn-light">
+                <Link to={EVENT_2026.path} className="btn btn-primary">
                     Join Challenge 2026
+                    <ArrowRight size={18} aria-hidden="true" />
                 </Link>
                 <Link to="/programs" className="btn btn-outline-primary hero-btn-ghost">
                     Explore Programmes

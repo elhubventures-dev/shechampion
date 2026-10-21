@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "node scripts/local-api-server.mjs",
+    "dev:staging": "node scripts/dev-staging.mjs",
     "dev:full": "vercel dev",
     "build": "vite build",
     "lint": "eslint .",
@@ -15,6 +17,8 @@
     "migrate:staging": "node scripts/migrate.mjs",
     "staging:preflight": "node scripts/staging-preflight.mjs",
     "staging:db-smoke": "node scripts/staging-db-smoke.mjs",
+    "staging:db-integration": "node scripts/staging-db-integration.mjs",
+    "staging:admin-verify": "node scripts/phase-7c-admin-verify.mjs",
     "hash-admin-password": "node scripts/hash-admin-password.mjs"
   },
   "dependencies": {

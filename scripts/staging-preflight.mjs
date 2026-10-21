@@ -2,10 +2,43 @@
 /**
  * Report staging resource readiness without printing secret values.
  *
+ * Loads gitignored `.env.staging.local` then `.env.local` if present
+ * (does not override variables already set in the process environment).
+ *
  * Usage:
  *   node scripts/staging-preflight.mjs
- *   # or with dotenv-style files already loaded into the process env
  */
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+function loadEnvFile(filePath) {
+  if (!existsSync(filePath)) return;
+  const text = readFileSync(filePath, 'utf8');
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (process.env[key] === undefined || process.env[key] === '') {
+      process.env[key] = value;
+    }
+  }
+}
+
+loadEnvFile(join(root, '.env.staging.local'));
+loadEnvFile(join(root, '.env.local'));
+
 const KEYS = [
   'APP_ENV',
   'STAGING_DATABASE_URL',
