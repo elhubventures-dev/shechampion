@@ -168,34 +168,46 @@
     font-weight: var(--font-weight-semibold);
 }
 
-.header-cta {
+/* Higher specificity than `.header-nav a` so label stays readable */
+.header-nav .header-cta,
+.header-drawer .header-cta,
+a.header-cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 42px;
-    padding: 0.55rem 1.15rem;
+    padding: 0.55rem 1.2rem;
     border-radius: var(--radius-sm);
     background: var(--color-navy);
-    color: var(--color-text-on-dark);
+    color: #fff;
     font-size: var(--text-caption);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
+    white-space: nowrap;
     border: var(--border-strong) solid var(--color-navy);
+    box-shadow: none;
     transition: background-color var(--duration-base) var(--ease-standard),
         border-color var(--duration-base) var(--ease-standard),
         color var(--duration-base) var(--ease-standard);
 }
 
-.header-cta:hover,
-.header-cta:focus-visible {
+.header-nav .header-cta::after,
+.header-drawer .header-cta::after,
+a.header-cta::after {
+    display: none !important;
+    content: none !important;
+}
+
+.header-nav .header-cta:hover,
+.header-nav .header-cta:focus-visible,
+.header-drawer .header-cta:hover,
+.header-drawer .header-cta:focus-visible,
+a.header-cta:hover,
+a.header-cta:focus-visible {
     background: var(--color-gold);
     border-color: var(--color-gold);
     color: var(--color-navy-dark);
-}
-
-.header-cta::after {
-    display: none !important;
 }
 
 .header-cta--block {
