@@ -61,12 +61,14 @@
     align-items: center;
     min-height: 48px;
     margin-bottom: var(--stack-md);
-    background: transparent;
+    padding: 0.4rem 0.65rem;
+    border-radius: var(--radius-md, 10px);
+    background: #fff;
 }
 
 .footer-logo__img {
     display: block;
-    height: 56px;
+    height: 52px;
     width: auto;
     max-width: 240px;
     object-fit: contain;

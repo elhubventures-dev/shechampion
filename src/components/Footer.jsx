@@ -50,8 +50,8 @@ const Footer = () => {
                             src={logo}
                             alt="SHE CHAMPIONS"
                             className="footer-logo__img"
-                            width="917"
-                            height="406"
+                            width="1024"
+                            height="364"
                             decoding="async"
                         />
                     </Link>
