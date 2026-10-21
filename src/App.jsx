@@ -15,6 +15,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ScrollToTop from './components/ScrollToTop';
 import FloatingActions from './components/FloatingActions';
+import MobileBottomNav from './components/MobileBottomNav';
 import MembershipPopup from './components/MembershipPopup';
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <MobileBottomNav />
       <FloatingActions />
       <MembershipPopup />
     </div>

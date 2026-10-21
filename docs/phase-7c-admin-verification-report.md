@@ -170,12 +170,12 @@ Operational note only: login rate limiting can trip during dense local verificat
 
 ---
 
-## 9. Remaining limitations (Paystack / Resend absent)
+## 9. Remaining limitations
 
 | Dependency | Status | Impact |
 | --- | --- | --- |
-| `PAYSTACK_SECRET_KEY` | Absent | No checkout, webhook, or live verify path in this phase |
-| Resend (`RESEND_API_KEY` / `EMAIL_FROM`) | Absent | Confirmation email cannot be delivered; retry correctly reports failure and does not mark sent |
+| `PAYSTACK_SECRET_KEY` | Present as `sk_test_` after Phase 7C (see later preflight / `staging:paystack-smoke`) | Hosted checkout still not exercised while registration is closed |
+| Resend (`RESEND_API_KEY` / `EMAIL_FROM`) | Absent — operator skipped for now | Confirmation email cannot be delivered; retry correctly reports failure and does not mark sent |
 | Public registration | Closed | `EVENT_REGISTRATION_ENABLED=false`; privacy/terms approval flags remain false; no invented `EVENT_START_AT` |
 | Live / production admin env | Out of scope | Production host may still lack admin env vars (see Phase 7/7B) |
 

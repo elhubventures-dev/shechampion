@@ -12,8 +12,8 @@
 | --- | --- |
 | Staging database migrate + constraints | **Passed against external staging DB (Neon)** |
 | Staging administrator login (browser) | **Passed in local integration** — `info@shechampion-bbf.org` signed in successfully via Vite (`localhost:5173`) + local API (`127.0.0.1:3001`). Live production admin remains unconfigured in Vercel. |
-| Paystack test checkout / webhook / verify | **Deferred / blocked** — operator chose to skip for now; no `PAYSTACK_SECRET_KEY` |
-| Resend confirmation email | **Deferred / blocked** — operator chose to skip for now |
+| Paystack test checkout / webhook / verify | **Partial** — `sk_test_` present; API smoke passed (`npm run staging:paystack-smoke`). Hosted checkout / webhook not run (registration remains closed). |
+| Resend confirmation email | **Deferred / skipped for now** — operator chose to proceed without Resend |
 | Browser registration open window | **Blocked** — registration closed; approvals/`EVENT_START_AT` not set (intentionally not overridden) |
 | Production payments / public registration | **Not activated** |
 
@@ -124,19 +124,19 @@ Or: `npm run dev:staging` (API + Vite together).
 
 ## Remaining blockers for full Phase 7B E2E
 
-Operator deferred for now:
+**Update (21 Oct 2026):** Operator skipped Resend + legal/start-time gates for now and proceeded. Paystack TEST key is configured; `npm run staging:paystack-smoke` returned provider OK. Public registration stays **closed**.
 
-1. `PAYSTACK_SECRET_KEY=sk_test_...` (never `sk_live_`)
-2. `RESEND_API_KEY` + `EMAIL_FROM`
+Deferred / skipped for now:
 
-Still required before a controlled open window (when ready):
+1. `RESEND_API_KEY` + `EMAIL_FROM` (email delivery not required to proceed past admin/Paystack smoke)
 
-3. Org approval before `EVENT_PRIVACY_NOTICE_APPROVED` / `EVENT_PARTICIPATION_TERMS_APPROVED=true`
-4. Confirmed or explicitly staging-only `EVENT_START_AT` / `EVENT_REGISTRATION_OPEN_AT` (`+01:00`)
-5. Temporary `EVENT_REGISTRATION_ENABLED=true` for the test window only
-6. Continue checklist scenarios (CSV export, email retry, registration form) on local staging
-7. Configure Paystack **TEST** webhook only when authorized
-8. Optional: add admin env vars to Vercel if production admin access is required
+Still required before a controlled open / hosted checkout window (when ready — do not invent):
+
+2. Org approval before `EVENT_PRIVACY_NOTICE_APPROVED` / `EVENT_PARTICIPATION_TERMS_APPROVED=true`
+3. Confirmed `EVENT_START_AT` / `EVENT_REGISTRATION_OPEN_AT` (`+01:00`)
+4. Temporary `EVENT_REGISTRATION_ENABLED=true` for the test window only
+5. Paystack hosted checkout + verify + optional TEST webhook
+6. Optional: add admin env vars to Vercel if production admin access is required
 
 **Security notes:**
 - Neon DB password was previously pasted into chat — rotate in Neon and update local env.
