@@ -1,6 +1,12 @@
 node_modules
 dist
 .env
+.env.local
+.env.staging
+.env.staging.local
+.env.*.local
+.vercel
+.artifacts-audit.json
 .eslintcache
 *.log
 .DS_Store

@@ -1,182 +1,290 @@
 import { Link } from 'react-router-dom';
-import { Target, TrendingUp, Globe, Users, ArrowRight, BookOpen, UserCheck } from 'lucide-react';
+import { ArrowRight, Target, TrendingUp, Globe, Users, BookOpen, UserCheck } from 'lucide-react';
 import Hero from '../components/Hero';
-import Card from '../components/Card';
-import AdUnit from '../components/AdUnit';
+import PageMeta from '../components/PageMeta';
+import ChallengePromo from '../components/ChallengePromo';
+import { EVENT_2026 } from '../lib/event2026';
 import './Home.css';
+
+const pathways = [
+    {
+        index: '01',
+        title: 'The SheChampions Challenge',
+        description:
+            'A national business plan competition and ecosystem support platform for women entrepreneurs.',
+        to: '/challenge',
+    },
+    {
+        index: '02',
+        title: 'Core Programmes',
+        description:
+            'Competition preparation, mentorship, and structured pathways to African and global platforms.',
+        to: '/programs',
+    },
+    {
+        index: '03',
+        title: 'Access-to-Market Seminars',
+        description:
+            'Monthly seminars and quarterly masterclasses focused on markets, compliance, and growth.',
+        to: '/seminars',
+    },
+    {
+        index: '04',
+        title: 'Women Network',
+        description:
+            'A platform for mentorship, advocacy, partnerships, and long-term enterprise support.',
+        to: '/network',
+    },
+];
+
+const pillars = [
+    {
+        icon: Target,
+        title: 'Business Plan Competition',
+        description:
+            'National competition identifying innovative women-led businesses across priority sectors.',
+    },
+    {
+        icon: TrendingUp,
+        title: 'Enterprise Development',
+        description:
+            'Continuous capacity building, structural access-to-market support, and high-level mentorship.',
+    },
+    {
+        icon: Globe,
+        title: 'Global Exposure',
+        description:
+            'International competition participation, strengthening global outlook, competitiveness, and visibility.',
+    },
+    {
+        icon: Users,
+        title: 'Sustainable Network',
+        description:
+            'Long-term women-led enterprise ecosystem for learning, deal flow, and brand growth.',
+    },
+];
+
+const commitments = [
+    'Personalized Growth Pathways',
+    'Strategic Resource Mobilization',
+    'Advocacy for Inclusive Policies',
+];
 
 const Home = () => {
     return (
-        <div className="home-page animate-fade-in">
+        <div className="home-page page-shell animate-fade-in">
+            <PageMeta
+                title="Elevating Women Entrepreneurs"
+                description="SHE CHAMPIONS is a Women-Led Entrepreneurship, Market Access & Investment Platform. We identify, prepare, and position high-potential women-led businesses for long-term growth."
+            />
+
             <Hero
                 title="Elevating Women Entrepreneurs"
                 subtitle="A Women-Led Entrepreneurship, Market Access & Investment Platform. We identify, prepare, and position high-potential women-led businesses for long-term growth."
                 bgImage="/assets/home_hero.webp"
             >
-                <Link to="/challenge" className="btn btn-primary">
-                    Discover The Challenge
+                <Link to={EVENT_2026.path} className="btn btn-light">
+                    Join Challenge 2026
                 </Link>
-                <Link to="/programs" className="btn btn-light">
-                    Our Programs
+                <Link to="/programs" className="btn btn-outline-primary hero-btn-ghost">
+                    Explore Programmes
                 </Link>
             </Hero>
 
-            {/* Combined Intro & Commitment Section */}
-            <section className="py-section combined-intro-section">
-                <div className="container">
-                    <div className="grid md:grid-cols-2 gap-8">
-                        {/* Why SheChampion Card */}
-                        <div className="info-card">
-                            <h2 className="section-title text-left">Why SheChampion?</h2>
-                            <p className="text-content">
-                                Women entrepreneurs contribute significantly to economic growth, innovation, and job creation.
-                                However, structural barriers such as limited access to finance, weak market linkages, and low
-                                investor visibility continue to constrain the growth of women-led enterprises.
-                            </p>
-                            <p className="text-content">
-                                The SheChampions Network responds to these gaps through a structured, inclusive, and partnership-driven approach.
-                            </p>
-                            <div className="mt-6">
-                                <Link to="/challenge" className="btn btn-outline-primary">
-                                    Our Strategy <ArrowRight size={20} className="ml-2 inline" />
-                                </Link>
-                            </div>
-                        </div>
+            <ChallengePromo variant="featured" />
 
-                        {/* Our Commitment Card */}
-                        <div className="info-card commitment-card">
-                            <h2 className="section-title text-left">Our Commitment</h2>
-                            <p className="text-content">
-                                At SheChampion, we don't just provide resources; we walk the journey with you. We are committed to fostering an ecosystem where African women-led businesses are not just participants but leaders in the global market.
-                            </p>
-                            <ul className="feature-list mt-4">
-                                <li><TrendingUp size={18} className="text-primary mr-2" /> Personalized Growth Pathways</li>
-                                <li><Users size={18} className="text-primary mr-2" /> Strategic Resource Mobilization</li>
-                                <li><Globe size={18} className="text-primary mr-2" /> Advocacy for Inclusive Policies</li>
-                            </ul>
-                            <div className="mt-6">
-                                <Link to="/programs" className="btn btn-primary">
-                                    Our Programs
+            <section className="py-section" aria-labelledby="intro-heading">
+                <div className="container">
+                    <div className="split-layout">
+                        <div>
+                            <p className="section-eyebrow">Who we are</p>
+                            <h2 className="section-title" id="intro-heading">
+                                Why SHE CHAMPIONS?
+                            </h2>
+                            <div className="prose-block">
+                                <p>
+                                    Women entrepreneurs contribute significantly to economic growth, innovation,
+                                    and job creation. However, structural barriers such as limited access to
+                                    finance, weak market linkages, and low investor visibility continue to
+                                    constrain the growth of women-led enterprises.
+                                </p>
+                                <p>
+                                    The SheChampions Network responds to these gaps through a structured,
+                                    inclusive, and partnership-driven approach.
+                                </p>
+                            </div>
+                            <div className="home-inline-actions">
+                                <Link to="/challenge" className="btn btn-primary">
+                                    Our strategy <ArrowRight size={18} aria-hidden="true" />
                                 </Link>
                             </div>
                         </div>
+                        <aside className="callout-panel" aria-labelledby="commitment-heading">
+                            <h3 id="commitment-heading">Our commitment</h3>
+                            <p>
+                                At SheChampion, we do not just provide resources; we walk the journey with you.
+                                We are committed to fostering an ecosystem where African women-led businesses are
+                                not just participants but leaders in the global market.
+                            </p>
+                            <ul className="commitment-list">
+                                {commitments.map((item) => (
+                                    <li key={item}>{item}</li>
+                                ))}
+                            </ul>
+                        </aside>
                     </div>
                 </div>
             </section>
 
-            {/* Ad Unit - Between Intro and Pillars */}
-            <div className="ad-between-sections">
-                <AdUnit format="horizontal" />
-            </div>
-
-            {/* Pillars Section */}
-            <section className="py-section pillars-section bg-light">
+            <section className="py-section band-muted" aria-labelledby="pathways-heading">
                 <div className="container">
-                    <div className="text-center mb-4">
-                        <h2 className="section-title">Overview of the SheChampions Challenge</h2>
-                        <p className="section-subtitle">A comprehensive platform combining competition with continuous support.</p>
+                    <div className="section-header">
+                        <p className="section-eyebrow">How we work</p>
+                        <h2 className="section-title" id="pathways-heading">
+                            Programmes and platforms
+                        </h2>
+                        <p className="section-lead">
+                            Explore the core pathways through which SHE CHAMPIONS prepares and positions
+                            women-led enterprises.
+                        </p>
                     </div>
+                    <div className="pathway-list">
+                        {pathways.map((item) => (
+                            <Link key={item.to} to={item.to} className="pathway-item">
+                                <span className="pathway-index" aria-hidden="true">
+                                    {item.index}
+                                </span>
+                                <span className="pathway-copy">
+                                    <h3>{item.title}</h3>
+                                    <p>{item.description}</p>
+                                </span>
+                                <ArrowRight className="pathway-arrow" size={20} aria-hidden="true" />
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-                    <div className="pillars-grid">
-                        <Card
-                            icon={Target}
-                            title="Business Plan Competition"
-                            description="National competition identifying innovative women-led businesses across priority sectors."
-                        />
-                        <Card
-                            icon={TrendingUp}
-                            title="Enterprise Development"
-                            description="Continuous capacity building, structural access-to-market support, and high-level mentorship."
-                        />
-                        <Card
-                            icon={Globe}
-                            title="Global Exposure"
-                            description="International competition participation, strengthening global outlook, competitiveness, and visibility."
-                        />
-                        <Card
-                            icon={Users}
-                            title="Sustainable Network"
-                            description="Long-term women-led enterprise ecosystem for learning, deal flow, and brand growth."
-                        />
+            <section className="py-section" aria-labelledby="challenge-overview-heading">
+                <div className="container">
+                    <div className="section-header centered">
+                        <p className="section-eyebrow">The Challenge</p>
+                        <h2 className="section-title" id="challenge-overview-heading">
+                            Overview of the SheChampions Challenge
+                        </h2>
+                        <p className="section-lead mx-auto">
+                            A comprehensive platform combining competition with continuous support.
+                        </p>
                     </div>
-                    <div className="text-center mt-12">
+                    <div className="pillars-editorial">
+                        {pillars.map((pillar) => {
+                            const PillarIcon = pillar.icon;
+                            return (
+                                <article key={pillar.title} className="pillar-item">
+                                    <div className="pillar-icon" aria-hidden="true">
+                                        <PillarIcon size={22} />
+                                    </div>
+                                    <h3>{pillar.title}</h3>
+                                    <p>{pillar.description}</p>
+                                </article>
+                            );
+                        })}
+                    </div>
+                    <div className="home-center-action">
                         <Link to="/challenge" className="btn btn-primary">
-                            Participate In The Challenge
+                            Learn about the Challenge
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Ad Unit - Between Pillars and Seminars */}
-            <div className="ad-between-sections">
-                <AdUnit format="in-article" />
-            </div>
-
-            {/* Seminars Info */}
-            <section className="py-section bg-secondary text-center">
-                <div className="container max-w-4xl mx-auto">
-                    <BookOpen size={48} className="mx-auto text-primary mb-4" />
-                    <h2 className="section-title">Access-to-Market Seminars</h2>
-                    <p className="section-lead mb-6">
-                        We equip you with practical knowledge, tools, and networks required to access local, regional, and international markets. Join our masterclasses and interactive sessions.
-                    </p>
-                    <Link to="/seminars" className="btn btn-primary mt-4">
-                        View Schedule & Topics <ArrowRight size={20} className="ml-2 inline" />
-                    </Link>
-                </div>
-            </section>
-
-            {/* Market Ready Services */}
-            <section className="py-section market-services bg-white">
-                <div className="container">
-                    <h2 className="section-title text-center">Market Ready Services</h2>
-                    <div className="services-grid mt-12">
-                        <div className="service-item card">
-                            <Globe size={40} className="text-primary mb-4" />
-                            <h3>Global Reach</h3>
-                            <p>Expanding your footprint beyond local borders to international arenas.</p>
-                        </div>
-                        <div className="service-item card">
-                            <TrendingUp size={40} className="text-primary mb-4" />
-                            <h3>Market Analytics</h3>
-                            <p>Data-driven insights to help you position your products effectively.</p>
-                        </div>
-                        <div className="service-item card">
-                            <Users size={40} className="text-primary mb-4" />
-                            <h3>B2B Connections</h3>
-                            <p>Structured linkages to corporate partners and high-growth distributors.</p>
-                        </div>
+            <section className="py-section band-warm" aria-labelledby="seminars-heading">
+                <div className="container home-feature-row">
+                    <div>
+                        <p className="section-eyebrow">Capacity building</p>
+                        <h2 className="section-title" id="seminars-heading">
+                            Access-to-Market Seminars
+                        </h2>
+                        <p className="section-lead">
+                            We equip you with practical knowledge, tools, and networks required to access
+                            local, regional, and international markets. Join our masterclasses and interactive
+                            sessions.
+                        </p>
+                        <Link to="/seminars" className="btn btn-outline-primary">
+                            View schedule & topics <ArrowRight size={18} aria-hidden="true" />
+                        </Link>
+                    </div>
+                    <div className="home-feature-aside" aria-hidden="true">
+                        <BookOpen size={40} />
                     </div>
                 </div>
             </section>
 
-            {/* The Network Info */}
-            <section className="py-section">
-                <div className="container text-center max-w-4xl mx-auto">
-                    <UserCheck size={48} className="mx-auto text-primary mb-4" />
-                    <h2 className="section-title">The Ambassadors Network</h2>
-                    <p className="section-lead mb-6">
-                        A robust, pan-African community combining peer-learning with structural market links, policy advocacy, and deal-making. Let our Ambassadors open new doors for your business.
-                    </p>
-                    <Link to="/network" className="btn btn-primary mt-4">
-                        Meet the Ambassadors <ArrowRight size={20} className="ml-2 inline" />
-                    </Link>
+            <section className="py-section" aria-labelledby="services-heading">
+                <div className="container">
+                    <div className="section-header centered">
+                        <p className="section-eyebrow">Market readiness</p>
+                        <h2 className="section-title" id="services-heading">
+                            Market Ready Services
+                        </h2>
+                    </div>
+                    <div className="services-editorial">
+                        <article>
+                            <Globe size={28} aria-hidden="true" />
+                            <h3>Global Reach</h3>
+                            <p>Expanding your footprint beyond local borders to international arenas.</p>
+                        </article>
+                        <article>
+                            <TrendingUp size={28} aria-hidden="true" />
+                            <h3>Market Analytics</h3>
+                            <p>Data-driven insights to help you position your products effectively.</p>
+                        </article>
+                        <article>
+                            <Users size={28} aria-hidden="true" />
+                            <h3>B2B Connections</h3>
+                            <p>Structured linkages to corporate partners and high-growth distributors.</p>
+                        </article>
+                    </div>
                 </div>
             </section>
 
-            {/* Ad Unit - Before CTA */}
-            <div className="ad-between-sections">
-                <AdUnit format="horizontal" />
-            </div>
+            <section className="py-section band-muted" aria-labelledby="network-heading">
+                <div className="container home-feature-row">
+                    <div className="home-feature-aside" aria-hidden="true">
+                        <UserCheck size={40} />
+                    </div>
+                    <div>
+                        <p className="section-eyebrow">Community</p>
+                        <h2 className="section-title" id="network-heading">
+                            The Ambassadors Network
+                        </h2>
+                        <p className="section-lead">
+                            A pan-African community combining peer-learning with structural market links,
+                            policy advocacy, and deal-making. Learn how the network is structured and the roles
+                            ambassadors are intended to play.
+                        </p>
+                        <Link to="/network" className="btn btn-primary">
+                            Explore the Network <ArrowRight size={18} aria-hidden="true" />
+                        </Link>
+                    </div>
+                </div>
+            </section>
 
-            {/* CTA Section */}
-            <section className="py-section cta-section bg-primary text-center text-light">
+            <section className="cta-band" aria-labelledby="home-cta-heading">
                 <div className="container">
-                    <h2 className="text-white mb-4">Ready to Take the Next Step?</h2>
-                    <p className="text-light mb-6">Join a collaborative ecosystem of mentors, investors, and fellow entrepreneurs.</p>
-                    <Link to="/contact" className="btn btn-light mt-4 cta-btn">
-                        Get in Touch <ArrowRight size={20} className="ml-2" />
-                    </Link>
+                    <h2 id="home-cta-heading">Ready for Challenge 2026?</h2>
+                    <p>
+                        Join the Business Empowerment Challenge in Abuja on {EVENT_2026.dateDisplay}.
+                        Participate for {EVENT_2026.feeDisplay} and compete for business grants.
+                    </p>
+                    <div className="cta-actions">
+                        <Link to={EVENT_2026.path} className="btn btn-light">
+                            Join Challenge 2026
+                        </Link>
+                        <Link to="/contact" className="btn btn-outline-primary hero-btn-ghost">
+                            Get in touch
+                        </Link>
+                    </div>
                 </div>
             </section>
         </div>

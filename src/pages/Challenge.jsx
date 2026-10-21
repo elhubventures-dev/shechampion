@@ -1,20 +1,36 @@
+import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
+import PageMeta from '../components/PageMeta';
+import ChallengePromo from '../components/ChallengePromo';
 import './Challenge.css';
 
-const Challenge = () => {
-    const objectives = [
-        { id: '01', text: "Identify innovative and scalable women-led business ideas and early-stage enterprises." },
-        { id: '02', text: "Strengthen participants' business planning, leadership, and investment readiness." },
-        { id: '03', text: "Provide structured access-to-market support through trainings, seminars, and masterclasses." },
-        { id: '04', text: "Facilitate access to finance through grants, loans, venture capital, and impact investment linkages." },
-        { id: '05', text: "Connect women entrepreneurs to high-level mentors, ambassadors, and role models." },
-        { id: '06', text: "Support participation in regional and international business competitions and platforms." },
-        { id: '07', text: "Establish a strong SheChampions Women Network that sustains learning, deal flow, and brand growth." },
-        { id: '08', text: "Integrate a focused girl-child sensitization, health, and safety initiative promoting education, protection, and empowerment." }
-    ];
+const objectives = [
+    { id: '01', text: 'Identify innovative and scalable women-led business ideas and early-stage enterprises.' },
+    { id: '02', text: "Strengthen participants' business planning, leadership, and investment readiness." },
+    { id: '03', text: 'Provide structured access-to-market support through trainings, seminars, and masterclasses.' },
+    { id: '04', text: 'Facilitate access to finance through grants, loans, venture capital, and impact investment linkages.' },
+    { id: '05', text: 'Connect women entrepreneurs to high-level mentors, ambassadors, and role models.' },
+    { id: '06', text: 'Support participation in regional and international business competitions and platforms.' },
+    { id: '07', text: 'Establish a strong SheChampions Women Network that sustains learning, deal flow, and brand growth.' },
+    { id: '08', text: 'Integrate a focused girl-child sensitization, health, and safety initiative promoting education, protection, and empowerment.' },
+];
 
+const barriers = [
+    'Limited access to finance and credit',
+    'Weak market and buyer linkages',
+    'Low exposure to investors and structured funding platforms',
+    'Inadequate access to high-level mentorship and networks',
+    'Absence of long-term enterprise ecosystems that extend beyond one-off programmes',
+];
+
+const Challenge = () => {
     return (
-        <div className="challenge-page animate-fade-in">
+        <div className="challenge-page page-shell animate-fade-in">
+            <PageMeta
+                title="The SheChampions Challenge"
+                description="A national business plan competition and ecosystem support platform designed to identify, prepare, and elevate women entrepreneurs."
+            />
+
             <Hero
                 title="The SheChampions Challenge"
                 subtitle="A national business plan competition and ecosystem support platform designed to identify, prepare, and elevate women entrepreneurs."
@@ -22,62 +38,77 @@ const Challenge = () => {
                 secondary={true}
             />
 
-            {/* Rationale Section */}
-            <section className="py-section rationale-section">
+            <ChallengePromo />
+
+            <section className="py-section" aria-labelledby="rationale-heading">
                 <div className="container">
-                    <div className="content-wrapper">
-                        <div className="text-content">
-                            <h2 className="section-title">Strategic Rationale</h2>
+                    <div className="split-layout">
+                        <div className="prose-block">
+                            <p className="section-eyebrow">Strategic rationale</p>
+                            <h2 className="section-title" id="rationale-heading">
+                                Why this platform exists
+                            </h2>
                             <p>
-                                Despite women's increasing participation in entrepreneurship, many women-led
+                                Despite women&apos;s increasing participation in entrepreneurship, many women-led
                                 enterprises remain excluded from formal investment and market ecosystems due to:
                             </p>
-                            <ul className="gap-list mt-4">
-                                <li>Limited access to finance and credit</li>
-                                <li>Weak market and buyer linkages</li>
-                                <li>Low exposure to investors and structured funding platforms</li>
-                                <li>Inadequate access to high-level mentorship and networks</li>
-                                <li>Absence of long-term enterprise ecosystems that extend beyond one-off programmes</li>
+                            <ul className="checklist">
+                                {barriers.map((item) => (
+                                    <li key={item}>{item}</li>
+                                ))}
                             </ul>
                         </div>
-                        <div className="image-content glass-dark">
-                            <h3>Our Goal</h3>
-                            <p className="goal-text">
-                                To identify, prepare, and elevate women entrepreneurs through a structured business plan
-                                competition and enterprise development platform.
+                        <aside className="callout-panel">
+                            <h3>Our goal</h3>
+                            <p>
+                                To identify, prepare, and elevate women entrepreneurs through a structured business
+                                plan competition and enterprise development platform.
                             </p>
-                        </div>
+                        </aside>
                     </div>
                 </div>
             </section>
 
-            {/* Objectives Section */}
-            <section className="py-section objectives-section bg-secondary">
+            <section className="py-section band-muted" aria-labelledby="objectives-heading">
                 <div className="container">
-                    <div className="text-center mb-4">
-                        <h2 className="section-title text-center">Program Objectives</h2>
-                        <p className="max-w-3xl mx-auto">The SheChampions Challenge aims to accomplish the following:</p>
+                    <div className="section-header centered">
+                        <p className="section-eyebrow">Programme objectives</p>
+                        <h2 className="section-title" id="objectives-heading">
+                            What the Challenge aims to accomplish
+                        </h2>
                     </div>
-
-                    <div className="objectives-grid mt-4">
+                    <ol className="objectives-list">
                         {objectives.map((obj) => (
-                            <div key={obj.id} className="objective-item">
-                                <span className="objective-number">{obj.id}</span>
+                            <li key={obj.id}>
+                                <span className="objectives-list__num" aria-hidden="true">
+                                    {obj.id}
+                                </span>
                                 <p>{obj.text}</p>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ol>
                 </div>
             </section>
 
-            {/* Beneficiaries Section */}
-            <section className="py-section beneficiaries-section">
-                <div className="container text-center">
-                    <h2 className="section-title">Target Beneficiaries</h2>
-                    <p className="section-lead mx-auto">
-                        The programme targets young female entrepreneurs aged 18-50, female students and graduates,
-                        early-stage women entrepreneurs, and women with innovative business ideas across priority sectors.
+            <section className="py-section" aria-labelledby="beneficiaries-heading">
+                <div className="container beneficiaries-panel">
+                    <p className="section-eyebrow">Who it serves</p>
+                    <h2 className="section-title" id="beneficiaries-heading">
+                        Target beneficiaries
+                    </h2>
+                    <p className="section-lead">
+                        The programme targets young female entrepreneurs aged 18–50, female students and graduates,
+                        early-stage women entrepreneurs, and women with innovative business ideas across priority
+                        sectors.
                     </p>
+                    <div className="cta-actions" style={{ justifyContent: 'flex-start' }}>
+                        <Link to="/programs" className="btn btn-primary">
+                            Explore programmes
+                        </Link>
+                        <Link to="/contact" className="btn btn-outline-primary">
+                            Contact us
+                        </Link>
+                    </div>
                 </div>
             </section>
         </div>

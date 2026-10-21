@@ -1,24 +1,88 @@
+import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
-import Card from '../components/Card';
-import { Target, Trophy, TrendingUp, Users, Globe } from 'lucide-react';
+import PageMeta from '../components/PageMeta';
+import ChallengePromo from '../components/ChallengePromo';
 import './Programs.css';
 
-const Programs = () => {
-    const scheduleData = [
-        { period: 'January - February', focus: 'Competition Mapping & Readiness', named: 'Tony Elumelu Foundation; She Leads Africa Accelerator Pitch', support: 'Competition orientation; eligibility screening; business diagnostics', outcome: 'Shortlisted SheChampions candidates' },
-        { period: 'March', focus: 'Africa-Wide Early-Stage Competitions', named: 'Anzisha Prize; Pitch AgriHack', support: 'Application clinics; storytelling & impact framing', outcome: 'Competitive Africa-focused applications' },
-        { period: 'April', focus: 'Pan-African Flagship Competitions', named: "Africa's Business Heroes; AWIEF Awards", support: 'Pitch deck refinement; mock pitching; ambassador mentoring', outcome: 'Pan-African visibility' },
-        { period: 'May', focus: 'Sector & Impact-Focused Competitions', named: 'Orange Social Venture; SheTrades Global', support: 'Compliance checks; export readiness support', outcome: 'Market & trade exposure' },
-        { period: 'June - July', focus: 'Global Student & Youth Platforms', named: 'Global Student Entrepreneur Awards; Hult Prize', support: 'Advanced pitching; mentorship; application reviews', outcome: 'Global youth-stage participation' },
-        { period: 'August', focus: 'Global Women-Focused Competitions', named: "Cartier Women's Initiative; WeXchange", support: 'Executive summaries; leadership storytelling; ambassador endorsements', outcome: 'High-level global submissions' },
-        { period: 'September', focus: 'Innovation & Tech Platforms', named: 'MIT Solve; Hello Tomorrow Global Challenge', support: 'Innovation framing; technical validation; pitch rehearsals', outcome: 'Global innovation exposure' },
-        { period: 'October', focus: 'Global Pitch & Visibility Platforms', named: 'Seedstars World; Startup World Cup', support: 'Pitch coaching; investor readiness; AICL Expo showcase', outcome: 'Investor interest & partnerships' },
-        { period: 'November', focus: 'Learning, Scaling & Deal Follow-Up', named: 'Multiple competitions', support: 'Post-competition reviews; investor follow-ups; deal structuring', outcome: 'Improved growth strategies' },
-        { period: 'December', focus: 'Recognition & Knowledge Sharing', named: 'All competitions', support: 'Recognition at SheChampions Awards Night; peer learning', outcome: 'Motivation & ecosystem learning' }
-    ];
+const scheduleData = [
+    { period: 'January – February', focus: 'Competition Mapping & Readiness', named: 'Tony Elumelu Foundation; She Leads Africa Accelerator Pitch', support: 'Competition orientation; eligibility screening; business diagnostics', outcome: 'Shortlisted SheChampions candidates' },
+    { period: 'March', focus: 'Africa-Wide Early-Stage Competitions', named: 'Anzisha Prize; Pitch AgriHack', support: 'Application clinics; storytelling & impact framing', outcome: 'Competitive Africa-focused applications' },
+    { period: 'April', focus: 'Pan-African Flagship Competitions', named: "Africa's Business Heroes; AWIEF Awards", support: 'Pitch deck refinement; mock pitching; ambassador mentoring', outcome: 'Pan-African visibility' },
+    { period: 'May', focus: 'Sector & Impact-Focused Competitions', named: 'Orange Social Venture; SheTrades Global', support: 'Compliance checks; export readiness support', outcome: 'Market & trade exposure' },
+    { period: 'June – July', focus: 'Global Student & Youth Platforms', named: 'Global Student Entrepreneur Awards; Hult Prize', support: 'Advanced pitching; mentorship; application reviews', outcome: 'Global youth-stage participation' },
+    { period: 'August', focus: 'Global Women-Focused Competitions', named: "Cartier Women's Initiative; WeXchange", support: 'Executive summaries; leadership storytelling; ambassador endorsements', outcome: 'High-level global submissions' },
+    { period: 'September', focus: 'Innovation & Tech Platforms', named: 'MIT Solve; Hello Tomorrow Global Challenge', support: 'Innovation framing; technical validation; pitch rehearsals', outcome: 'Global innovation exposure' },
+    { period: 'October', focus: 'Global Pitch & Visibility Platforms', named: 'Seedstars World; Startup World Cup', support: 'Pitch coaching; investor readiness; AICL Expo showcase', outcome: 'Investor interest & partnerships' },
+    { period: 'November', focus: 'Learning, Scaling & Deal Follow-Up', named: 'Multiple competitions', support: 'Post-competition reviews; investor follow-ups; deal structuring', outcome: 'Improved growth strategies' },
+    { period: 'December', focus: 'Recognition & Knowledge Sharing', named: 'All competitions', support: 'Recognition at SheChampions Awards Night; peer learning', outcome: 'Motivation & ecosystem learning' },
+];
 
+const exposureBlocks = [
+    {
+        title: 'Overview',
+        body: 'Selected participants will be strategically exposed and supported to participate in reputable African and international business plan competitions. This expands global outlook, competitiveness, visibility, and access to funding and markets.',
+    },
+    {
+        title: 'Objectives',
+        items: [
+            'Expose women entrepreneurs to global best practices.',
+            'Increase participation in African and international competitions.',
+            'Enhance visibility of Nigerian women entrepreneurs on global platforms.',
+            'Facilitate access to international grants, accelerators, investors.',
+            'Strengthen business plans through global feedback.',
+        ],
+    },
+    {
+        title: 'Eligible participants',
+        items: [
+            'Top-performing participants from SheChampions Competition.',
+            'High-potential members of the SheChampions Women Network.',
+            'Women-led startups with scalable, innovation-driven business models.',
+        ],
+    },
+    {
+        title: 'Support provided',
+        items: [
+            'Guidance on identifying suitable competitions.',
+            'Support with application processes and documentation.',
+            'Pitch deck and executive summary refinement.',
+            'Mock pitching and feedback sessions.',
+            'Recommendation letters and institutional endorsements.',
+        ],
+    },
+];
+
+const strategicNotes = [
+    'Early months focus on African and early-stage competitions',
+    'Mid-year targets pan-African and sector-specific platforms',
+    'Late year prioritises elite global competitions and investor exposure',
+    'Learning is recycled into mentoring, Expo showcases, and Awards Night',
+];
+
+const ambassadorRoles = [
+    'Support application reviews and storytelling',
+    'Participate in mock pitch sessions',
+    'Provide endorsements and recommendation letters',
+    'Represent SheChampions at selected international platforms',
+    'Mentor women returning from competitions to share learnings',
+];
+
+const kpis = [
+    'Number of women supported to apply internationally',
+    'Number of African vs global competitions entered',
+    'Number of women shortlisted / selected',
+    'Grants, prizes, or investments secured',
+    'Partnerships or market opportunities generated',
+];
+
+const Programs = () => {
     return (
-        <div className="programs-page animate-fade-in">
+        <div className="programs-page page-shell animate-fade-in">
+            <PageMeta
+                title="Programmes"
+                description="Core SHE CHAMPIONS programme components: business plan competition support, international exposure pathways, and annual preparation schedules."
+            />
+
             <Hero
                 title="Core Programme Components"
                 subtitle="Identifying innovative, scalable businesses and providing international exposure."
@@ -26,89 +90,82 @@ const Programs = () => {
                 secondary={true}
             />
 
-            <section className="py-section competition-section">
+            <ChallengePromo />
+
+            <section className="py-section" aria-labelledby="competition-heading">
+                <div className="container programs-intro">
+                    <p className="section-eyebrow">Flagship competition</p>
+                    <h2 className="section-title" id="competition-heading">
+                        Business Plan Competition
+                    </h2>
+                    <p className="section-lead">
+                        The SheChampions Business Plan Competition identifies innovative and scalable women-led
+                        businesses and supports them through training, mentorship, and access to finance. Selected
+                        participants are further supported to participate in African and global business plan
+                        competitions to enhance visibility and benchmark their solutions.
+                    </p>
+                    <Link to="/challenge" className="btn btn-outline-primary">
+                        About the Challenge
+                    </Link>
+                </div>
+            </section>
+
+            <section className="py-section band-muted" aria-labelledby="exposure-heading">
                 <div className="container">
-                    <div className="text-center mb-4">
-                        <h2 className="section-title">Business Plan Competition</h2>
+                    <div className="section-header">
+                        <p className="section-eyebrow">Exposure pathway</p>
+                        <h2 className="section-title" id="exposure-heading">
+                            International & Africa-based exposure
+                        </h2>
                     </div>
-                    <div className="competition-content">
-                        <p className="section-lead text-center">
-                            The SheChampions Business Plan Competition identifies innovative and scalable
-                            women-led businesses and supports them through training, mentorship, and access
-                            to finance. Selected participants are further supported to participate in African
-                            and global business plan competitions to enhance visibility and benchmark their solutions.
+                    <div className="programs-blocks">
+                        {exposureBlocks.map((block) => (
+                            <article key={block.title} className="programs-block">
+                                <h3>{block.title}</h3>
+                                {block.body && <p>{block.body}</p>}
+                                {block.items && (
+                                    <ul className="checklist">
+                                        {block.items.map((item) => (
+                                            <li key={item}>{item}</li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </article>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="py-section band-navy" aria-labelledby="schedule-heading">
+                <div className="container">
+                    <div className="section-header centered">
+                        <p className="section-eyebrow">Annual calendar</p>
+                        <h2 className="section-title" id="schedule-heading">
+                            Competition preparation & participation schedule
+                        </h2>
+                        <p className="section-lead mx-auto">
+                            Named competitions are examples of platforms participants may be prepared for; inclusion
+                            does not imply sponsorship or guaranteed placement.
                         </p>
                     </div>
-                </div>
-            </section>
-
-            <section className="py-section exposure-section bg-secondary">
-                <div className="container">
-                    <div className="text-center mb-4">
-                        <h2 className="section-title">International & Africa-Based Exposure</h2>
-                    </div>
-
-                    <div className="exposure-grid">
-                        <Card title="Overview" icon={Globe}>
-                            <p>
-                                Selected participants will be strategically exposed and supported to participate
-                                in reputable African and international business plan competitions. This expands
-                                global outlook, competitiveness, visibility, and access to funding and markets.
-                            </p>
-                        </Card>
-
-                        <Card title="Objectives" icon={Target}>
-                            <ul className="custom-list">
-                                <li>Expose women entrepreneurs to global best practices.</li>
-                                <li>Increase participation in African and international competitions.</li>
-                                <li>Enhance visibility of Nigerian women entrepreneurs on global platforms.</li>
-                                <li>Facilitate access to international grants, accelerators, investors.</li>
-                                <li>Strengthen business plans through global feedback.</li>
-                            </ul>
-                        </Card>
-
-                        <Card title="Eligible Participants" icon={Users}>
-                            <ul className="custom-list">
-                                <li>Top-performing participants from SheChampions Competition.</li>
-                                <li>High-potential members of the SheChampions Women Network.</li>
-                                <li>Women-led startups with scalable, innovation-driven business models.</li>
-                            </ul>
-                        </Card>
-
-                        <Card title="Support Provided" icon={Trophy}>
-                            <ul className="custom-list">
-                                <li>Guidance on identifying suitable competitions.</li>
-                                <li>Support with application processes and documentation.</li>
-                                <li>Pitch deck and executive summary refinement.</li>
-                                <li>Mock pitching and feedback sessions.</li>
-                                <li>Recommendation letters and institutional endorsements.</li>
-                            </ul>
-                        </Card>
-                    </div>
-                </div>
-            </section>
-
-            {/* Participation Schedule Table */}
-            <section className="py-section schedule-table-section bg-primary text-light">
-                <div className="container">
-                    <div className="text-center mb-4">
-                        <h2 className="section-title text-light">Annual Competition Preparation & Participation Schedule</h2>
-                    </div>
-                    <div className="table-responsive">
-                        <table className="schedule-table">
+                    <div className="data-table-wrap">
+                        <table className="data-table">
+                            <caption className="visually-hidden">
+                                Annual competition preparation and participation schedule by period
+                            </caption>
                             <thead>
                                 <tr>
-                                    <th>Period</th>
-                                    <th>Competition Focus</th>
-                                    <th>Named Competitions</th>
-                                    <th>Key Support Activities</th>
-                                    <th>Expected Outcomes</th>
+                                    <th scope="col">Period</th>
+                                    <th scope="col">Focus</th>
+                                    <th scope="col">Named competitions</th>
+                                    <th scope="col">Key support</th>
+                                    <th scope="col">Expected outcomes</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {scheduleData.map((row, idx) => (
-                                    <tr key={idx}>
-                                        <td className="font-medium text-secondary">{row.period}</td>
+                                {scheduleData.map((row) => (
+                                    <tr key={row.period}>
+                                        <td className="col-period">{row.period}</td>
                                         <td>{row.focus}</td>
                                         <td>{row.named}</td>
                                         <td>{row.support}</td>
@@ -118,43 +175,50 @@ const Programs = () => {
                             </tbody>
                         </table>
                     </div>
-
-                    <div className="strategic-how mt-4 bg-primary-light p-4 rounded-lg border border-opacity-20 glass-dark">
-                        <h3 className="text-secondary mb-3">How This Schedule Works Strategically</h3>
-                        <ul className="custom-list list-light">
-                            <li>Early months focus on African and early-stage competitions</li>
-                            <li>Mid-year targets pan-African and sector-specific platforms</li>
-                            <li>Late year prioritises elite global competitions and investor exposure</li>
-                            <li>Learning is recycled into mentoring, Expo showcases, and Awards Night</li>
+                    <div className="programs-strategy">
+                        <h3>How this schedule works strategically</h3>
+                        <ul className="checklist checklist-on-dark">
+                            {strategicNotes.map((note) => (
+                                <li key={note}>{note}</li>
+                            ))}
                         </ul>
                     </div>
                 </div>
             </section>
 
-            {/* Roles & KPIs */}
-            <section className="py-section roles-kpi-section">
+            <section className="py-section" aria-labelledby="roles-heading">
                 <div className="container">
-                    <div className="roles-kpi-grid">
-                        <div className="role-card glass">
-                            <h3 className="text-primary mb-3">Role of SheChampions Ambassadors</h3>
-                            <ul className="custom-list">
-                                <li>Support application reviews and storytelling</li>
-                                <li>Participate in mock pitch sessions</li>
-                                <li>Provide endorsements and recommendation letters</li>
-                                <li>Represent SheChampions at selected international platforms</li>
-                                <li>Mentor women returning from competitions to share learnings</li>
+                    <div className="section-header">
+                        <p className="section-eyebrow">Delivery & measurement</p>
+                        <h2 className="section-title" id="roles-heading">
+                            Ambassador roles and indicators
+                        </h2>
+                    </div>
+                    <div className="programs-two-col">
+                        <article>
+                            <h3>Role of SheChampions Ambassadors</h3>
+                            <ul className="checklist">
+                                {ambassadorRoles.map((item) => (
+                                    <li key={item}>{item}</li>
+                                ))}
                             </ul>
-                        </div>
-                        <div className="kpi-card glass">
-                            <h3 className="text-primary mb-3">Key Performance Indicators</h3>
-                            <ul className="custom-list">
-                                <li>Number of women supported to apply internationally</li>
-                                <li>Number of African vs global competitions entered</li>
-                                <li>Number of women shortlisted / selected</li>
-                                <li>Grants, prizes, or investments secured</li>
-                                <li>Partnerships or market opportunities generated</li>
+                        </article>
+                        <article>
+                            <h3>Key performance indicators</h3>
+                            <ul className="checklist">
+                                {kpis.map((item) => (
+                                    <li key={item}>{item}</li>
+                                ))}
                             </ul>
-                        </div>
+                        </article>
+                    </div>
+                    <div className="home-inline-actions" style={{ marginTop: '2rem' }}>
+                        <Link to="/network" className="btn btn-primary">
+                            Explore the Network
+                        </Link>
+                        <Link to="/seminars" className="btn btn-outline-primary">
+                            View seminars
+                        </Link>
                     </div>
                 </div>
             </section>

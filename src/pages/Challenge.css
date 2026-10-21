@@ -1,93 +1,43 @@
-.content-wrapper {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 3rem;
-}
-
-@media (min-width: 768px) {
-    .content-wrapper {
-        grid-template-columns: 1fr 1fr;
-        align-items: center;
-    }
-}
-
-.gap-list {
-    padding-left: 1.5rem;
-    list-style-type: disc;
-    color: var(--text-dark);
-}
-
-.gap-list li {
-    margin-bottom: 0.8rem;
-    line-height: 1.6;
-}
-
-.image-content {
-    padding: 3rem;
-    border-radius: 12px;
-    color: var(--text-light);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.image-content h3 {
-    color: var(--secondary-color);
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-}
-
-.goal-text {
-    font-size: 1.2rem;
-    line-height: 1.8;
-}
-
-.objectives-section {
-    padding-top: 4rem;
-    padding-bottom: 5rem;
-}
-
-.objectives-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-}
-
-.objective-item {
-    background-color: var(--white);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    transition: var(--transition);
-    border-left: 4px solid var(--primary-color);
-}
-
-.objective-item:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-}
-
-.objective-number {
-    position: absolute;
-    top: -15px;
-    right: 20px;
-    font-size: 3rem;
-    font-weight: 800;
-    color: rgba(11, 31, 58, 0.08);
-    line-height: 1;
-}
-
-.beneficiaries-section {
-    background-color: var(--white);
-    padding: 5rem 1rem;
-}
-
-.max-w-3xl {
+.challenge-page .beneficiaries-panel {
     max-width: 48rem;
 }
 
-.mx-auto {
-    margin-left: auto;
-    margin-right: auto;
+.objectives-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--stack-md);
+}
+
+.objectives-list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--stack-md);
+    align-items: start;
+    padding: var(--stack-md);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.objectives-list__num {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    color: var(--color-gold-dark);
+    line-height: 1;
+}
+
+.objectives-list p {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body);
+}
+
+@media (min-width: 768px) {
+    .objectives-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }

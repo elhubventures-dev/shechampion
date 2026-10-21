@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Mail, MapPin, Phone, Send, CheckCircle } from 'lucide-react';
 import Hero from '../components/Hero';
+import PageMeta from '../components/PageMeta';
+import ChallengePromo from '../components/ChallengePromo';
 import { submitToAppsScript } from '../lib/submitToAppsScript';
 import './Contact.css';
 
@@ -9,7 +11,7 @@ const Contact = () => {
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
     });
 
     // idle | loading | sent | error
@@ -20,7 +22,7 @@ const Contact = () => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
         if (status === 'error') {
             setStatus('idle');
@@ -60,7 +62,7 @@ const Contact = () => {
             email: formData.email.trim(),
             subject: formData.subject.trim() || 'New Message from SheChampion Website',
             message: formData.message.trim(),
-            type: 'Contact Form'
+            type: 'Contact Form',
         });
 
         if (result === 'sent') {
@@ -75,71 +77,79 @@ const Contact = () => {
     };
 
     return (
-        <div className="contact-page animate-fade-in">
+        <div className="contact-page page-shell animate-fade-in">
+            <PageMeta
+                title="Contact"
+                description="Contact SHE CHAMPIONS in Abuja: phone (+234) 703 631 6083, email info@shechampion-bbf.org, or send a message through the website form."
+            />
+
             <Hero
-                title="Get in Touch"
-                subtitle="We'd love to hear from you. Reach out with any questions, partnership inquiries, or feedback."
+                title="Get in touch"
+                subtitle="Reach out with questions, partnership inquiries, or feedback. We welcome women entrepreneurs, partners, and institutional stakeholders."
                 secondary={true}
             />
 
-            <section className="py-section contact-section">
+            <ChallengePromo />
+
+            <section className="py-section contact-section" aria-labelledby="contact-heading">
                 <div className="container">
                     <div className="contact-grid">
-                        {/* Contact Information */}
-                        <div className="contact-info glass-dark bg-primary text-light">
-                            <h2 className="text-white mb-4">Contact Information</h2>
-                            <p className="mb-8 opacity-90">
-                                Fill up the form and our team will get back to you within 24 hours.
+                        <aside className="contact-info" aria-labelledby="contact-heading">
+                            <p className="section-eyebrow">Details</p>
+                            <h2 className="contact-info-title" id="contact-heading">
+                                Contact information
+                            </h2>
+                            <p className="contact-info-lead">
+                                Complete the form and our team will aim to respond within 24 hours. You can also
+                                reach us directly using the details below.
                             </p>
 
-                            <div className="info-item">
-                                <Phone className="info-icon" aria-hidden="true" />
-                                <div>
-                                    <h4>Phone</h4>
-                                    <p>
+                            <ul className="contact-details">
+                                <li>
+                                    <Phone className="info-icon" aria-hidden="true" />
+                                    <div>
+                                        <h3>Phone</h3>
                                         <a href="tel:+2347036316083">(+234) 703 631 6083</a>
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="info-item">
-                                <Mail className="info-icon" aria-hidden="true" />
-                                <div>
-                                    <h4>Email</h4>
-                                    <p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <Mail className="info-icon" aria-hidden="true" />
+                                    <div>
+                                        <h3>Email</h3>
                                         <a href="mailto:info@shechampion-bbf.org">info@shechampion-bbf.org</a>
-                                    </p>
-                                </div>
-                            </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <MapPin className="info-icon" aria-hidden="true" />
+                                    <div>
+                                        <h3>Location</h3>
+                                        <p>
+                                            Phase 2, Plot 84 Victor B.K. Cres, off Idris Garba Street, Kado, Abuja
+                                            900108, FCT, Nigeria
+                                        </p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </aside>
 
-                            <div className="info-item">
-                                <MapPin className="info-icon" aria-hidden="true" />
-                                <div>
-                                    <h4>Location</h4>
-                                    <p>Phase 2, Plot 84 Victor B.K. Cres, off Idris Garba Street,Kado, Abuja 900108, FCT, Nigeria</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Contact Form */}
                         <div className="contact-form-container">
                             {status === 'sent' ? (
                                 <div
-                                    className="success-message text-center animate-fade-in"
+                                    className="success-message animate-fade-in"
                                     role="status"
                                     aria-live="polite"
                                 >
-                                    <CheckCircle size={64} className="text-secondary mx-auto mb-4" aria-hidden="true" />
-                                    <h3 className="text-primary mb-2">Message submitted</h3>
-                                    <p className="text-dark">
+                                    <CheckCircle size={48} className="success-icon" aria-hidden="true" />
+                                    <h3>Message submitted</h3>
+                                    <p>
                                         Your message was submitted from this page. Because of how our form service
-                                        works, we cannot confirm delivery here. If you do not hear from us within
-                                        24 hours, please email{' '}
+                                        works, we cannot confirm delivery here. If you do not hear from us within 24
+                                        hours, please email{' '}
                                         <a href="mailto:info@shechampion-bbf.org">info@shechampion-bbf.org</a>.
                                     </p>
                                     <button
                                         type="button"
-                                        className="btn btn-outline-primary mt-6"
+                                        className="btn btn-outline-primary"
                                         onClick={() => setStatus('idle')}
                                     >
                                         Send another message
@@ -147,10 +157,15 @@ const Contact = () => {
                                 </div>
                             ) : (
                                 <form className="contact-form" onSubmit={handleSubmit} noValidate>
-                                    <h3 className="text-primary mb-6">Send us a Message</h3>
+                                    <h3>Send us a message</h3>
+                                    <p className="form-help">
+                                        Fields marked required must be completed before submission.
+                                    </p>
 
                                     <div className="form-group">
-                                        <label htmlFor="name">Full Name</label>
+                                        <label htmlFor="name">
+                                            Full name <span className="required-mark">*</span>
+                                        </label>
                                         <input
                                             type="text"
                                             id="name"
@@ -165,7 +180,9 @@ const Contact = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="email">Email Address</label>
+                                        <label htmlFor="email">
+                                            Email address <span className="required-mark">*</span>
+                                        </label>
                                         <input
                                             type="email"
                                             id="email"
@@ -187,13 +204,15 @@ const Contact = () => {
                                             name="subject"
                                             value={formData.subject}
                                             onChange={handleChange}
-                                            placeholder="Partnership Inquiry"
+                                            placeholder="Partnership inquiry"
                                             disabled={status === 'loading'}
                                         />
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="message">Message</label>
+                                        <label htmlFor="message">
+                                            Message <span className="required-mark">*</span>
+                                        </label>
                                         <textarea
                                             id="message"
                                             name="message"
@@ -203,17 +222,12 @@ const Contact = () => {
                                             required
                                             placeholder="How can we help you?"
                                             disabled={status === 'loading'}
-                                        ></textarea>
+                                        />
                                     </div>
 
-                                    <div
-                                        className="form-status"
-                                        role="status"
-                                        aria-live="polite"
-                                        aria-atomic="true"
-                                    >
+                                    <div className="form-status" role="status" aria-live="polite" aria-atomic="true">
                                         {status === 'error' && errorMessage && (
-                                            <p className="error-text mb-4">{errorMessage}</p>
+                                            <p className="error-text">{errorMessage}</p>
                                         )}
                                     </div>
 
@@ -223,8 +237,12 @@ const Contact = () => {
                                         disabled={status === 'loading'}
                                         aria-busy={status === 'loading'}
                                     >
-                                        {status === 'loading' ? 'Sending...' : (
-                                            <>Send Message <Send size={18} className="ml-2" aria-hidden="true" /></>
+                                        {status === 'loading' ? (
+                                            'Sending...'
+                                        ) : (
+                                            <>
+                                                Send message <Send size={18} aria-hidden="true" />
+                                            </>
                                         )}
                                     </button>
                                 </form>
