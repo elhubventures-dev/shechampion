@@ -4,7 +4,7 @@ import logo from '../assets/logo-horizontal.png';
 import './Footer.css';
 
 const WHATSAPP_HREF =
-    'https://wa.me/2347036316083?text=' +
+    'https://wa.me/2349043197743?text=' +
     encodeURIComponent('Hello SHE CHAMPIONS, I would like to learn more about your programmes.');
 
 const exploreLinks = [

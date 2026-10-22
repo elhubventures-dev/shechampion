@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import './FloatingActions.css';
 
-const WHATSAPP_NUMBER = '2347036316083';
+const WHATSAPP_NUMBER = '2349043197743';
 const WHATSAPP_MESSAGE = encodeURIComponent(
   'Hello SHE CHAMPIONS, I would like to learn more about your programmes.'
 );
