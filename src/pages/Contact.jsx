@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone, Send, CheckCircle } from 'lucide-react';
 import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
+import Reveal from '../components/Reveal';
 import { submitToAppsScript } from '../lib/submitToAppsScript';
 import './Contact.css';
 
@@ -89,9 +90,11 @@ const Contact = () => {
                 secondary={true}
             />
 
-            <ChallengePromo />
+            <Reveal>
+                <ChallengePromo />
+            </Reveal>
 
-            <section className="py-section contact-section" aria-labelledby="contact-heading">
+            <Reveal as="section" className="py-section contact-section" aria-labelledby="contact-heading">
                 <div className="container">
                     <div className="contact-grid">
                         <aside className="contact-info" aria-labelledby="contact-heading">
@@ -250,7 +253,7 @@ const Contact = () => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };

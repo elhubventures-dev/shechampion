@@ -15,6 +15,13 @@
 .card:hover {
     border-color: var(--color-navy-soft);
     box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card:hover {
+        transform: none;
+    }
 }
 
 .card-icon {

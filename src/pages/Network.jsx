@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
+import Reveal from '../components/Reveal';
 import './Network.css';
 
 const purposes = [
@@ -95,9 +96,11 @@ const Network = () => {
                 secondary={true}
             />
 
-            <ChallengePromo />
+            <Reveal>
+                <ChallengePromo />
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="network-overview-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="network-overview-heading">
                 <div className="container">
                     <div className="callout-panel network-overview">
                         <p className="section-eyebrow">Overview</p>
@@ -112,9 +115,9 @@ const Network = () => {
                         </p>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" aria-labelledby="purpose-heading">
+            <Reveal as="section" className="py-section band-muted" aria-labelledby="purpose-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Purpose</p>
@@ -131,9 +134,9 @@ const Network = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="roles-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="roles-heading">
                 <div className="container">
                     <div className="section-header">
                         <p className="section-eyebrow">Responsibilities</p>
@@ -156,9 +159,9 @@ const Network = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-navy" aria-labelledby="proposed-heading">
+            <Reveal as="section" className="py-section band-navy" aria-labelledby="proposed-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Composition</p>
@@ -185,9 +188,9 @@ const Network = () => {
                         ))}
                     </ol>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="cta-band" aria-labelledby="network-cta-heading">
+            <Reveal as="section" className="cta-band" aria-labelledby="network-cta-heading">
                 <div className="container">
                     <h2 id="network-cta-heading">Interested in the Network?</h2>
                     <p>
@@ -203,7 +206,7 @@ const Network = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };

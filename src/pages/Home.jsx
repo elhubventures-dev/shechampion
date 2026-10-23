@@ -3,6 +3,7 @@ import { ArrowRight, Target, TrendingUp, Globe, Users, BookOpen, UserCheck } fro
 import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
+import Reveal from '../components/Reveal';
 import { EVENT_2026 } from '../lib/event2026';
 import './Home.css';
 
@@ -93,9 +94,11 @@ const Home = () => {
                 </Link>
             </Hero>
 
-            <ChallengePromo variant="featured" />
+            <Reveal>
+                <ChallengePromo variant="featured" />
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="intro-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="intro-heading">
                 <div className="container">
                     <div className="split-layout">
                         <div>
@@ -136,9 +139,9 @@ const Home = () => {
                         </aside>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" aria-labelledby="pathways-heading">
+            <Reveal as="section" className="py-section band-muted" aria-labelledby="pathways-heading">
                 <div className="container">
                     <div className="section-header">
                         <p className="section-eyebrow">How we work</p>
@@ -150,7 +153,7 @@ const Home = () => {
                             women-led enterprises.
                         </p>
                     </div>
-                    <div className="pathway-list">
+                    <Reveal as="div" className="pathway-list" stagger>
                         {pathways.map((item) => (
                             <Link key={item.to} to={item.to} className="pathway-item">
                                 <span className="pathway-index" aria-hidden="true">
@@ -163,11 +166,11 @@ const Home = () => {
                                 <ArrowRight className="pathway-arrow" size={20} aria-hidden="true" />
                             </Link>
                         ))}
-                    </div>
+                    </Reveal>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="challenge-overview-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="challenge-overview-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">The Challenge</p>
@@ -178,7 +181,7 @@ const Home = () => {
                             A comprehensive platform combining competition with continuous support.
                         </p>
                     </div>
-                    <div className="pillars-editorial">
+                    <Reveal as="div" className="pillars-editorial" stagger>
                         {pillars.map((pillar) => {
                             const PillarIcon = pillar.icon;
                             return (
@@ -191,16 +194,16 @@ const Home = () => {
                                 </article>
                             );
                         })}
-                    </div>
+                    </Reveal>
                     <div className="home-center-action">
                         <Link to="/challenge" className="btn btn-primary">
                             Learn about the Challenge
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-warm" aria-labelledby="seminars-heading">
+            <Reveal as="section" className="py-section band-warm" aria-labelledby="seminars-heading">
                 <div className="container home-feature-row">
                     <div>
                         <p className="section-eyebrow">Capacity building</p>
@@ -220,9 +223,9 @@ const Home = () => {
                         <BookOpen size={40} />
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="services-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="services-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Market readiness</p>
@@ -230,7 +233,7 @@ const Home = () => {
                             Market Ready Services
                         </h2>
                     </div>
-                    <div className="services-editorial">
+                    <Reveal as="div" className="services-editorial" stagger>
                         <article>
                             <Globe size={28} aria-hidden="true" />
                             <h3>Global Reach</h3>
@@ -246,11 +249,11 @@ const Home = () => {
                             <h3>B2B Connections</h3>
                             <p>Structured linkages to corporate partners and high-growth distributors.</p>
                         </article>
-                    </div>
+                    </Reveal>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" aria-labelledby="network-heading">
+            <Reveal as="section" className="py-section band-muted" aria-labelledby="network-heading">
                 <div className="container home-feature-row">
                     <div className="home-feature-aside" aria-hidden="true">
                         <UserCheck size={40} />
@@ -270,9 +273,9 @@ const Home = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="cta-band" aria-labelledby="home-cta-heading">
+            <Reveal as="section" className="cta-band" aria-labelledby="home-cta-heading">
                 <div className="container">
                     <h2 id="home-cta-heading">Ready for Challenge 2026?</h2>
                     <p>
@@ -288,7 +291,7 @@ const Home = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };

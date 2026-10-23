@@ -11,10 +11,12 @@ import {
     MapPin,
     Presentation,
     Sparkles,
+    Ticket,
     Users,
     Wrench,
 } from 'lucide-react';
 import PageMeta from '../components/PageMeta';
+import Reveal from '../components/Reveal';
 import EventCountdown from '../components/EventCountdown';
 import RegistrationForm from '../components/RegistrationForm';
 import { EVENT_2026 } from '../lib/event2026';
@@ -191,13 +193,17 @@ const EventChallenge2026 = () => {
             />
 
             <section className="event-hero" style={heroStyle} aria-labelledby="event-hero-heading">
-                <div className="container event-hero__inner">
-                    <p className="event-hero__eyebrow">Flagship programme</p>
-                    <h1 id="event-hero-heading">{EVENT_2026.officialName}</h1>
-                    <p className="event-hero__tagline">{EVENT_2026.tagline}</p>
-                    <p className="event-hero__tagline-note">Proposed campaign tagline — subject to organisational approval.</p>
+                <div className="container event-hero__layout">
+                    <div className="event-hero__inner">
+                        <p className="event-hero__eyebrow">Flagship programme</p>
+                        <h1 id="event-hero-heading">{EVENT_2026.officialName}</h1>
+                        <p className="event-hero__tagline">{EVENT_2026.tagline}</p>
+                        <p className="event-hero__tagline-note">
+                            Proposed campaign tagline — subject to organisational approval.
+                        </p>
 
-                    <EventCountdown variant="hero" />
+                        <EventCountdown variant="hero" />
+                    </div>
 
                     <dl className="event-hero__facts">
                         <div>
@@ -214,32 +220,43 @@ const EventChallenge2026 = () => {
                         </div>
                         <div>
                             <dt>Registration</dt>
-                            <dd>{EVENT_2026.pricingSummary}</dd>
+                            <dd>
+                                <ul className="event-pricing-lines event-pricing-lines--on-dark">
+                                    {EVENT_2026.pricingLines.map((line) => (
+                                        <li key={line.label}>
+                                            <span>{line.label}{line.optional ? ' · optional' : ''}</span>
+                                            <strong>{line.value}</strong>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </dd>
                         </div>
                     </dl>
 
-                    <p className="event-hero__grant">
-                        Opportunity to compete for business grants ranging from{' '}
-                        <strong>{EVENT_2026.grantRangeDisplay}</strong>, subject to eligibility, assessment, the
-                        final award structure, and available funding.
-                    </p>
+                    <div className="event-hero__inner">
+                        <p className="event-hero__grant">
+                            Opportunity to compete for business grants ranging from{' '}
+                            <strong>{EVENT_2026.grantRangeDisplay}</strong>, subject to eligibility, assessment, the
+                            final award structure, and available funding.
+                        </p>
 
-                    <div className="event-hero__actions">
-                        <a
-                            href="#participation"
-                            className="btn btn-light"
-                            onClick={scrollToId('participation')}
-                        >
-                            Explore Participation <ArrowDown size={18} aria-hidden="true" />
-                        </a>
-                        <Link to="/contact" className="btn event-btn-ghost">
-                            Contact SHE CHAMPIONS
-                        </Link>
+                        <div className="event-hero__actions">
+                            <a
+                                href="#participation"
+                                className="btn btn-light"
+                                onClick={scrollToId('participation')}
+                            >
+                                Explore Participation <ArrowDown size={18} aria-hidden="true" />
+                            </a>
+                            <Link to="/contact" className="btn event-btn-ghost">
+                                Contact SHE CHAMPIONS
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section className="py-section" aria-labelledby="about-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="about-heading">
                 <div className="container split-layout">
                     <div>
                         <p className="section-eyebrow">About the challenge</p>
@@ -272,9 +289,9 @@ const EventChallenge2026 = () => {
                         </ul>
                     </aside>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" id="who-can-participate" aria-labelledby="who-heading">
+            <Reveal as="section" className="py-section band-muted" id="who-can-participate" aria-labelledby="who-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Eligibility</p>
@@ -286,7 +303,7 @@ const EventChallenge2026 = () => {
                             participants showcase their capabilities and business potential.
                         </p>
                     </div>
-                    <div className="event-category-grid">
+                    <Reveal as="div" className="event-category-grid" stagger>
                         {categories.map((category) => {
                             const CategoryIcon = category.icon;
                             return (
@@ -299,11 +316,11 @@ const EventChallenge2026 = () => {
                                 </article>
                             );
                         })}
-                    </div>
+                    </Reveal>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="experience-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="experience-heading">
                 <div className="container">
                     <div className="section-header">
                         <p className="section-eyebrow">Programme experience</p>
@@ -315,7 +332,7 @@ const EventChallenge2026 = () => {
                             will be shared by SHE CHAMPIONS when confirmed.
                         </p>
                     </div>
-                    <div className="event-activity-grid">
+                    <Reveal as="div" className="event-activity-grid" stagger>
                         {activities.map((activity) => {
                             const ActivityIcon = activity.icon;
                             return (
@@ -328,11 +345,11 @@ const EventChallenge2026 = () => {
                                 </article>
                             );
                         })}
-                    </div>
+                    </Reveal>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-navy" aria-labelledby="grant-heading">
+            <Reveal as="section" className="py-section band-navy" aria-labelledby="grant-heading">
                 <div className="container event-grant">
                     <p className="section-eyebrow">Grant opportunity</p>
                     <h2 className="section-title" id="grant-heading">
@@ -354,9 +371,9 @@ const EventChallenge2026 = () => {
                         </p>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="process-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="process-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Selection process</p>
@@ -364,7 +381,7 @@ const EventChallenge2026 = () => {
                             How participation and assessment will work
                         </h2>
                     </div>
-                    <ol className="event-process">
+                    <Reveal as="ol" className="event-process" stagger>
                         {processSteps.map((item) => (
                             <li key={item.step}>
                                 <span aria-hidden="true">{item.step}</span>
@@ -374,11 +391,11 @@ const EventChallenge2026 = () => {
                                 </div>
                             </li>
                         ))}
-                    </ol>
+                    </Reveal>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-warm" aria-labelledby="ambassador-heading">
+            <Reveal as="section" className="py-section band-warm" aria-labelledby="ambassador-heading">
                 <div className="container split-layout">
                     <div>
                         <p className="section-eyebrow">Ambassador recognition</p>
@@ -402,9 +419,9 @@ const EventChallenge2026 = () => {
                         </ul>
                     </aside>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" id="event-details" aria-labelledby="details-heading">
+            <Reveal as="section" className="py-section" id="event-details" aria-labelledby="details-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Event details</p>
@@ -415,34 +432,55 @@ const EventChallenge2026 = () => {
                     <dl className="event-details-grid">
                         <div>
                             <dt>
-                                <CalendarDays size={18} aria-hidden="true" /> Date
+                                <span className="event-details-grid__icon" aria-hidden="true">
+                                    <CalendarDays size={18} />
+                                </span>
+                                Date
                             </dt>
                             <dd>{EVENT_2026.dateDisplay}</dd>
                         </div>
                         <div>
                             <dt>
-                                <MapPin size={18} aria-hidden="true" /> Location
+                                <span className="event-details-grid__icon" aria-hidden="true">
+                                    <MapPin size={18} />
+                                </span>
+                                Location
                             </dt>
                             <dd>{EVENT_2026.locationDisplay}</dd>
                         </div>
                         <div>
                             <dt>
-                                <Users size={18} aria-hidden="true" /> Format
+                                <span className="event-details-grid__icon" aria-hidden="true">
+                                    <Users size={18} />
+                                </span>
+                                Format
                             </dt>
                             <dd>{EVENT_2026.format}</dd>
                         </div>
-                        <div>
+                        <div className="event-details-grid__pricing">
                             <dt>
-                                <Award size={18} aria-hidden="true" /> Registration
+                                <span className="event-details-grid__icon" aria-hidden="true">
+                                    <Ticket size={18} />
+                                </span>
+                                Registration
                             </dt>
-                            <dd>{EVENT_2026.pricingSummary}</dd>
+                            <dd>
+                                <ul className="event-pricing-lines event-pricing-lines--inline">
+                                    {EVENT_2026.pricingLines.map((line) => (
+                                        <li key={line.label}>
+                                            <span>{line.label}{line.optional ? ' · optional' : ''}</span>
+                                            <strong>{line.value}</strong>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </dd>
                         </div>
                     </dl>
                     <p className="notice-banner event-venue-note">{EVENT_2026.venueNote}</p>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" id="participation" tabIndex={-1} aria-labelledby="participation-heading">
+            <Reveal as="section" className="py-section band-muted" id="participation" tabIndex={-1} aria-labelledby="participation-heading">
                 <div className="container event-participation">
                     <p className="section-eyebrow">Registration information</p>
                     <h2 className="section-title" id="participation-heading">
@@ -500,9 +538,9 @@ const EventChallenge2026 = () => {
                         </div>
                     )}
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="faq-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="faq-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">FAQ</p>
@@ -519,9 +557,9 @@ const EventChallenge2026 = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="cta-band" aria-labelledby="final-cta-heading">
+            <Reveal as="section" className="cta-band" aria-labelledby="final-cta-heading">
                 <div className="container">
                     <h2 id="final-cta-heading">Ready to explore participation?</h2>
                     <p>
@@ -537,7 +575,7 @@ const EventChallenge2026 = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
+import Reveal from '../components/Reveal';
 import './Seminars.css';
 
 const scheduleData = [
@@ -56,9 +57,11 @@ const Seminars = () => {
                 secondary={true}
             />
 
-            <ChallengePromo />
+            <Reveal>
+                <ChallengePromo />
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="seminars-overview-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="seminars-overview-heading">
                 <div className="container seminars-intro">
                     <p className="section-eyebrow">Overview</p>
                     <h2 className="section-title" id="seminars-overview-heading">
@@ -75,9 +78,9 @@ const Seminars = () => {
                         registration details should be confirmed with the organisation.
                     </p>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" aria-labelledby="structure-heading">
+            <Reveal as="section" className="py-section band-muted" aria-labelledby="structure-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Structure</p>
@@ -94,9 +97,9 @@ const Seminars = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-navy" aria-labelledby="topics-heading">
+            <Reveal as="section" className="py-section band-navy" aria-labelledby="topics-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Annual topics</p>
@@ -130,9 +133,9 @@ const Seminars = () => {
                         </table>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="masterclass-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="masterclass-heading">
                 <div className="container">
                     <div className="section-header">
                         <p className="section-eyebrow">Quarterly</p>
@@ -155,9 +158,9 @@ const Seminars = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-warm" aria-labelledby="outputs-heading">
+            <Reveal as="section" className="py-section band-warm" aria-labelledby="outputs-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Outcomes</p>
@@ -176,7 +179,7 @@ const Seminars = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };

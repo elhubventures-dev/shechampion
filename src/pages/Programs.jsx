@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
+import Reveal from '../components/Reveal';
 import './Programs.css';
 
 const scheduleData = [
@@ -90,9 +91,11 @@ const Programs = () => {
                 secondary={true}
             />
 
-            <ChallengePromo />
+            <Reveal>
+                <ChallengePromo />
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="competition-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="competition-heading">
                 <div className="container programs-intro">
                     <p className="section-eyebrow">Flagship competition</p>
                     <h2 className="section-title" id="competition-heading">
@@ -108,9 +111,9 @@ const Programs = () => {
                         About the Challenge
                     </Link>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" aria-labelledby="exposure-heading">
+            <Reveal as="section" className="py-section band-muted" aria-labelledby="exposure-heading">
                 <div className="container">
                     <div className="section-header">
                         <p className="section-eyebrow">Exposure pathway</p>
@@ -134,9 +137,9 @@ const Programs = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-navy" aria-labelledby="schedule-heading">
+            <Reveal as="section" className="py-section band-navy" aria-labelledby="schedule-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Annual calendar</p>
@@ -184,9 +187,9 @@ const Programs = () => {
                         </ul>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="roles-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="roles-heading">
                 <div className="container">
                     <div className="section-header">
                         <p className="section-eyebrow">Delivery & measurement</p>
@@ -221,7 +224,7 @@ const Programs = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };

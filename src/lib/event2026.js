@@ -22,6 +22,12 @@ export const EVENT_2026 = {
   combinedFeeDisplay: '₦35,000',
   pricingSummary:
     'Free event registration; optional Challenge ₦5,000; optional Exhibition ₦30,000',
+  /** Structured pricing for scannable UI (hero / details). */
+  pricingLines: [
+    { label: 'Event registration', value: 'Free' },
+    { label: 'Challenge', value: '₦5,000', optional: true },
+    { label: 'Exhibition', value: '₦30,000', optional: true },
+  ],
   grantTeaser: 'Opportunity to compete for business grants',
   grantRangeDisplay: '₦1 million – ₦5 million',
   cutoffDateDisplay: '10 December 2026',

@@ -124,8 +124,11 @@
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
+  --duration-reveal: 650ms;
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-reveal: var(--ease-standard);
   --ease-out: ease-out;
+  --reveal-distance: 1.15rem;
   --transition: color var(--duration-base) var(--ease-standard),
     background-color var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard),
@@ -264,6 +267,59 @@ img {
   animation: fadeIn var(--duration-slow) var(--ease-standard) forwards;
 }
 
+/* —— Scroll reveal utilities —— */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--duration-reveal) var(--ease-reveal),
+    transform var(--duration-reveal) var(--ease-reveal);
+  will-change: opacity, transform;
+}
+
+.reveal.reveal-fade {
+  transform: none;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--duration-reveal) var(--ease-reveal),
+    transform var(--duration-reveal) var(--ease-reveal);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal-stagger.is-visible > *:nth-child(1) {
+  --reveal-delay: 0ms;
+}
+.reveal-stagger.is-visible > *:nth-child(2) {
+  --reveal-delay: 70ms;
+}
+.reveal-stagger.is-visible > *:nth-child(3) {
+  --reveal-delay: 140ms;
+}
+.reveal-stagger.is-visible > *:nth-child(4) {
+  --reveal-delay: 210ms;
+}
+.reveal-stagger.is-visible > *:nth-child(5) {
+  --reveal-delay: 280ms;
+}
+.reveal-stagger.is-visible > *:nth-child(6) {
+  --reveal-delay: 350ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -271,6 +327,14 @@ img {
 
   .animate-fade-in {
     animation: none;
+  }
+
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
   }
 
   *,
@@ -552,6 +616,11 @@ select:focus-visible {
   background-color: var(--color-brand-deep);
   border-color: var(--color-brand-deep);
   color: #fff;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
 }
 
 .btn-secondary,
@@ -565,6 +634,12 @@ select:focus-visible {
 .btn-outline-primary:hover {
   background-color: var(--color-navy);
   color: var(--color-text-on-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active,
+.btn-outline-primary:active {
+  transform: translateY(1px);
 }
 
 .btn-light {
@@ -577,6 +652,11 @@ select:focus-visible {
   background-color: var(--color-brand-lilac);
   border-color: var(--color-brand-lilac);
   color: var(--color-navy-dark);
+  transform: translateY(-1px);
+}
+
+.btn-light:active {
+  transform: translateY(1px);
 }
 
 .btn-accent {

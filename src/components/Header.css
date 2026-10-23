@@ -6,12 +6,18 @@
     z-index: 1000;
     background: var(--color-surface);
     border-bottom: var(--border-width) solid var(--color-divider);
-    transition: box-shadow var(--duration-base) var(--ease-standard);
+    transition:
+        box-shadow var(--duration-base) var(--ease-standard),
+        border-color var(--duration-base) var(--ease-standard);
 }
 
 .site-header--scrolled,
 .site-header--menu-open {
     box-shadow: var(--shadow-md);
+}
+
+.site-header--scrolled .header-main__inner {
+    min-height: 4.1rem;
 }
 
 /* —— Utility bar —— */
@@ -83,6 +89,7 @@
     justify-content: space-between;
     gap: var(--stack-md);
     min-height: 4.5rem;
+    transition: min-height var(--duration-base) var(--ease-standard);
 }
 
 .header-logo {

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
 import logo from '../assets/logo-horizontal.png';
+import Reveal from './Reveal';
 import './Footer.css';
 
 const WHATSAPP_HREF =
@@ -25,7 +26,7 @@ const Footer = () => {
 
     return (
         <footer className="site-footer">
-            <div className="footer-cta-band">
+            <Reveal as="div" className="footer-cta-band">
                 <div className="container footer-cta-band__inner">
                     <div>
                         <p className="footer-cta-band__eyebrow">Flagship programme</p>
@@ -41,9 +42,9 @@ const Footer = () => {
                         <ArrowRight size={18} aria-hidden="true" />
                     </Link>
                 </div>
-            </div>
+            </Reveal>
 
-            <div className="container footer-main">
+            <Reveal as="div" className="container footer-main">
                 <div className="footer-brand">
                     <Link to="/" className="footer-logo">
                         <img
@@ -112,7 +113,7 @@ const Footer = () => {
                         </li>
                     </ul>
                 </div>
-            </div>
+            </Reveal>
 
             <div className="footer-bottom">
                 <div className="container footer-bottom__inner">

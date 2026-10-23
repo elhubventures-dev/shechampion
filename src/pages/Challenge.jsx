@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
+import Reveal from '../components/Reveal';
 import './Challenge.css';
 
 const objectives = [
@@ -38,9 +39,11 @@ const Challenge = () => {
                 secondary={true}
             />
 
-            <ChallengePromo />
+            <Reveal>
+                <ChallengePromo />
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="rationale-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="rationale-heading">
                 <div className="container">
                     <div className="split-layout">
                         <div className="prose-block">
@@ -67,9 +70,9 @@ const Challenge = () => {
                         </aside>
                     </div>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section band-muted" aria-labelledby="objectives-heading">
+            <Reveal as="section" className="py-section band-muted" aria-labelledby="objectives-heading">
                 <div className="container">
                     <div className="section-header centered">
                         <p className="section-eyebrow">Programme objectives</p>
@@ -88,9 +91,9 @@ const Challenge = () => {
                         ))}
                     </ol>
                 </div>
-            </section>
+            </Reveal>
 
-            <section className="py-section" aria-labelledby="beneficiaries-heading">
+            <Reveal as="section" className="py-section" aria-labelledby="beneficiaries-heading">
                 <div className="container beneficiaries-panel">
                     <p className="section-eyebrow">Who it serves</p>
                     <h2 className="section-title" id="beneficiaries-heading">
@@ -110,7 +113,7 @@ const Challenge = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </Reveal>
         </div>
     );
 };
