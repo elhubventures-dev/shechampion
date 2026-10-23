@@ -33,7 +33,7 @@ const Footer = () => {
                             Business Empowerment Challenge 2026
                         </h2>
                         <p className="footer-cta-band__text">
-                            12 December 2026 · Abuja · ₦5,000 participation fee
+                            12 December 2026 · Abuja · Free registration · optional paid activities
                         </p>
                     </div>
                     <Link to="/business-empowerment-challenge-2026" className="btn btn-light">

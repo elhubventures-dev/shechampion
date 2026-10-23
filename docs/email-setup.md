@@ -8,12 +8,22 @@
 
 ## Behaviour
 
-- Confirmation emails are sent **only after** a payment is verified as successful.
+- Free registration confirmation is sent after a successful free registration save.
+- Paid participation confirmation is sent **only after** payment is verified as successful.
 - Delivery status is stored in `email_deliveries` separately from payment status.
 - A send is marked `SENT` only when Resend returns a message id.
-- Failures mark the row `FAILED` and never reverse a successful payment.
+- Failures mark the row `FAILED` and never reverse a successful payment or registration.
 - Admins can retry failed confirmation emails from the dashboard.
 
-## Local / Preview
+## Local / Preview / staging synthetics
 
-Use Resend test/sandbox practices recommended by Resend. Do not claim production delivery until the sending domain is verified.
+Use Resend practices recommended for your account (verified sending domain, or Resend’s documented testing recipient rules).
+
+**Important (Phase 9C finding):** when the Resend account is in testing / restricted recipient mode, addresses on domains such as `example.com` / `example.invalid` are rejected with a validation error on the `to` field. That failure is recorded honestly as `FAILED` and is **not** a template defect.
+
+For staging synthetic applicants:
+
+1. Prefer a recipient on your verified organisational domain (for example a plus-address under the same domain as `ADMIN_NOTIFICATION_EMAIL`), **or**
+2. Use the testing recipient address Resend documents for your account mode.
+
+Do not claim production inbox delivery until the sending domain is verified and unrestricted sending is enabled. Do not mark a send as `SENT` without a provider message id.

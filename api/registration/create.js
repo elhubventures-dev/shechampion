@@ -36,7 +36,9 @@ export default async function handler(req, res) {
     }
 
     const { data } = await readJsonBody(req);
-    const validated = validateRegistrationInput(data);
+    const validated = validateRegistrationInput(data, {
+      allowCombinedChallengeExhibition: config.allowCombinedChallengeExhibition,
+    });
     if (!validated.ok) {
       sendError(res, 400, 'VALIDATION_ERROR', 'Invalid registration input.', validated.errors);
       return;
@@ -62,9 +64,17 @@ export default async function handler(req, res) {
     sendJson(res, 200, {
       ok: true,
       publicReference: result.publicReference,
-      checkoutUrl: result.checkoutUrl,
+      checkoutUrl: result.checkoutUrl || null,
       alreadyPaid: Boolean(result.alreadyPaid),
       resumed: Boolean(result.resumed),
+      paymentRequired: Boolean(result.paymentRequired),
+      eventRegistrationStatus: result.eventRegistrationStatus || null,
+      paymentStatus: result.paymentStatus || null,
+      challengeStatus: result.challengeStatus || null,
+      exhibitionStatus: result.exhibitionStatus || null,
+      expectedAmountKobo:
+        result.expectedAmountKobo !== undefined ? result.expectedAmountKobo : null,
+      emailStatus: result.emailStatus || null,
     });
   } catch (error) {
     if (error.code === 'RATE_LIMITED') {
@@ -93,14 +103,20 @@ export default async function handler(req, res) {
       );
       return;
     }
-    if (error.code === 'NOT_READY' || error.code === 'DB_UNAVAILABLE') {
+    if (
+      error.code === 'NOT_READY' ||
+      error.code === 'DB_UNAVAILABLE' ||
+      error.code === 'PAID_CHECKOUT_UNAVAILABLE'
+    ) {
       sendError(res, 403, error.code, error.message, {
         status: error.publicStatus || 'unavailable',
       });
       return;
     }
     if (error.code === 'ALREADY_REGISTERED') {
-      sendError(res, 409, error.code, error.message);
+      sendError(res, 409, error.code, error.message, {
+        publicReference: error.publicReference,
+      });
       return;
     }
     if (error.code === 'PAYMENT_INIT_FAILED') {

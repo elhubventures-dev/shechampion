@@ -1,6 +1,9 @@
 import { requireAdmin, writeAuditEvent } from '../_lib/auth.js';
 import { getEventConfig } from '../_lib/config.js';
-import { APPLICATION_STATUSES } from '../_lib/constants.js';
+import {
+  APPLICATION_STATUSES,
+  CHALLENGE_ADMIN_STATUSES,
+} from '../_lib/constants.js';
 import { getSql } from '../_lib/db.js';
 import {
   methodNotAllowed,
@@ -39,6 +42,11 @@ export default async function handler(req, res) {
           id, public_reference, event_id, full_name, email_normalized, phone,
           state_of_residence, applicant_category, business_name, brief_description,
           privacy_accepted_at, terms_accepted_at, application_status, payment_status,
+          event_registration_status, challenge_selected, exhibition_selected,
+          challenge_status, exhibition_status, expected_amount_kobo, currency,
+          challenge_women_eligibility_attested, challenge_eligibility_attested_at,
+          exhibition_business_owner_attested, exhibition_owner_attested_at,
+          exhibition_business_name, exhibition_category, exhibition_description,
           admin_notes, created_at, updated_at
         FROM registrations
         WHERE id = ${id}
@@ -66,11 +74,20 @@ export default async function handler(req, res) {
         ORDER BY created_at DESC
       `;
 
+      const audit = await sql`
+        SELECT id, actor_email, action, entity_type, entity_id, detail, created_at
+        FROM admin_audit_events
+        WHERE entity_type = 'registration' AND entity_id = ${id}
+        ORDER BY created_at DESC
+        LIMIT 50
+      `;
+
       sendJson(res, 200, {
         ok: true,
         registration: rows[0],
         payments,
         emails,
+        audit,
       });
       return;
     }
@@ -83,6 +100,9 @@ export default async function handler(req, res) {
       const applicationStatus = data.applicationStatus
         ? String(data.applicationStatus)
         : null;
+      const challengeStatus = data.challengeStatus
+        ? String(data.challengeStatus)
+        : null;
       const adminNotes =
         data.adminNotes !== undefined ? String(data.adminNotes).slice(0, 4000) : undefined;
 
@@ -90,9 +110,14 @@ export default async function handler(req, res) {
         sendError(res, 400, 'INVALID_STATUS', 'Invalid application status.');
         return;
       }
+      if (challengeStatus && !CHALLENGE_ADMIN_STATUSES.includes(challengeStatus)) {
+        sendError(res, 400, 'INVALID_CHALLENGE_STATUS', 'Invalid challenge status.');
+        return;
+      }
 
       const current = await sql`
-        SELECT id, application_status, admin_notes, payment_status
+        SELECT id, application_status, challenge_status, admin_notes, payment_status,
+               challenge_selected
         FROM registrations WHERE id = ${id} LIMIT 1
       `;
       if (!current[0]) {
@@ -100,17 +125,47 @@ export default async function handler(req, res) {
         return;
       }
 
-      const nextStatus = applicationStatus || current[0].application_status;
+      const nextAppStatus = applicationStatus || current[0].application_status;
+      let nextChallenge = challengeStatus || current[0].challenge_status;
+
+      // Keep challenge assessment aligned when admin updates legacy application_status.
+      if (
+        applicationStatus &&
+        current[0].challenge_selected &&
+        ['UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED', 'WITHDRAWN'].includes(
+          applicationStatus
+        )
+      ) {
+        if (applicationStatus === 'WITHDRAWN') nextChallenge = 'CANCELLED';
+        else if (!challengeStatus) nextChallenge = applicationStatus;
+      }
+
+      if (
+        challengeStatus &&
+        current[0].challenge_selected &&
+        ['UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED'].includes(challengeStatus) &&
+        !applicationStatus
+      ) {
+        // Mirror into application_status for legacy list filters.
+      }
+
       const nextNotes = adminNotes !== undefined ? adminNotes : current[0].admin_notes;
+      const mirroredApp =
+        challengeStatus &&
+        ['UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED'].includes(challengeStatus)
+          ? challengeStatus
+          : nextAppStatus;
 
       const updated = await sql`
         UPDATE registrations
         SET
-          application_status = ${nextStatus},
+          application_status = ${mirroredApp},
+          challenge_status = ${nextChallenge},
           admin_notes = ${nextNotes},
           updated_at = now()
         WHERE id = ${id}
-        RETURNING id, public_reference, application_status, payment_status, admin_notes, updated_at
+        RETURNING id, public_reference, application_status, challenge_status,
+                  payment_status, admin_notes, updated_at
       `;
 
       await writeAuditEvent({
@@ -120,7 +175,9 @@ export default async function handler(req, res) {
         entityId: id,
         detail: {
           previousApplicationStatus: current[0].application_status,
-          applicationStatus: nextStatus,
+          applicationStatus: mirroredApp,
+          previousChallengeStatus: current[0].challenge_status,
+          challengeStatus: nextChallenge,
           notesUpdated: adminNotes !== undefined,
         },
         databaseUrl: config.databaseUrl,

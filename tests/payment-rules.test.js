@@ -20,6 +20,7 @@ describe('payment reference ownership rules', () => {
         currency: 'NGN',
       },
       expectedReference: reference,
+      expectedAmountKobo: EVENT_FEE_KOBO,
     });
     expect(result.ok).toBe(false);
   });
@@ -34,6 +35,7 @@ describe('payment reference ownership rules', () => {
           currency: 'NGN',
         },
         expectedReference: reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
       }).ok
     ).toBe(false);
     expect(
@@ -45,6 +47,7 @@ describe('payment reference ownership rules', () => {
           currency: 'USD',
         },
         expectedReference: reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
       }).ok
     ).toBe(false);
   });
@@ -60,6 +63,7 @@ describe('payment reference ownership rules', () => {
             currency: 'NGN',
           },
           expectedReference: reference,
+          expectedAmountKobo: EVENT_FEE_KOBO,
         }).ok
       ).toBe(false);
     }
@@ -69,7 +73,6 @@ describe('payment reference ownership rules', () => {
 describe('launch readiness gates', () => {
   const readyBase = {
     eventId: 'bec-2026',
-    feeKobo: EVENT_FEE_KOBO,
     currency: 'NGN',
     registrationEnabled: true,
     registrationOpenAtRaw: '2026-01-01T00:00:00+01:00',
@@ -87,6 +90,7 @@ describe('launch readiness gates', () => {
     emailFrom: 'noreply@example.com',
     adminNotificationEmail: '',
     isVercelProduction: false,
+    allowCombinedChallengeExhibition: true,
   };
 
   it('uses a 48-hour cutoff before EVENT_START_AT (Lagos offset preserved)', () => {
@@ -114,19 +118,20 @@ describe('launch readiness gates', () => {
     ).toBe(false);
   });
 
-  it('blocks missing payment credentials and production test mode', () => {
-    expect(
-      evaluateReadiness(
-        { ...readyBase, paystackSecretKey: '' },
-        { now: new Date('2026-06-01T00:00:00+01:00') }
-      ).ready
-    ).toBe(false);
-    expect(
-      evaluateReadiness(
-        { ...readyBase, isVercelProduction: true, paystackMode: 'test' },
-        { now: new Date('2026-06-01T00:00:00+01:00') }
-      ).ready
-    ).toBe(false);
+  it('keeps free registration open without Paystack but blocks paid checkout', () => {
+    const withoutPaystack = evaluateReadiness(
+      { ...readyBase, paystackSecretKey: '' },
+      { now: new Date('2026-06-01T00:00:00+01:00') }
+    );
+    expect(withoutPaystack.ready).toBe(true);
+    expect(withoutPaystack.paidCheckoutAvailable).toBe(false);
+
+    const productionTest = evaluateReadiness(
+      { ...readyBase, isVercelProduction: true, paystackMode: 'test' },
+      { now: new Date('2026-06-01T00:00:00+01:00') }
+    );
+    expect(productionTest.ready).toBe(true);
+    expect(productionTest.paidCheckoutAvailable).toBe(false);
   });
 });
 

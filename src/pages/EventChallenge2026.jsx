@@ -83,8 +83,8 @@ const faqs = [
         a: 'Women who own businesses, women with vocational or professional skills, and women with business ideas. No additional age, education, residency, or company-registration restrictions have been confirmed.',
     },
     {
-        q: 'What is the participation fee?',
-        a: 'The participation fee is ₦5,000. Payment processing will be enabled when the official registration workflow is launched.',
+        q: 'What does registration cost?',
+        a: 'General event registration is free. Optional Business Empowerment Challenge participation costs ₦5,000 (women only). Optional business exhibition costs ₦30,000 for business owners. Selecting both costs ₦35,000 when combined selection is enabled. Paid activities are confirmed only after verified payment.',
     },
     {
         q: 'When and where will the event take place?',
@@ -137,6 +137,8 @@ const EventChallenge2026 = () => {
     const [regStatus, setRegStatus] = useState({
         loading: true,
         registrationOpen: false,
+        paidCheckoutAvailable: false,
+        pricing: null,
         status: 'closed',
         message: 'Checking registration availability…',
     });
@@ -149,6 +151,8 @@ const EventChallenge2026 = () => {
                 setRegStatus({
                     loading: false,
                     registrationOpen: Boolean(data.registrationOpen),
+                    paidCheckoutAvailable: Boolean(data.paidCheckoutAvailable),
+                    pricing: data.pricing || null,
                     status: data.status || 'unavailable',
                     message:
                         data.message ||
@@ -160,6 +164,8 @@ const EventChallenge2026 = () => {
                 setRegStatus({
                     loading: false,
                     registrationOpen: false,
+                    paidCheckoutAvailable: false,
+                    pricing: null,
                     status: 'unavailable',
                     message:
                         'Registration status could not be loaded. Online registration remains closed until the service is available.',
@@ -180,7 +186,7 @@ const EventChallenge2026 = () => {
         <div className="event-2026 page-shell animate-fade-in">
             <PageMeta
                 title="SHE CHAMPIONS Business Empowerment Challenge 2026"
-                description="Join the SHE CHAMPIONS Business Empowerment Challenge 2026 in Abuja on 12 December 2026. A physical programme for women entrepreneurs, skilled professionals, and idea founders — with a ₦5,000 fee and a competitive opportunity for business grants from ₦1 million to ₦5 million, subject to assessment and available funding."
+                description="Join the SHE CHAMPIONS Business Empowerment Challenge 2026 in Abuja on 12 December 2026. Free event registration with optional paid challenge and exhibition participation, plus a competitive opportunity for business grants from ₦1 million to ₦5 million, subject to assessment and available funding."
             />
 
             <section className="event-hero" style={heroStyle} aria-labelledby="event-hero-heading">
@@ -204,8 +210,8 @@ const EventChallenge2026 = () => {
                             <dd>{EVENT_2026.format}</dd>
                         </div>
                         <div>
-                            <dt>Participation fee</dt>
-                            <dd>{EVENT_2026.feeDisplay}</dd>
+                            <dt>Registration</dt>
+                            <dd>{EVENT_2026.pricingSummary}</dd>
                         </div>
                     </dl>
 
@@ -336,7 +342,7 @@ const EventChallenge2026 = () => {
                     </p>
                     <div className="event-grant__points">
                         <p>
-                            <strong>Registration is not a grant award.</strong> Paying the participation fee enables
+                            <strong>Registration is not a grant award.</strong> Free registration or paying a selected participation fee enables
                             you to take part in the programme. It does not guarantee funding.
                         </p>
                         <p>
@@ -424,9 +430,9 @@ const EventChallenge2026 = () => {
                         </div>
                         <div>
                             <dt>
-                                <Award size={18} aria-hidden="true" /> Participation fee
+                                <Award size={18} aria-hidden="true" /> Registration
                             </dt>
-                            <dd>{EVENT_2026.feeDisplay}</dd>
+                            <dd>{EVENT_2026.pricingSummary}</dd>
                         </div>
                     </dl>
                     <p className="notice-banner event-venue-note">{EVENT_2026.venueNote}</p>
@@ -441,9 +447,15 @@ const EventChallenge2026 = () => {
                     </h2>
                     <div className="prose-block">
                         <p>
-                            The participation fee is <strong>{EVENT_2026.feeDisplay}</strong>. The initial
-                            application is short. Shortlisted applicants may later be asked for detailed business
-                            proposals and supporting documents.
+                            <strong>General event registration is free.</strong> You may optionally add Business
+                            Empowerment Challenge participation ({EVENT_2026.challengeFeeDisplay}, women only) and/or
+                            business exhibition ({EVENT_2026.exhibitionFeeDisplay}). Selecting both totals{' '}
+                            {EVENT_2026.combinedFeeDisplay} when combined selection is enabled. Free registration does
+                            not purchase challenge or exhibition participation.
+                        </p>
+                        <p>
+                            The initial application is short. Shortlisted challenge applicants may later be asked for
+                            detailed business proposals and supporting documents.
                         </p>
                         <p>
                             Registration closes <strong>{EVENT_2026.cutoffRule}</strong>. The expected cutoff date is{' '}
@@ -451,8 +463,8 @@ const EventChallenge2026 = () => {
                         </p>
                         <p>
                             Online registration stays closed until SHE CHAMPIONS completes required approvals and
-                            environment configuration. Payment is confirmed only after server-side verification with
-                            Paystack.
+                            environment configuration. Paid participation is confirmed only after server-side
+                            verification with Paystack.
                         </p>
                     </div>
                     <div
@@ -464,7 +476,11 @@ const EventChallenge2026 = () => {
                             : regStatus.message}
                     </div>
                     {regStatus.registrationOpen ? (
-                        <RegistrationForm registrationOpen />
+                        <RegistrationForm
+                            registrationOpen
+                            paidCheckoutAvailable={regStatus.paidCheckoutAvailable}
+                            pricing={regStatus.pricing}
+                        />
                     ) : (
                         <div className="cta-actions" style={{ justifyContent: 'flex-start' }}>
                             <Link to="/contact" className="btn btn-primary">

@@ -1,9 +1,9 @@
 import {
   EVENT_CURRENCY,
-  EVENT_FEE_KOBO,
   EVENT_ID,
   REGISTRATION_CUTOFF_HOURS,
 } from './constants.js';
+import { PRICING } from './pricing.js';
 
 function env(name, fallback = '') {
   const value = process.env[name];
@@ -13,6 +13,16 @@ function env(name, fallback = '') {
 
 function isTrue(name) {
   return env(name).toLowerCase() === 'true';
+}
+
+/**
+ * ALLOW_COMBINED_CHALLENGE_EXHIBITION defaults to false when unset
+ * (safer for production until the organisation explicitly enables combined).
+ * Explicit "true" enables combined selection server-side.
+ */
+function allowCombinedFromEnv() {
+  const raw = env('ALLOW_COMBINED_CHALLENGE_EXHIBITION', 'false').toLowerCase();
+  return raw === 'true' || raw === '1' || raw === 'yes';
 }
 
 function parseIsoDate(value, label) {
@@ -25,12 +35,12 @@ function parseIsoDate(value, label) {
 }
 
 export function getEventConfig() {
-  const feeKobo = Number(env('EVENT_FEE_KOBO', String(EVENT_FEE_KOBO)));
   const currency = env('EVENT_CURRENCY', EVENT_CURRENCY).toUpperCase();
+  const appEnv = env('APP_ENV', env('NODE_ENV', '')).toLowerCase();
   return {
     eventId: env('EVENT_ID', EVENT_ID),
-    feeKobo: Number.isFinite(feeKobo) ? feeKobo : EVENT_FEE_KOBO,
     currency: currency || EVENT_CURRENCY,
+    appEnv,
     registrationEnabled: isTrue('EVENT_REGISTRATION_ENABLED'),
     registrationOpenAtRaw: env('EVENT_REGISTRATION_OPEN_AT'),
     eventStartAtRaw: env('EVENT_START_AT'),
@@ -47,15 +57,11 @@ export function getEventConfig() {
     emailFrom: env('EMAIL_FROM'),
     adminNotificationEmail: env('ADMIN_NOTIFICATION_EMAIL').toLowerCase(),
     isVercelProduction: env('VERCEL_ENV') === 'production',
+    allowCombinedChallengeExhibition: allowCombinedFromEnv(),
   };
 }
 
-/**
- * Central readiness gate. Public registration/payment init must not proceed
- * unless every required condition is met.
- */
-export function evaluateReadiness(config = getEventConfig(), options = {}) {
-  const now = options.now || new Date();
+function collectBaseGateReasons(config, now) {
   const reasons = [];
   let publicStatus = 'unavailable';
 
@@ -93,17 +99,6 @@ export function evaluateReadiness(config = getEventConfig(), options = {}) {
   if (!config.databaseUrl) {
     reasons.push('DATABASE_URL is missing.');
   }
-  if (!config.paystackSecretKey) {
-    reasons.push('PAYSTACK_SECRET_KEY is missing.');
-  }
-  if (!['test', 'live'].includes(config.paystackMode)) {
-    reasons.push('PAYSTACK_MODE must be "test" or "live".');
-  }
-  if (config.isVercelProduction && config.paystackMode !== 'live') {
-    reasons.push(
-      'Production deployment requires PAYSTACK_MODE=live for completed live registrations.'
-    );
-  }
   if (!config.publicSiteUrl || !/^https?:\/\//i.test(config.publicSiteUrl)) {
     reasons.push('PUBLIC_SITE_URL must be an absolute http(s) URL.');
   }
@@ -113,13 +108,7 @@ export function evaluateReadiness(config = getEventConfig(), options = {}) {
   if (config.sessionSecret && config.sessionSecret.length < 32) {
     reasons.push('SESSION_SECRET must be at least 32 characters.');
   }
-  if (!config.resendApiKey || !config.emailFrom) {
-    reasons.push('Confirmation email configuration is incomplete.');
-  }
-  if (config.feeKobo !== EVENT_FEE_KOBO) {
-    reasons.push(`EVENT_FEE_KOBO must be exactly ${EVENT_FEE_KOBO}.`);
-  }
-  if (config.currency !== EVENT_CURRENCY) {
+  if (config.currency !== EVENT_CURRENCY && config.currency !== PRICING.CURRENCY) {
     reasons.push(`EVENT_CURRENCY must be ${EVENT_CURRENCY}.`);
   }
 
@@ -135,18 +124,104 @@ export function evaluateReadiness(config = getEventConfig(), options = {}) {
     }
   }
 
-  const ready = reasons.length === 0 && publicStatus === 'open';
+  return {
+    reasons,
+    publicStatus,
+    openAt,
+    startAt,
+    cutoffAt,
+  };
+}
+
+function collectPaidCheckoutReasons(config) {
+  const reasons = [];
+  const key = String(config.paystackSecretKey || '');
+  const mode = String(config.paystackMode || '').toLowerCase();
+  const appEnv = String(config.appEnv || '').toLowerCase();
+  const keyIsLive = key.toLowerCase().startsWith('sk_live_');
+  const keyIsTest = key.toLowerCase().startsWith('sk_test_');
+
+  if (!key) {
+    reasons.push('PAYSTACK_SECRET_KEY is missing.');
+  }
+  if (!['test', 'live'].includes(mode)) {
+    reasons.push('PAYSTACK_MODE must be "test" or "live".');
+  }
+  if (mode === 'test' && keyIsLive) {
+    reasons.push(
+      'PAYSTACK_SECRET_KEY must be a test key (sk_test_) when PAYSTACK_MODE=test.'
+    );
+  }
+  if (mode === 'live' && key && !keyIsLive) {
+    reasons.push(
+      'PAYSTACK_SECRET_KEY must be a live key (sk_live_) when PAYSTACK_MODE=live.'
+    );
+  }
+  if ((appEnv === 'staging' || appEnv === 'development') && keyIsLive) {
+    reasons.push(
+      'Live Paystack secret keys are not allowed when APP_ENV is staging or development.'
+    );
+  }
+  if ((appEnv === 'staging' || appEnv === 'development') && mode === 'live') {
+    reasons.push(
+      'PAYSTACK_MODE=live is not allowed when APP_ENV is staging or development.'
+    );
+  }
+  if (key && !keyIsLive && !keyIsTest) {
+    reasons.push('PAYSTACK_SECRET_KEY must start with sk_test_ or sk_live_.');
+  }
+  if (config.isVercelProduction && mode !== 'live') {
+    reasons.push(
+      'Production deployment requires PAYSTACK_MODE=live for completed live paid participation.'
+    );
+  }
+  return reasons;
+}
+
+/**
+ * Central readiness gate.
+ *
+ * - `ready` / free registration: does not require Paystack or Resend.
+ * - `paidCheckoutAvailable`: requires Paystack credentials and mode rules.
+ * Global event gates (enabled, window, legal approvals, DB, admin) still apply
+ * to both paths — neither opens while those remain closed.
+ */
+export function evaluateReadiness(config = getEventConfig(), options = {}) {
+  const now = options.now || new Date();
+  const base = collectBaseGateReasons(config, now);
+  const paidReasons = collectPaidCheckoutReasons(config);
+
+  const freeReady =
+    base.reasons.length === 0 && base.publicStatus === 'open';
+  const paidCheckoutAvailable = freeReady && paidReasons.length === 0;
+
+  const allReasons = [...base.reasons];
+  // Surface paid-only gaps for operators without blocking free registration.
+  for (const reason of paidReasons) {
+    if (!allReasons.includes(reason)) {
+      allReasons.push(`[paid] ${reason}`);
+    }
+  }
 
   return {
-    ready,
-    publicStatus: ready ? 'open' : publicStatus === 'open' ? 'unavailable' : publicStatus,
-    reasons,
-    registrationOpenAt: openAt.ok ? openAt.date.toISOString() : null,
-    eventStartAt: startAt.ok ? startAt.date.toISOString() : null,
-    registrationCutoffAt: cutoffAt ? cutoffAt.toISOString() : null,
-    feeKobo: config.feeKobo,
-    currency: config.currency,
+    ready: freeReady,
+    freeRegistrationAvailable: freeReady,
+    paidCheckoutAvailable,
+    publicStatus: freeReady
+      ? 'open'
+      : base.publicStatus === 'open'
+        ? 'unavailable'
+        : base.publicStatus,
+    reasons: allReasons,
+    registrationOpenAt: base.openAt.ok ? base.openAt.date.toISOString() : null,
+    eventStartAt: base.startAt.ok ? base.startAt.date.toISOString() : null,
+    registrationCutoffAt: base.cutoffAt ? base.cutoffAt.toISOString() : null,
+    currency: config.currency || PRICING.CURRENCY,
     paystackMode: config.paystackMode,
+    allowCombinedChallengeExhibition: Boolean(
+      config.allowCombinedChallengeExhibition
+    ),
+    emailConfigured: Boolean(config.resendApiKey && config.emailFrom),
   };
 }
 

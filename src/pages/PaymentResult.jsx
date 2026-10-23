@@ -10,20 +10,20 @@ const STATE_COPY = {
     body: 'Please wait while we confirm your payment with Paystack. Do not close this page.',
   },
   success: {
-    title: 'Registration confirmed',
-    body: 'Your payment was verified and your registration is confirmed.',
+    title: 'Paid participation confirmed',
+    body: 'Your payment was verified. Selected challenge and/or exhibition participation is now confirmed. Free event registration remains separate from paid activities.',
   },
   pending: {
     title: 'Payment pending',
-    body: 'We have not yet received a successful payment confirmation. If you completed payment, wait a moment and retry verification.',
+    body: 'We have not yet received a successful payment confirmation. Your free event registration may already be saved; paid participation remains unconfirmed until payment succeeds.',
   },
   failed: {
     title: 'Payment not completed',
-    body: 'The payment was not successful. You can return to the event page to try again.',
+    body: 'The payment was not successful. A failed or abandoned payment does not confirm paid participation. Your free event registration remains if it was already saved.',
   },
   reversed: {
     title: 'Payment reversed',
-    body: 'This payment was reversed. Contact SHE CHAMPIONS if you need assistance.',
+    body: 'This payment was reversed. Paid participation is no longer confirmed. Contact SHE CHAMPIONS if you need assistance.',
   },
   unavailable: {
     title: 'Verification unavailable',

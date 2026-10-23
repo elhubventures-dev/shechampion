@@ -47,6 +47,9 @@ export async function submitRegistration(payload, idempotencyKey) {
     const error = new Error(data?.error?.message || 'Registration failed.');
     error.code = data?.error?.code;
     error.details = data?.error?.details;
+    if (data?.error?.details?.publicReference) {
+      error.publicReference = data.error.details.publicReference;
+    }
     throw error;
   }
   return data;

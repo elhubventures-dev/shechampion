@@ -21,6 +21,21 @@ const APP_STATUSES = [
   'WITHDRAWN',
 ];
 
+const PAYMENT_STATUSES = [
+  'NOT_REQUIRED',
+  'PENDING',
+  'SUCCESS',
+  'FAILED',
+  'REVERSED',
+  'INITIALIZATION_FAILED',
+];
+
+function formatKobo(kobo) {
+  if (kobo === null || kobo === undefined) return '—';
+  if (Number(kobo) === 0) return 'Free (₦0)';
+  return `₦${(Number(kobo) / 100).toLocaleString('en-NG')}`;
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -34,6 +49,9 @@ export default function AdminDashboard() {
     q: '',
     paymentStatus: '',
     applicationStatus: '',
+    participation: '',
+    challengeEligible: '',
+    exhibitionCategory: '',
     from: '',
     to: '',
   });
@@ -84,7 +102,16 @@ export default function AdminDashboard() {
     try {
       const data = await adminGetRegistration(id);
       setDetail(data);
-      setStatusDraft(data.registration.application_status);
+      setStatusDraft(
+        data.registration.challenge_status &&
+          ['UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED', 'CONFIRMED'].includes(
+            data.registration.challenge_status
+          )
+          ? data.registration.challenge_status === 'CONFIRMED'
+            ? 'REGISTERED'
+            : data.registration.challenge_status
+          : data.registration.application_status
+      );
       setNotesDraft(data.registration.admin_notes || '');
     } catch (err) {
       setError(err.message || 'Unable to load detail.');
@@ -162,6 +189,7 @@ export default function AdminDashboard() {
   }
 
   const pageCount = Math.max(1, Math.ceil(total / 25));
+  const reg = detail?.registration;
 
   return (
     <div className="admin-shell">
@@ -193,20 +221,40 @@ export default function AdminDashboard() {
             <span>Total applications</span>
           </div>
           <div>
-            <strong>{summary.paid_registrations}</strong>
-            <span>Paid registrations</span>
+            <strong>{summary.free_event_registrations}</strong>
+            <span>Free event only</span>
+          </div>
+          <div>
+            <strong>{summary.challenge_applicants}</strong>
+            <span>Challenge applicants</span>
+          </div>
+          <div>
+            <strong>{summary.confirmed_challenge_participants}</strong>
+            <span>Confirmed challenge</span>
+          </div>
+          <div>
+            <strong>{summary.exhibition_applicants}</strong>
+            <span>Exhibition applicants</span>
+          </div>
+          <div>
+            <strong>{summary.confirmed_exhibitors}</strong>
+            <span>Confirmed exhibitors</span>
+          </div>
+          <div>
+            <strong>{summary.both_activities}</strong>
+            <span>Both activities</span>
           </div>
           <div>
             <strong>{summary.pending_payments}</strong>
             <span>Pending payments</span>
           </div>
           <div>
-            <strong>{summary.failed_or_reversed}</strong>
-            <span>Failed / reversed</span>
+            <strong>{summary.verified_payments ?? summary.paid_registrations}</strong>
+            <span>Verified payments</span>
           </div>
           <div>
-            <strong>{summary.shortlisted}</strong>
-            <span>Shortlisted</span>
+            <strong>{summary.failed_or_reversed}</strong>
+            <span>Failed / reversed</span>
           </div>
         </div>
       ) : null}
@@ -228,6 +276,21 @@ export default function AdminDashboard() {
           />
         </label>
         <label>
+          Participation
+          <select
+            value={filters.participation}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, participation: e.target.value }))
+            }
+          >
+            <option value="">All</option>
+            <option value="free">Free only</option>
+            <option value="challenge">Challenge only</option>
+            <option value="exhibition">Exhibition only</option>
+            <option value="both">Challenge + exhibition</option>
+          </select>
+        </label>
+        <label>
           Payment status
           <select
             value={filters.paymentStatus}
@@ -236,11 +299,11 @@ export default function AdminDashboard() {
             }
           >
             <option value="">All</option>
-            <option value="PENDING">PENDING</option>
-            <option value="SUCCESS">SUCCESS</option>
-            <option value="FAILED">FAILED</option>
-            <option value="REVERSED">REVERSED</option>
-            <option value="INITIALIZATION_FAILED">INITIALIZATION_FAILED</option>
+            {PAYMENT_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
         </label>
         <label>
@@ -258,6 +321,29 @@ export default function AdminDashboard() {
               </option>
             ))}
           </select>
+        </label>
+        <label>
+          Challenge eligibility
+          <select
+            value={filters.challengeEligible}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, challengeEligible: e.target.value }))
+            }
+          >
+            <option value="">All</option>
+            <option value="true">Attested</option>
+            <option value="false">Not attested</option>
+          </select>
+        </label>
+        <label>
+          Exhibition category
+          <input
+            value={filters.exhibitionCategory}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, exhibitionCategory: e.target.value }))
+            }
+            placeholder="Category contains…"
+          />
         </label>
         <label>
           From
@@ -293,9 +379,11 @@ export default function AdminDashboard() {
               <tr>
                 <th>Reference</th>
                 <th>Name</th>
+                <th>Participation</th>
                 <th>Payment</th>
-                <th>Application</th>
-                <th>Email status</th>
+                <th>Challenge</th>
+                <th>Exhibition</th>
+                <th>Email</th>
                 <th>Created</th>
               </tr>
             </thead>
@@ -313,18 +401,27 @@ export default function AdminDashboard() {
                   </td>
                   <td>{row.full_name}</td>
                   <td>
+                    {[
+                      row.challenge_selected ? 'Challenge' : null,
+                      row.exhibition_selected ? 'Exhibition' : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' + ') || 'Free only'}
+                  </td>
+                  <td>
                     <span className={`pill pill--${row.payment_status}`}>
                       {row.payment_status}
                     </span>
                   </td>
-                  <td>{row.application_status}</td>
+                  <td>{row.challenge_status || '—'}</td>
+                  <td>{row.exhibition_status || '—'}</td>
                   <td>{row.confirmation_email_status || '—'}</td>
                   <td>{new Date(row.created_at).toLocaleString()}</td>
                 </tr>
               ))}
               {!rows.length ? (
                 <tr>
-                  <td colSpan={6}>No registrations match these filters.</td>
+                  <td colSpan={8}>No registrations match these filters.</td>
                 </tr>
               ) : null}
             </tbody>
@@ -357,41 +454,96 @@ export default function AdminDashboard() {
             <p className="admin-muted">Select a registration to view details.</p>
           ) : detailBusy && !detail ? (
             <p className="admin-muted">Loading detail…</p>
-          ) : detail ? (
+          ) : reg ? (
             <>
-              <h2>{detail.registration.public_reference}</h2>
+              <h2>{reg.public_reference}</h2>
               <dl className="admin-dl">
                 <div>
                   <dt>Name</dt>
-                  <dd>{detail.registration.full_name}</dd>
+                  <dd>{reg.full_name}</dd>
                 </div>
                 <div>
                   <dt>Email</dt>
-                  <dd>{detail.registration.email_normalized}</dd>
+                  <dd>{reg.email_normalized}</dd>
                 </div>
                 <div>
                   <dt>Phone</dt>
-                  <dd>{detail.registration.phone}</dd>
+                  <dd>{reg.phone}</dd>
                 </div>
                 <div>
                   <dt>State</dt>
-                  <dd>{detail.registration.state_of_residence}</dd>
+                  <dd>{reg.state_of_residence}</dd>
                 </div>
                 <div>
                   <dt>Category</dt>
-                  <dd>{detail.registration.applicant_category}</dd>
+                  <dd>{reg.applicant_category}</dd>
                 </div>
                 <div>
-                  <dt>Business</dt>
-                  <dd>{detail.registration.business_name || '—'}</dd>
+                  <dt>Event registration</dt>
+                  <dd>{reg.event_registration_status || '—'}</dd>
                 </div>
                 <div>
-                  <dt>Description</dt>
-                  <dd>{detail.registration.brief_description}</dd>
+                  <dt>Selected activities</dt>
+                  <dd>
+                    {[
+                      reg.challenge_selected ? 'Challenge' : null,
+                      reg.exhibition_selected ? 'Exhibition' : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' + ') || 'None (free event only)'}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Expected amount</dt>
+                  <dd>
+                    {formatKobo(reg.expected_amount_kobo)} {reg.currency || ''}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Challenge status</dt>
+                  <dd>{reg.challenge_status || '—'}</dd>
+                </div>
+                <div>
+                  <dt>Exhibition status</dt>
+                  <dd>{reg.exhibition_status || '—'}</dd>
+                </div>
+                <div>
+                  <dt>Challenge eligibility attested</dt>
+                  <dd>
+                    {reg.challenge_women_eligibility_attested ? 'Yes' : 'No'}
+                    {reg.challenge_eligibility_attested_at
+                      ? ` · ${new Date(reg.challenge_eligibility_attested_at).toLocaleString()}`
+                      : ''}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Exhibition owner attested</dt>
+                  <dd>
+                    {reg.exhibition_business_owner_attested ? 'Yes' : 'No'}
+                    {reg.exhibition_owner_attested_at
+                      ? ` · ${new Date(reg.exhibition_owner_attested_at).toLocaleString()}`
+                      : ''}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Exhibition business</dt>
+                  <dd>{reg.exhibition_business_name || '—'}</dd>
+                </div>
+                <div>
+                  <dt>Exhibition category</dt>
+                  <dd>{reg.exhibition_category || '—'}</dd>
+                </div>
+                <div>
+                  <dt>Exhibition description</dt>
+                  <dd>{reg.exhibition_description || '—'}</dd>
                 </div>
                 <div>
                   <dt>Payment status</dt>
-                  <dd>{detail.registration.payment_status}</dd>
+                  <dd>{reg.payment_status}</dd>
+                </div>
+                <div>
+                  <dt>Description</dt>
+                  <dd>{reg.brief_description}</dd>
                 </div>
               </dl>
 
@@ -399,17 +551,21 @@ export default function AdminDashboard() {
               <ul className="admin-list">
                 {(detail.payments || []).map((p) => (
                   <li key={p.id}>
-                    {p.payment_reference} — {p.status} — {p.amount_kobo}{' '}
+                    {p.payment_reference} — {p.status} — {formatKobo(p.amount_kobo)}{' '}
                     {p.currency} ({p.payment_mode})
+                    {p.verified_at
+                      ? ` · verified ${new Date(p.verified_at).toLocaleString()}`
+                      : ''}
                   </li>
                 ))}
+                {!detail.payments?.length ? <li>No payment transactions.</li> : null}
               </ul>
 
-              <h3>Confirmation email</h3>
+              <h3>Emails</h3>
               <ul className="admin-list">
                 {(detail.emails || []).map((e) => (
                   <li key={e.id}>
-                    {e.status}
+                    {e.email_type} — {e.status}
                     {e.provider_message_id ? ` · id ${e.provider_message_id}` : ''}
                     {e.last_error ? ` · ${e.last_error}` : ''}
                     {` · attempts ${e.attempts}`}
@@ -417,7 +573,8 @@ export default function AdminDashboard() {
                 ))}
                 {!detail.emails?.length ? <li>No email attempts yet.</li> : null}
               </ul>
-              {detail.registration.payment_status === 'SUCCESS' ? (
+              {reg.payment_status === 'SUCCESS' ||
+              reg.payment_status === 'NOT_REQUIRED' ? (
                 <button
                   type="button"
                   className="btn btn-outline-primary"
@@ -428,9 +585,23 @@ export default function AdminDashboard() {
                 </button>
               ) : null}
 
+              {detail.audit?.length ? (
+                <>
+                  <h3>Audit history</h3>
+                  <ul className="admin-list">
+                    {detail.audit.map((a) => (
+                      <li key={a.id}>
+                        {new Date(a.created_at).toLocaleString()} — {a.action} (
+                        {a.actor_email})
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
+
               <form className="admin-detail__form" onSubmit={saveDetail}>
                 <label>
-                  Application status
+                  Application / challenge assessment status
                   <select
                     value={statusDraft}
                     onChange={(e) => setStatusDraft(e.target.value)}

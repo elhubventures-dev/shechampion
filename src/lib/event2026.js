@@ -9,7 +9,13 @@ export const EVENT_2026 = {
   dateDisplay: '12 December 2026',
   locationDisplay: 'Abuja, Nigeria',
   format: 'Physical event',
-  feeDisplay: '₦5,000',
+  /** General event registration is free; paid options are optional. */
+  feeDisplay: 'Free registration',
+  challengeFeeDisplay: '₦5,000',
+  exhibitionFeeDisplay: '₦30,000',
+  combinedFeeDisplay: '₦35,000',
+  pricingSummary:
+    'Free event registration; optional Challenge ₦5,000; optional Exhibition ₦30,000',
   grantTeaser: 'Opportunity to compete for business grants',
   grantRangeDisplay: '₦1 million – ₦5 million',
   cutoffDateDisplay: '10 December 2026',

@@ -34,6 +34,23 @@ function loadEnvFile(filePath) {
 loadEnvFile(join(root, '.env.staging.local'));
 loadEnvFile(join(root, '.env.local'));
 
+// Staging/dev must never load live Paystack credentials from a merged .env.local.
+const appEnv = String(process.env.APP_ENV || '').toLowerCase();
+const paystackKey = String(process.env.PAYSTACK_SECRET_KEY || '');
+const paystackMode = String(process.env.PAYSTACK_MODE || '').toLowerCase();
+if (
+  (appEnv === 'staging' || appEnv === 'development') &&
+  (paystackKey.startsWith('sk_live_') || paystackMode === 'live')
+) {
+  console.error(
+    '[local-api] Refusing live Paystack credentials under APP_ENV=' +
+      (appEnv || 'unknown') +
+      '. Unset PAYSTACK_SECRET_KEY for this process; set sk_test_ in .env.staging.local.'
+  );
+  delete process.env.PAYSTACK_SECRET_KEY;
+  process.env.PAYSTACK_MODE = 'test';
+}
+
 /** @type {Record<string, string>} */
 const routes = {
   '/api/health': 'api/health.js',
@@ -105,6 +122,13 @@ const server = createServer(async (req, res) => {
       );
     }
   }
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('[local-api] uncaughtException', error?.code || error?.message || error);
+});
+process.on('unhandledRejection', (error) => {
+  console.error('[local-api] unhandledRejection', error?.code || error?.message || error);
 });
 
 server.listen(port, '127.0.0.1', () => {

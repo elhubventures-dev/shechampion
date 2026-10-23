@@ -41,7 +41,7 @@ const ChallengePromo = ({ variant = 'banner' }) => {
             <li>
               <Ticket size={22} aria-hidden="true" />
               <div>
-                <strong>{EVENT_2026.feeDisplay} participation fee</strong>
+                <strong>{EVENT_2026.pricingSummary}</strong>
                 <span>{EVENT_2026.grantTeaser}</span>
               </div>
             </li>

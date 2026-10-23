@@ -4,7 +4,7 @@ import {
   isValidPaymentReference,
   validateRegistrationInput,
 } from '../api/_lib/validation.js';
-import { EVENT_FEE_KOBO } from '../api/_lib/constants.js';
+import { PRICING } from '../api/_lib/pricing.js';
 
 describe('validateRegistrationInput', () => {
   const valid = {
@@ -19,11 +19,13 @@ describe('validateRegistrationInput', () => {
     termsAccepted: true,
   };
 
-  it('accepts and normalizes valid input', () => {
+  it('accepts and normalizes valid free registration input', () => {
     const result = validateRegistrationInput(valid);
     expect(result.ok).toBe(true);
     expect(result.value.email).toBe('ada.okafor@example.com');
     expect(result.value.fullName).toBe('Ada Okafor');
+    expect(result.value.expectedAmountKobo).toBe(0);
+    expect(result.value.paymentRequired).toBe(false);
   });
 
   it('rejects missing required fields', () => {
@@ -46,9 +48,11 @@ describe('validateRegistrationInput', () => {
   });
 });
 
-describe('payment reference and amount', () => {
-  it('uses fixed fee of 500000 kobo', () => {
-    expect(EVENT_FEE_KOBO).toBe(500000);
+describe('payment reference and pricing constants', () => {
+  it('keeps challenge fee at 500000 kobo', () => {
+    expect(PRICING.CHALLENGE_KOBO).toBe(500000);
+    expect(PRICING.EXHIBITION_KOBO).toBe(3000000);
+    expect(PRICING.COMBINED_KOBO).toBe(3500000);
   });
 
   it('validates payment reference format', () => {

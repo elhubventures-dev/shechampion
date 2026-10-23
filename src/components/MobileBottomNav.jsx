@@ -25,17 +25,20 @@ const MobileBottomNav = () => {
   return (
     <nav className="mobile-bottom-nav" aria-label="Mobile primary">
       <div className="mobile-bottom-nav__inner">
-        {left.map(({ name, path, icon: Icon }) => (
-          <Link
-            key={path}
-            to={path}
-            className={`mobile-bottom-nav__item${isActive(path) ? ' is-active' : ''}`}
-            aria-current={isActive(path) ? 'page' : undefined}
-          >
-            <Icon size={20} aria-hidden="true" strokeWidth={2.1} />
-            <span>{name}</span>
-          </Link>
-        ))}
+        {left.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`mobile-bottom-nav__item${isActive(item.path) ? ' is-active' : ''}`}
+              aria-current={isActive(item.path) ? 'page' : undefined}
+            >
+              <Icon size={20} aria-hidden="true" strokeWidth={2.1} />
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
 
         <Link
           to={EVENT_2026.path}
@@ -49,17 +52,20 @@ const MobileBottomNav = () => {
           <span className="mobile-bottom-nav__center-label">2026</span>
         </Link>
 
-        {right.map(({ name, path, icon: Icon }) => (
-          <Link
-            key={path}
-            to={path}
-            className={`mobile-bottom-nav__item${isActive(path) ? ' is-active' : ''}`}
-            aria-current={isActive(path) ? 'page' : undefined}
-          >
-            <Icon size={20} aria-hidden="true" strokeWidth={2.1} />
-            <span>{name}</span>
-          </Link>
-        ))}
+        {right.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`mobile-bottom-nav__item${isActive(item.path) ? ' is-active' : ''}`}
+              aria-current={isActive(item.path) ? 'page' : undefined}
+            >
+              <Icon size={20} aria-hidden="true" strokeWidth={2.1} />
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

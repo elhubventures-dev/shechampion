@@ -65,21 +65,31 @@ export default async function handler(req, res) {
           source: 'webhook',
           config,
         });
-        await sendConfirmationEmailSafe(result.registrationId, config);
+        // Email must never fail the webhook ack after payment is persisted.
+        try {
+          await sendConfirmationEmailSafe(result.registrationId, config);
+        } catch {
+          // Intentionally ignored — delivery status is tracked separately.
+        }
       } catch (error) {
         if (
           error.code === 'UNKNOWN_REFERENCE' ||
           error.code === 'PAYMENT_VALIDATION_FAILED' ||
           error.code === 'TEST_MODE_BLOCKED' ||
           error.code === 'PAYMENT_REVERSED' ||
-          error.code === 'STORED_AMOUNT_MISMATCH'
+          error.code === 'STORED_AMOUNT_MISMATCH' ||
+          error.code === 'PAYMENT_UPDATE_CONFLICT'
         ) {
-          await recordWebhookEvent({
-            eventKey,
-            eventType,
-            paymentReference,
-            config,
-          });
+          try {
+            await recordWebhookEvent({
+              eventKey,
+              eventType,
+              paymentReference,
+              config,
+            });
+          } catch {
+            // still acknowledge ignored validation outcomes
+          }
           sendJson(res, 200, { ok: true, ignored: true, reason: error.code });
           return;
         }
@@ -103,12 +113,17 @@ export default async function handler(req, res) {
       });
     }
 
-    const recorded = await recordWebhookEvent({
-      eventKey,
-      eventType,
-      paymentReference,
-      config,
-    });
+    let recorded = { duplicate: false };
+    try {
+      recorded = await recordWebhookEvent({
+        eventKey,
+        eventType,
+        paymentReference,
+        config,
+      });
+    } catch {
+      // Payment state already applied when relevant; still ack to avoid poison retries.
+    }
 
     sendJson(res, 200, {
       ok: true,

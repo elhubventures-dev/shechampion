@@ -18,9 +18,11 @@ Clients cannot supply a callback URL. Configure `PUBLIC_SITE_URL` to the deploye
 
 ## Webhook URL (configure after deployment)
 
-In the Paystack dashboard, add:
+In the Paystack **live** dashboard (after production HTTPS is live), add:
 
-`https://<your-production-domain>/api/payment/webhook`
+`https://www.shechampion-bbf.org/api/payment/webhook`
+
+Use the Paystack **test** dashboard only for non-production hosts. Do not point the live webhook at localhost or staging tunnels.
 
 Notes:
 

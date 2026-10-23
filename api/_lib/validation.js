@@ -2,6 +2,7 @@ import {
   APPLICANT_CATEGORIES,
   NIGERIA_STATES,
 } from './constants.js';
+import { calculateParticipationAmount } from './pricing.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+]?[\d\s().-]{7,20}$/;
@@ -24,7 +25,23 @@ export function normalizeName(name) {
     .replace(/\s+/g, ' ');
 }
 
-export function validateRegistrationInput(input) {
+function normalizeOptionalText(value, maxLen) {
+  if (value === undefined || value === null || value === '') return '';
+  const text = String(value).trim().replace(/\s+/g, ' ');
+  if (text.length > maxLen) return { tooLong: true, text };
+  return { tooLong: false, text };
+}
+
+/**
+ * Validate basic event registration fields plus optional paid participation.
+ * Client-supplied amount / currency / discounts are ignored (never accepted).
+ */
+export function validateRegistrationInput(input, options = {}) {
+  const allowCombined =
+    options.allowCombinedChallengeExhibition !== undefined
+      ? Boolean(options.allowCombinedChallengeExhibition)
+      : false;
+
   const errors = {};
   const fullName = normalizeName(input.fullName);
   const email = normalizeEmail(input.email);
@@ -39,6 +56,31 @@ export function validateRegistrationInput(input) {
     .replace(/\s+/g, ' ');
   const privacyAccepted = input.privacyAccepted === true;
   const termsAccepted = input.termsAccepted === true;
+
+  const challengeSelected =
+    input.challengeSelected === true || input.participateChallenge === true;
+  const exhibitionSelected =
+    input.exhibitionSelected === true || input.exhibitBusiness === true;
+
+  const challengeEligible =
+    input.challengeWomenEligibilityAttested === true ||
+    input.challengeEligibilityConfirmed === true;
+  const exhibitionOwner =
+    input.exhibitionBusinessOwnerAttested === true ||
+    input.businessOwnerConfirmed === true;
+
+  const exhibitionBusinessNameRaw = normalizeOptionalText(
+    input.exhibitionBusinessName ?? input.exhibitBusinessName,
+    160
+  );
+  const exhibitionCategoryRaw = normalizeOptionalText(
+    input.exhibitionCategory ?? input.exhibitCategory,
+    120
+  );
+  const exhibitionDescriptionRaw = normalizeOptionalText(
+    input.exhibitionDescription ?? input.exhibitDescription,
+    1000
+  );
 
   if (!fullName || fullName.length < 2) {
     errors.fullName = 'Full name is required.';
@@ -83,20 +125,109 @@ export function validateRegistrationInput(input) {
     errors.termsAccepted = 'You must accept the participation terms.';
   }
 
+  if (challengeSelected && !challengeEligible) {
+    errors.challengeWomenEligibilityAttested =
+      'Confirm that you are eligible for the women-only Business Empowerment Challenge.';
+  }
+
+  if (exhibitionSelected) {
+    if (!exhibitionOwner) {
+      errors.exhibitionBusinessOwnerAttested =
+        'Confirm that you are applying as a business owner to exhibit.';
+    }
+    if (
+      !exhibitionBusinessNameRaw ||
+      exhibitionBusinessNameRaw.tooLong ||
+      !exhibitionBusinessNameRaw.text
+    ) {
+      errors.exhibitionBusinessName =
+        exhibitionBusinessNameRaw?.tooLong
+          ? 'Exhibition business name must be 160 characters or fewer.'
+          : 'Exhibition business name is required.';
+    }
+    if (
+      !exhibitionCategoryRaw ||
+      exhibitionCategoryRaw.tooLong ||
+      !exhibitionCategoryRaw.text ||
+      exhibitionCategoryRaw.text.length < 2
+    ) {
+      errors.exhibitionCategory =
+        exhibitionCategoryRaw?.tooLong
+          ? 'Product/service category must be 120 characters or fewer.'
+          : 'Product or service category is required.';
+    }
+    if (
+      !exhibitionDescriptionRaw ||
+      exhibitionDescriptionRaw.tooLong ||
+      !exhibitionDescriptionRaw.text ||
+      exhibitionDescriptionRaw.text.length < 10
+    ) {
+      errors.exhibitionDescription =
+        exhibitionDescriptionRaw?.tooLong
+          ? 'Exhibition description must be 1000 characters or fewer.'
+          : 'Briefly describe what you will exhibit (at least 10 characters).';
+    }
+  }
+
+  const pricing = calculateParticipationAmount({
+    challengeSelected,
+    exhibitionSelected,
+    allowCombined,
+  });
+  if (!pricing.ok) {
+    errors.participationSelection = pricing.error;
+  }
+
+  // Explicitly reject client-supplied pricing fields rather than trusting them.
+  if (
+    input.amountKobo !== undefined ||
+    input.amount !== undefined ||
+    input.feeKobo !== undefined ||
+    input.currency !== undefined ||
+    input.discount !== undefined ||
+    input.discountCode !== undefined
+  ) {
+    errors.amount = 'Payment amount and currency are determined by the server.';
+  }
+
+  const ok = Object.keys(errors).length === 0;
+
   return {
-    ok: Object.keys(errors).length === 0,
+    ok,
     errors,
-    value: {
-      fullName,
-      email,
-      phone,
-      stateOfResidence: state,
-      applicantCategory: category,
-      businessName: businessName || null,
-      briefDescription,
-      privacyAccepted,
-      termsAccepted,
-    },
+    value: ok
+      ? {
+          fullName,
+          email,
+          phone,
+          stateOfResidence: state,
+          applicantCategory: category,
+          businessName: businessName || null,
+          briefDescription,
+          privacyAccepted,
+          termsAccepted,
+          challengeSelected,
+          exhibitionSelected,
+          challengeWomenEligibilityAttested: challengeSelected
+            ? challengeEligible
+            : false,
+          exhibitionBusinessOwnerAttested: exhibitionSelected
+            ? exhibitionOwner
+            : false,
+          exhibitionBusinessName: exhibitionSelected
+            ? exhibitionBusinessNameRaw.text
+            : null,
+          exhibitionCategory: exhibitionSelected
+            ? exhibitionCategoryRaw.text
+            : null,
+          exhibitionDescription: exhibitionSelected
+            ? exhibitionDescriptionRaw.text
+            : null,
+          expectedAmountKobo: pricing.amountKobo,
+          currency: pricing.currency,
+          paymentRequired: pricing.paymentRequired,
+        }
+      : null,
   };
 }
 

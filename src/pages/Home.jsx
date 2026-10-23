@@ -277,7 +277,7 @@ const Home = () => {
                     <h2 id="home-cta-heading">Ready for Challenge 2026?</h2>
                     <p>
                         Join the Business Empowerment Challenge in Abuja on {EVENT_2026.dateDisplay}.
-                        Participate for {EVENT_2026.feeDisplay} and compete for business grants.
+                        Free event registration with optional paid challenge and exhibition — compete for business grants.
                     </p>
                     <div className="cta-actions">
                         <Link to={EVENT_2026.path} className="btn btn-light">

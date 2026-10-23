@@ -441,6 +441,94 @@
     max-width: 36rem;
 }
 
+.reg-form__intro {
+    margin: 0;
+    font-size: var(--text-body-sm);
+    color: var(--color-text);
+    max-width: 40rem;
+}
+
+.reg-form__fieldset {
+    margin: 0;
+    padding: 1.25rem 0 0;
+    border: none;
+    border-top: var(--border-width) solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-md);
+}
+
+.reg-form__fieldset legend {
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h4, 1.15rem);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-navy, var(--color-text));
+}
+
+.reg-form__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.reg-form__option {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.85rem 1rem;
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font-size: var(--text-body-sm);
+}
+
+.reg-form__option--included {
+    background: color-mix(in srgb, var(--color-navy, #0b1f3a) 4%, var(--color-surface));
+}
+
+.reg-form__conditional {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1rem;
+    border-left: 3px solid var(--color-gold, #c4a35a);
+    background: color-mix(in srgb, var(--color-gold, #c4a35a) 8%, var(--color-surface));
+}
+
+.reg-form__totals {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.reg-form__totals p {
+    margin: 0;
+    font-size: var(--text-body-sm);
+}
+
+.reg-form__total-line {
+    margin-top: 0.35rem !important;
+    font-size: var(--text-body) !important;
+}
+
+.reg-form--success {
+    padding: 1.25rem 1.35rem;
+    border: var(--border-width) solid var(--color-border);
+    border-left: 3px solid var(--color-gold, #c4a35a);
+    background: var(--color-surface);
+}
+
+.reg-form__success-title {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: var(--text-h3, 1.35rem);
+}
+
 .payment-result {
     max-width: 40rem;
 }

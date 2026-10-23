@@ -18,6 +18,8 @@
     "staging:preflight": "node scripts/staging-preflight.mjs",
     "staging:db-smoke": "node scripts/staging-db-smoke.mjs",
     "staging:db-integration": "node scripts/staging-db-integration.mjs",
+    "staging:phase9a-precheck": "node scripts/staging-phase9a-precheck.mjs",
+    "staging:phase9a-verify": "node scripts/staging-phase9a-verify.mjs",
     "staging:admin-verify": "node scripts/phase-7c-admin-verify.mjs",
     "staging:paystack-smoke": "node scripts/staging-paystack-smoke.mjs",
     "hash-admin-password": "node scripts/hash-admin-password.mjs"

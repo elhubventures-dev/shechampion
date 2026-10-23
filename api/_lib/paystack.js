@@ -1,9 +1,5 @@
 import { hmacSha512Hex, safeEqualHex } from './crypto.js';
-import {
-  EVENT_CURRENCY,
-  EVENT_FEE_KOBO,
-  PAYSTACK_PROVIDER,
-} from './constants.js';
+import { EVENT_CURRENCY } from './constants.js';
 
 const PAYSTACK_BASE = 'https://api.paystack.co';
 
@@ -76,9 +72,12 @@ export async function verifyPaystackTransaction({ secretKey, reference }) {
 export function validatePaystackSuccess({
   data,
   expectedReference,
-  expectedAmountKobo = EVENT_FEE_KOBO,
+  expectedAmountKobo,
   expectedCurrency = EVENT_CURRENCY,
 }) {
+  if (expectedAmountKobo === undefined || expectedAmountKobo === null) {
+    return { ok: false, reason: 'Expected amount was not provided.' };
+  }
   if (!data || typeof data !== 'object') {
     return { ok: false, reason: 'Missing provider data.' };
   }
@@ -132,5 +131,3 @@ export function mapPaystackStatus(status) {
   if (s === 'abandoned' || s === 'ongoing' || s === 'pending') return 'PENDING';
   return 'FAILED';
 }
-
-export { PAYSTACK_PROVIDER };

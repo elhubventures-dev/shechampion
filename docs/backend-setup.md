@@ -112,4 +112,4 @@ SPA rewrites in `vercel.json` exclude `/api/` so functions are not replaced by `
 
 ## Fee amount
 
-The server always initializes Paystack with **500000** kobo (₦5,000). Clients cannot supply the amount.
+The server calculates Paystack amounts from selected participation options in `api/_lib/pricing.js` (challenge ₦5,000 / exhibition ₦30,000 / combined ₦35,000). Free event registration uses amount `0` and does not create a Paystack transaction. Clients cannot supply the amount.

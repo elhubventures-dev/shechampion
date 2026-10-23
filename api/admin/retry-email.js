@@ -54,12 +54,15 @@ export default async function handler(req, res) {
       sendError(res, 404, 'NOT_FOUND', 'Registration not found.');
       return;
     }
-    if (rows[0].payment_status !== 'SUCCESS') {
+    if (
+      rows[0].payment_status !== 'SUCCESS' &&
+      rows[0].payment_status !== 'NOT_REQUIRED'
+    ) {
       sendError(
         res,
         400,
-        'NOT_PAID',
-        'Confirmation email can only be sent after verified payment.'
+        'NOT_ELIGIBLE',
+        'Confirmation email can only be sent for free registrations or after verified payment.'
       );
       return;
     }

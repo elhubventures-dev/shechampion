@@ -19,6 +19,7 @@ describe('Paystack verification rules', () => {
       validatePaystackSuccess({
         data: good,
         expectedReference: good.reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
       }).ok
     ).toBe(true);
   });
@@ -28,12 +29,14 @@ describe('Paystack verification rules', () => {
       validatePaystackSuccess({
         data: { ...good, amount: 5000 },
         expectedReference: good.reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
       }).ok
     ).toBe(false);
     expect(
       validatePaystackSuccess({
         data: { ...good, currency: 'USD' },
         expectedReference: good.reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
       }).ok
     ).toBe(false);
   });
@@ -43,6 +46,40 @@ describe('Paystack verification rules', () => {
       validatePaystackSuccess({
         data: good,
         expectedReference: 'SCBEC26_' + 'c'.repeat(32),
+        expectedAmountKobo: EVENT_FEE_KOBO,
+      }).ok
+    ).toBe(false);
+  });
+
+  it('requires an expected amount from the server', () => {
+    expect(
+      validatePaystackSuccess({
+        data: good,
+        expectedReference: good.reference,
+      }).ok
+    ).toBe(false);
+  });
+
+  it('accepts exhibition and combined amounts when expected', () => {
+    expect(
+      validatePaystackSuccess({
+        data: { ...good, amount: 3000000 },
+        expectedReference: good.reference,
+        expectedAmountKobo: 3000000,
+      }).ok
+    ).toBe(true);
+    expect(
+      validatePaystackSuccess({
+        data: { ...good, amount: 3500000 },
+        expectedReference: good.reference,
+        expectedAmountKobo: 3500000,
+      }).ok
+    ).toBe(true);
+    expect(
+      validatePaystackSuccess({
+        data: { ...good, amount: 500000 },
+        expectedReference: good.reference,
+        expectedAmountKobo: 3500000,
       }).ok
     ).toBe(false);
   });

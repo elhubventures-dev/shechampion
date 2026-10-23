@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { evaluateReadiness } from '../api/_lib/config.js';
-import { EVENT_FEE_KOBO } from '../api/_lib/constants.js';
 
 function baseConfig(overrides = {}) {
   return {
     eventId: 'bec-2026',
-    feeKobo: EVENT_FEE_KOBO,
     currency: 'NGN',
     registrationEnabled: true,
     registrationOpenAtRaw: '2026-01-01T00:00:00Z',
@@ -23,6 +21,7 @@ function baseConfig(overrides = {}) {
     emailFrom: 'noreply@example.com',
     adminNotificationEmail: '',
     isVercelProduction: false,
+    allowCombinedChallengeExhibition: true,
     ...overrides,
   };
 }
@@ -33,6 +32,8 @@ describe('evaluateReadiness', () => {
       now: new Date('2026-06-01T00:00:00Z'),
     });
     expect(result.ready).toBe(true);
+    expect(result.freeRegistrationAvailable).toBe(true);
+    expect(result.paidCheckoutAvailable).toBe(true);
     expect(result.publicStatus).toBe('open');
     expect(result.registrationCutoffAt).toBe(
       new Date('2026-12-10T10:00:00Z').toISOString()
@@ -64,22 +65,29 @@ describe('evaluateReadiness', () => {
     expect(result.publicStatus).toBe('closed');
   });
 
-  it('rejects invalid event configuration', () => {
+  it('rejects invalid event configuration without requiring fee kobo', () => {
     const result = evaluateReadiness(
       baseConfig({
         eventStartAtRaw: 'not-a-date',
         privacyApproved: false,
-        feeKobo: 100,
       }),
       { now: new Date('2026-06-01T00:00:00Z') }
     );
     expect(result.ready).toBe(false);
     expect(result.reasons.some((r) => r.includes('EVENT_START_AT'))).toBe(true);
     expect(result.reasons.some((r) => r.includes('PRIVACY'))).toBe(true);
-    expect(result.reasons.some((r) => r.includes('EVENT_FEE_KOBO'))).toBe(true);
   });
 
-  it('blocks test-mode completed live registrations on Vercel production', () => {
+  it('keeps free registration available when Paystack is missing', () => {
+    const result = evaluateReadiness(
+      baseConfig({ paystackSecretKey: '' }),
+      { now: new Date('2026-06-01T00:00:00Z') }
+    );
+    expect(result.ready).toBe(true);
+    expect(result.paidCheckoutAvailable).toBe(false);
+  });
+
+  it('blocks paid checkout in Vercel production with test mode', () => {
     const result = evaluateReadiness(
       baseConfig({
         isVercelProduction: true,
@@ -87,9 +95,35 @@ describe('evaluateReadiness', () => {
       }),
       { now: new Date('2026-06-01T00:00:00Z') }
     );
-    expect(result.ready).toBe(false);
+    expect(result.ready).toBe(true);
+    expect(result.paidCheckoutAvailable).toBe(false);
+  });
+
+  it('blocks paid checkout when a live secret is loaded with test mode', () => {
+    const result = evaluateReadiness(
+      baseConfig({
+        paystackMode: 'test',
+        paystackSecretKey: 'sk_live_blocked',
+        appEnv: 'staging',
+      }),
+      { now: new Date('2026-06-01T00:00:00Z') }
+    );
+    expect(result.ready).toBe(true);
+    expect(result.paidCheckoutAvailable).toBe(false);
     expect(
-      result.reasons.some((r) => r.toLowerCase().includes('production'))
+      result.reasons.some((r) => r.includes('sk_test_') || r.includes('Live Paystack'))
     ).toBe(true);
+  });
+
+  it('blocks paid checkout when PAYSTACK_MODE=live under staging APP_ENV', () => {
+    const result = evaluateReadiness(
+      baseConfig({
+        paystackMode: 'live',
+        paystackSecretKey: 'sk_live_blocked',
+        appEnv: 'staging',
+      }),
+      { now: new Date('2026-06-01T00:00:00Z') }
+    );
+    expect(result.paidCheckoutAvailable).toBe(false);
   });
 });

@@ -39,7 +39,7 @@ export default function EventPrivacyNotice() {
           <h2>Why we collect it</h2>
           <p>
             We use this information to process event registration, verify the
-            participation fee payment, communicate confirmation and next steps,
+            free registration and optional participation fee payment, communicate confirmation and next steps,
             and administer assessment of applications.
           </p>
 
