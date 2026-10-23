@@ -316,6 +316,10 @@
     max-width: 46rem;
 }
 
+.event-participation .event-countdown {
+    margin-bottom: var(--stack-lg);
+}
+
 .event-participation:has(.reg-form) {
     max-width: 40rem;
 }

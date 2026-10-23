@@ -1,0 +1,216 @@
+.event-countdown {
+  --ec-surface: rgba(255, 255, 255, 0.08);
+  --ec-border: rgba(255, 255, 255, 0.18);
+  --ec-value: #fff;
+  --ec-label: rgba(232, 212, 245, 0.88);
+  --ec-note: rgba(255, 255, 255, 0.62);
+  --ec-eyebrow: var(--color-gold-soft, #e8d4f5);
+
+  margin: 0;
+  max-width: 28rem;
+}
+
+.event-countdown__eyebrow {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-body);
+  font-size: var(--text-caption, 0.72rem);
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ec-eyebrow);
+}
+
+.event-countdown__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(3.25rem, 1fr));
+  gap: 0.5rem;
+}
+
+.event-countdown__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 4rem;
+  padding: 0.55rem 0.35rem;
+  border-radius: var(--radius-sm, 0.55rem);
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.event-countdown__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--ec-value);
+  font-variant-numeric: tabular-nums;
+}
+
+.event-countdown__label {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ec-label);
+}
+
+.event-countdown__note,
+.event-countdown__complete {
+  margin: 0.7rem 0 0;
+  font-size: var(--text-caption, 0.75rem);
+  line-height: 1.45;
+  color: var(--ec-note);
+  max-width: 26rem;
+}
+
+.event-countdown__complete {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  color: var(--ec-value);
+}
+
+/* Hero — on dark event hero */
+.event-countdown--hero {
+  margin: 0 0 var(--stack-lg, 1.5rem);
+  padding: 1rem 1.05rem 1.05rem;
+  border-radius: var(--radius-md, 0.75rem);
+  background: rgba(6, 21, 37, 0.35);
+  border: 1px solid rgba(197, 137, 232, 0.28);
+  box-shadow: 0 12px 32px rgba(6, 21, 37, 0.28);
+}
+
+.event-countdown--hero .event-countdown__unit {
+  animation: eventCountdownUnitIn 0.7s var(--ease-standard, ease) both;
+}
+
+.event-countdown--hero .event-countdown__unit:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.event-countdown--hero .event-countdown__unit:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.event-countdown--hero .event-countdown__unit:nth-child(3) {
+  animation-delay: 0.19s;
+}
+.event-countdown--hero .event-countdown__unit:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+.event-countdown--hero .event-countdown__value {
+  text-shadow: 0 0 18px rgba(197, 137, 232, 0.35);
+}
+
+/* Promo — on navy ChallengePromo bands */
+.event-countdown--promo {
+  margin: var(--stack-md, 1rem) 0 0;
+  max-width: 24rem;
+}
+
+.event-countdown--promo .event-countdown__grid {
+  gap: 0.4rem;
+}
+
+.event-countdown--promo .event-countdown__unit {
+  min-height: 3.5rem;
+  padding: 0.45rem 0.25rem;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.event-countdown--promo .event-countdown__value {
+  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+}
+
+/* Section — light surfaces (participation / key facts) */
+.event-countdown--section {
+  --ec-surface: rgba(139, 61, 184, 0.06);
+  --ec-border: rgba(139, 61, 184, 0.16);
+  --ec-value: var(--color-brand-deep, #6b2a8f);
+  --ec-label: var(--color-text-muted, #5c6570);
+  --ec-note: var(--color-text-muted, #5c6570);
+  --ec-eyebrow: var(--color-brand, #8b3db8);
+
+  margin: 0 0 var(--stack-lg, 1.5rem);
+  padding: 1.1rem 1.15rem;
+  max-width: 32rem;
+  border-radius: var(--radius-md, 0.75rem);
+  background: linear-gradient(
+    135deg,
+    rgba(232, 212, 245, 0.45) 0%,
+    rgba(255, 255, 255, 0.9) 55%
+  );
+  border: 1px solid rgba(139, 61, 184, 0.14);
+}
+
+.event-countdown--section .event-countdown__unit {
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(107, 42, 143, 0.08);
+}
+
+/* Compact — tight placements */
+.event-countdown--compact {
+  max-width: 20rem;
+}
+
+.event-countdown--compact .event-countdown__eyebrow {
+  margin-bottom: 0.45rem;
+}
+
+.event-countdown--compact .event-countdown__grid {
+  gap: 0.35rem;
+}
+
+.event-countdown--compact .event-countdown__unit {
+  min-height: 3rem;
+  padding: 0.35rem 0.2rem;
+}
+
+.event-countdown--compact .event-countdown__value {
+  font-size: 1.05rem;
+}
+
+.event-countdown--compact .event-countdown__note {
+  margin-top: 0.45rem;
+  font-size: 0.68rem;
+}
+
+@keyframes eventCountdownUnitIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .event-countdown__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .event-countdown__unit {
+    min-height: 3.35rem;
+    padding: 0.4rem 0.2rem;
+  }
+
+  .event-countdown__value {
+    font-size: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-countdown--hero .event-countdown__unit {
+    animation: none;
+  }
+}

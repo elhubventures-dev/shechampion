@@ -83,6 +83,50 @@ describe('Paystack verification rules', () => {
       }).ok
     ).toBe(false);
   });
+
+  it('accepts fee-inclusive amount when requested_amount matches expected', () => {
+    expect(
+      validatePaystackSuccess({
+        data: {
+          ...good,
+          amount: 517767,
+          requested_amount: EVENT_FEE_KOBO,
+          fees: 17767,
+        },
+        expectedReference: good.reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
+      }).ok
+    ).toBe(true);
+  });
+
+  it('rejects fee-inclusive amount when requested_amount does not match', () => {
+    expect(
+      validatePaystackSuccess({
+        data: {
+          ...good,
+          amount: 517767,
+          requested_amount: 3000000,
+          fees: 17767,
+        },
+        expectedReference: good.reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
+      }).ok
+    ).toBe(false);
+  });
+
+  it('falls back to amount minus fees when requested_amount is absent', () => {
+    expect(
+      validatePaystackSuccess({
+        data: {
+          ...good,
+          amount: 517767,
+          fees: 17767,
+        },
+        expectedReference: good.reference,
+        expectedAmountKobo: EVENT_FEE_KOBO,
+      }).ok
+    ).toBe(true);
+  });
 });
 
 describe('webhook signature', () => {

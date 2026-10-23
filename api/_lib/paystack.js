@@ -87,13 +87,41 @@ export function validatePaystackSuccess({
   if (String(data.reference) !== String(expectedReference)) {
     return { ok: false, reason: 'Reference mismatch.' };
   }
-  if (Number(data.amount) !== Number(expectedAmountKobo)) {
+  // Prefer requested_amount: when Paystack passes fees to the customer,
+  // data.amount is fee-inclusive while requested_amount is the initialize amount.
+  const comparableAmount = resolveComparableAmountKobo(data);
+  if (comparableAmount === null) {
+    return { ok: false, reason: 'Amount mismatch.' };
+  }
+  if (Number(comparableAmount) !== Number(expectedAmountKobo)) {
     return { ok: false, reason: 'Amount mismatch.' };
   }
   if (String(data.currency).toUpperCase() !== expectedCurrency) {
     return { ok: false, reason: 'Currency mismatch.' };
   }
   return { ok: true };
+}
+
+/**
+ * Amount to compare against our stored expected_amount_kobo.
+ * @param {{ amount?: unknown, requested_amount?: unknown, fees?: unknown }} data
+ * @returns {number | null}
+ */
+export function resolveComparableAmountKobo(data) {
+  if (!data || typeof data !== 'object') return null;
+  if (data.requested_amount !== undefined && data.requested_amount !== null) {
+    const requested = Number(data.requested_amount);
+    return Number.isFinite(requested) ? requested : null;
+  }
+  const amount = Number(data.amount);
+  if (!Number.isFinite(amount)) return null;
+  if (data.fees !== undefined && data.fees !== null) {
+    const fees = Number(data.fees);
+    if (Number.isFinite(fees) && fees >= 0) {
+      return amount - fees;
+    }
+  }
+  return amount;
 }
 
 export function verifyPaystackSignature(secretKey, rawBody, signatureHeader) {

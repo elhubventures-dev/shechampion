@@ -7,6 +7,12 @@ export const EVENT_2026 = {
     "Empowering women's skills, showcasing businesses, and creating opportunities for growth.",
   tagline: 'Empowering Her Skills. Elevating Her Business. Unlocking Her Potential.',
   dateDisplay: '12 December 2026',
+  /**
+   * Countdown target: start of event day in Africa/Lagos (+01:00).
+   * Exact clock time is not yet confirmed — do not treat this as the programme start time.
+   */
+  countdownAt: '2026-12-12T00:00:00+01:00',
+  countdownNote: 'Countdown to event day · exact start time to be announced',
   locationDisplay: 'Abuja, Nigeria',
   format: 'Physical event',
   /** General event registration is free; paid options are optional. */

@@ -133,6 +133,14 @@
   color: var(--color-gold-soft);
 }
 
+.challenge-promo__countdown {
+  margin-top: var(--stack-md, 1rem);
+}
+
+.challenge-promo--banner .challenge-promo__countdown {
+  margin-top: var(--stack-sm, 0.75rem);
+}
+
 @keyframes challengePromoPulse {
   0%,
   100% {

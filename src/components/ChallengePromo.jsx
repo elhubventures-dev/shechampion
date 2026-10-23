@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CalendarDays, Ticket } from 'lucide-react';
 import { EVENT_2026 } from '../lib/event2026';
+import EventCountdown from './EventCountdown';
 import './ChallengePromo.css';
 
 /**
@@ -46,6 +47,11 @@ const ChallengePromo = ({ variant = 'banner' }) => {
               </div>
             </li>
           </ul>
+
+          <EventCountdown
+            variant={variant === 'featured' ? 'promo' : 'compact'}
+            className="challenge-promo__countdown"
+          />
         </div>
 
         <div className="challenge-promo__action">

@@ -47,7 +47,10 @@ const MobileBottomNav = () => {
           aria-current={eventActive ? 'page' : undefined}
         >
           <span className="mobile-bottom-nav__center-disc" aria-hidden="true">
-            <Ticket size={22} strokeWidth={2.25} />
+            <span className="mobile-bottom-nav__center-ring" />
+            <span className="mobile-bottom-nav__center-icon">
+              <Ticket size={22} strokeWidth={2.25} />
+            </span>
           </span>
           <span className="mobile-bottom-nav__center-label">2026</span>
         </Link>

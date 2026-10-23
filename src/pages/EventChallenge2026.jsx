@@ -15,6 +15,7 @@ import {
     Wrench,
 } from 'lucide-react';
 import PageMeta from '../components/PageMeta';
+import EventCountdown from '../components/EventCountdown';
 import RegistrationForm from '../components/RegistrationForm';
 import { EVENT_2026 } from '../lib/event2026';
 import { fetchRegistrationStatus } from '../lib/eventApi';
@@ -195,6 +196,8 @@ const EventChallenge2026 = () => {
                     <h1 id="event-hero-heading">{EVENT_2026.officialName}</h1>
                     <p className="event-hero__tagline">{EVENT_2026.tagline}</p>
                     <p className="event-hero__tagline-note">Proposed campaign tagline — subject to organisational approval.</p>
+
+                    <EventCountdown variant="hero" />
 
                     <dl className="event-hero__facts">
                         <div>
@@ -445,6 +448,7 @@ const EventChallenge2026 = () => {
                     <h2 className="section-title" id="participation-heading">
                         How to participate
                     </h2>
+                    <EventCountdown variant="section" />
                     <div className="prose-block">
                         <p>
                             <strong>General event registration is free.</strong> You may optionally add Business

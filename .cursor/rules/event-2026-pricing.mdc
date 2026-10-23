@@ -1,0 +1,34 @@
+---
+description: Locked SHE CHAMPIONS BEC 2026 registration and participation pricing rules
+globs: api/**/*.{js,mjs},src/components/RegistrationForm.jsx,src/lib/event2026.js,src/pages/EventChallenge2026.jsx,src/pages/PaymentResult.jsx,migrations/**/*.sql,tests/**/*pricing*,tests/**/*payment*,tests/**/*webhook*
+alwaysApply: false
+---
+
+# Event 2026 pricing (locked)
+
+SHE CHAMPIONS Business Empowerment Challenge 2026 pricing:
+
+- General event registration: FREE for all applicants. No Paystack call.
+- Optional Challenge participation: ₦5,000 (`500000` kobo). Women-only via required attestation. Server sets amount.
+- Optional Exhibition: ₦30,000 (`3000000` kobo). Business-owner attestation + business name, category, description required.
+- Combined Challenge+Exhibition: DISABLED unless `ALLOW_COMBINED_CHALLENGE_EXHIBITION=true` (then ₦35,000 / `3500000` kobo). Default is false.
+- Never trust client-supplied amount, currency, or discounts.
+- Free registration must not be undone if paid checkout fails or is abandoned.
+- Paid participation confirmed only after server-side Paystack verify/webhook against stored `expected_amount_kobo`.
+- Do not open public registration (`EVENT_REGISTRATION_ENABLED`) or deploy to production unless the user explicitly asks.
+
+## Authoritative sources
+
+- Amounts: `api/_lib/pricing.js`
+- Eligibility: `api/_lib/validation.js`
+- Create / Paystack / webhook: `api/_lib/registrationService.js`
+- Public form: `src/components/RegistrationForm.jsx`
+- Display copy: `src/lib/event2026.js`
+- Schema: `migrations/003_participation_options.sql`
+- Spec: `docs/phase-8-participation-pricing-report.md`
+
+## Agent behaviour
+
+- Extend the existing free + optional paid model; do not reintroduce a single hardcoded ₦5,000 registration fee.
+- Prefer Plan mode for multi-file pricing changes; keep registration closed unless explicitly instructed.
+- Do not invent venue, grant amounts beyond existing copy, refund policy, or legal approvals.
