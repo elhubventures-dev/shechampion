@@ -5,6 +5,7 @@ import {
   CHALLENGE_ADMIN_STATUSES,
 } from '../_lib/constants.js';
 import { getSql } from '../_lib/db.js';
+import { sendAssessmentStatusEmailSafe } from '../_lib/emailDelivery.js';
 import {
   methodNotAllowed,
   readJsonBody,
@@ -18,6 +19,14 @@ import {
   assertTrustedBrowserOrigin,
   isUuid,
 } from '../_lib/security.js';
+
+const ASSESSMENT_EMAIL_STATUSES = new Set([
+  'UNDER_REVIEW',
+  'SHORTLISTED',
+  'NOT_SHORTLISTED',
+  'WITHDRAWN',
+  'CANCELLED',
+]);
 
 export default async function handler(req, res) {
   setNoStore(res);
@@ -183,7 +192,33 @@ export default async function handler(req, res) {
         databaseUrl: config.databaseUrl,
       });
 
-      sendJson(res, 200, { ok: true, registration: updated[0] });
+      let assessmentEmailStatus = null;
+      if (
+        nextChallenge !== current[0].challenge_status &&
+        ASSESSMENT_EMAIL_STATUSES.has(nextChallenge)
+      ) {
+        assessmentEmailStatus = nextChallenge;
+      } else if (
+        mirroredApp !== current[0].application_status &&
+        ASSESSMENT_EMAIL_STATUSES.has(mirroredApp)
+      ) {
+        assessmentEmailStatus = mirroredApp;
+      }
+
+      let assessmentEmail = null;
+      if (assessmentEmailStatus) {
+        assessmentEmail = await sendAssessmentStatusEmailSafe(
+          id,
+          assessmentEmailStatus,
+          config
+        );
+      }
+
+      sendJson(res, 200, {
+        ok: true,
+        registration: updated[0],
+        assessmentEmail,
+      });
       return;
     }
 

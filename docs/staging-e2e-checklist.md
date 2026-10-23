@@ -78,8 +78,18 @@ Only after staging DB smoke passes and Paystack/Resend test config is confirmed:
 2. Open `/admin/event-registrations`
 3. Locate the synthetic paid registration and payment reference
 4. Retry confirmation email if FAILED
-5. Export CSV via the dashboard button (POST + CSRF)
-6. Sign out; confirm `/api/admin/me` returns 401
+5. On a challenge/exhibition registration: Send challenge materials / Send exhibitor instructions
+6. Optional: Broadcast panel — registration open / cutoff / details update (allowed recipient only)
+7. Export CSV via the dashboard button (POST + CSRF)
+8. Sign out; confirm `/api/admin/me` returns 401
+
+## Branded email smoke (Resend)
+
+1. Apply migration `004_email_deliveries_nullable_registration.sql` if not already applied
+2. Confirm `PUBLIC_SITE_URL` points at the staging host (logo + CTAs)
+3. Free + paid paths record `email_deliveries` with branded HTML (logo alt `SHE CHAMPIONS`)
+4. Contact form (`POST /api/contact`) and membership popup (`POST /api/membership`) send ack + admin notify without Apps Script
+5. Open one received HTML email and confirm the logo image loads
 
 ## Negative cases
 

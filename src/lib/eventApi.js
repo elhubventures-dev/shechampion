@@ -203,6 +203,80 @@ export async function adminRetryEmail(registrationId) {
   return data;
 }
 
+export async function adminSendRegistrationEmail({
+  registrationId,
+  emailType,
+  message = '',
+}) {
+  const response = await fetch('/api/admin/send-email', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...csrfHeaders(),
+    },
+    body: JSON.stringify({ registrationId, emailType, message }),
+  });
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Send email failed.');
+  }
+  return data;
+}
+
+export async function adminAnnounce({ announceType, message = '' }) {
+  const response = await fetch('/api/admin/announce', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...csrfHeaders(),
+    },
+    body: JSON.stringify({ announceType, message }),
+  });
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Announcement failed.');
+  }
+  return data;
+}
+
+export async function submitContactForm(payload) {
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify(payload),
+  });
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Unable to send message.');
+  }
+  return data;
+}
+
+export async function submitMembershipInterest(payload) {
+  const response = await fetch('/api/membership', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify(payload),
+  });
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Unable to submit membership interest.');
+  }
+  return data;
+}
+
 export async function adminExportCsv() {
   const response = await fetch('/api/admin/export', {
     method: 'POST',

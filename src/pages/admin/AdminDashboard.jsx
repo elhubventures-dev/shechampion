@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageMeta from '../../components/PageMeta';
 import {
+  adminAnnounce,
   adminExportCsv,
   adminGetRegistration,
   adminListRegistrations,
   adminLogout,
   adminMe,
   adminRetryEmail,
+  adminSendRegistrationEmail,
   adminUpdateRegistration,
 } from '../../lib/eventApi';
 import './admin.css';
@@ -60,6 +62,11 @@ export default function AdminDashboard() {
   const [detailBusy, setDetailBusy] = useState(false);
   const [statusDraft, setStatusDraft] = useState('');
   const [notesDraft, setNotesDraft] = useState('');
+  const [announceType, setAnnounceType] = useState('registration_open_announcement');
+  const [announceMessage, setAnnounceMessage] = useState('');
+  const [announceBusy, setAnnounceBusy] = useState(false);
+  const [announceResult, setAnnounceResult] = useState('');
+  const [instructionMessage, setInstructionMessage] = useState('');
 
   const loadList = useCallback(
     async (pageOverride) => {
@@ -157,6 +164,51 @@ export default function AdminDashboard() {
       setError(err.message || 'Retry failed.');
     } finally {
       setDetailBusy(false);
+    }
+  }
+
+  async function sendInstructionEmail(emailType) {
+    if (!selectedId) return;
+    setDetailBusy(true);
+    setError('');
+    try {
+      const result = await adminSendRegistrationEmail({
+        registrationId: selectedId,
+        emailType,
+        message: instructionMessage,
+      });
+      if (!result.sent) {
+        setError(
+          result.alreadySent
+            ? 'That email was already sent. Use retry confirmation for paid/free confirmations.'
+            : result.reason || 'Email was not sent.'
+        );
+      }
+      await openDetail(selectedId);
+    } catch (err) {
+      setError(err.message || 'Send failed.');
+    } finally {
+      setDetailBusy(false);
+    }
+  }
+
+  async function handleAnnounce(event) {
+    event.preventDefault();
+    setAnnounceBusy(true);
+    setAnnounceResult('');
+    setError('');
+    try {
+      const result = await adminAnnounce({
+        announceType,
+        message: announceMessage,
+      });
+      setAnnounceResult(
+        `Announcement queued: ${result.sent || 0} sent, ${result.failed || 0} failed of ${result.total || 0} recipients.`
+      );
+    } catch (err) {
+      setError(err.message || 'Announcement failed.');
+    } finally {
+      setAnnounceBusy(false);
     }
   }
 
@@ -258,6 +310,42 @@ export default function AdminDashboard() {
           </div>
         </div>
       ) : null}
+
+      <section className="admin-announce" aria-labelledby="admin-announce-heading">
+        <h2 id="admin-announce-heading">Broadcast announcement</h2>
+        <p className="admin-muted">
+          Sends branded emails to registered applicants. Event details updates require a message.
+          Does not open or close registration automatically.
+        </p>
+        <form className="admin-detail__form" onSubmit={handleAnnounce}>
+          <label>
+            Announcement type
+            <select
+              value={announceType}
+              onChange={(e) => setAnnounceType(e.target.value)}
+              disabled={announceBusy}
+            >
+              <option value="registration_open_announcement">Registration open</option>
+              <option value="registration_cutoff_reminder">Cutoff reminder (unpaid + free)</option>
+              <option value="event_details_update">Event details update</option>
+            </select>
+          </label>
+          <label>
+            Optional message (required for details update)
+            <textarea
+              rows={3}
+              value={announceMessage}
+              onChange={(e) => setAnnounceMessage(e.target.value)}
+              disabled={announceBusy}
+              placeholder="Plain text only — venue/schedule notes supplied by the organiser."
+            />
+          </label>
+          <button type="submit" className="btn btn-outline-primary" disabled={announceBusy}>
+            {announceBusy ? 'Sending…' : 'Send announcement'}
+          </button>
+          {announceResult ? <p className="admin-muted" role="status">{announceResult}</p> : null}
+        </form>
+      </section>
 
       <form
         className="admin-filters"
@@ -573,17 +661,47 @@ export default function AdminDashboard() {
                 ))}
                 {!detail.emails?.length ? <li>No email attempts yet.</li> : null}
               </ul>
-              {reg.payment_status === 'SUCCESS' ||
-              reg.payment_status === 'NOT_REQUIRED' ? (
-                <button
-                  type="button"
-                  className="btn btn-outline-primary"
-                  onClick={retryEmail}
-                  disabled={detailBusy}
-                >
-                  Retry confirmation email
-                </button>
-              ) : null}
+              <div className="admin-detail__email-actions">
+                {reg.payment_status === 'SUCCESS' ||
+                reg.payment_status === 'NOT_REQUIRED' ? (
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={retryEmail}
+                    disabled={detailBusy}
+                  >
+                    Retry confirmation email
+                  </button>
+                ) : null}
+                <label>
+                  Optional note for materials / exhibitor email
+                  <textarea
+                    rows={2}
+                    value={instructionMessage}
+                    onChange={(e) => setInstructionMessage(e.target.value)}
+                    disabled={detailBusy}
+                    placeholder="Optional plain-text instructions for the applicant."
+                  />
+                </label>
+                <div className="admin-top__actions">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={() => sendInstructionEmail('challenge_materials_request')}
+                    disabled={detailBusy || !reg.challenge_selected}
+                  >
+                    Send challenge materials
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={() => sendInstructionEmail('exhibition_instructions')}
+                    disabled={detailBusy || !reg.exhibition_selected}
+                  >
+                    Send exhibitor instructions
+                  </button>
+                </div>
+              </div>
 
               {detail.audit?.length ? (
                 <>

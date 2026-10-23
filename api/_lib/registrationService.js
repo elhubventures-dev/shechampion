@@ -13,11 +13,23 @@ import {
 } from './crypto.js';
 import { getSql, pingDatabase } from './db.js';
 import {
-  buildFreeRegistrationEmail,
-  buildParticipationConfirmationEmail,
-  createEmailProvider,
-} from './email.js';
+  sendConfirmationEmailSafe,
+  sendFreeRegistrationEmailSafe,
+  sendParticipationEmailSafe,
+  sendPaymentFailedEmailSafe,
+  sendPaymentPendingEmailSafe,
+  sendPaymentReversedEmailSafe,
+} from './emailDelivery.js';
 import { getPublicPricingConfig } from './pricing.js';
+
+export {
+  sendConfirmationEmailSafe,
+  sendFreeRegistrationEmailSafe,
+  sendParticipationEmailSafe,
+  sendPaymentFailedEmailSafe,
+  sendPaymentPendingEmailSafe,
+  sendPaymentReversedEmailSafe,
+};
 import {
   initializePaystackTransaction,
   mapPaystackStatus,
@@ -558,6 +570,15 @@ async function initializePaymentForRegistration(registration, config) {
       WHERE id = ${registration.id}
     `;
 
+    try {
+      await sendPaymentPendingEmailSafe(registration.id, config, {
+        checkoutUrl: init.authorizationUrl,
+        paymentReference,
+      });
+    } catch {
+      // Email failure must not block checkout URL return.
+    }
+
     return {
       publicReference: registration.public_reference,
       checkoutUrl: init.authorizationUrl,
@@ -589,6 +610,14 @@ async function initializePaymentForRegistration(registration, config) {
         updated_at = now()
       WHERE id = ${registration.id}
     `;
+    try {
+      await sendPaymentFailedEmailSafe(registration.id, config, {
+        paymentReference,
+        statusLabel: 'INITIALIZATION_FAILED',
+      });
+    } catch {
+      // ignore
+    }
     const err = new Error(
       'Payment could not be started. Your free event registration was saved — paid participation remains unconfirmed. Please try again.'
     );
@@ -825,7 +854,7 @@ export async function markPaymentNonSuccess({
       WHERE payment_reference = ${paymentReference}
         AND status <> 'REVERSED'
     `;
-    await sql`
+    const reversedRegs = await sql`
       UPDATE registrations r
       SET
         payment_status = 'REVERSED',
@@ -842,8 +871,12 @@ export async function markPaymentNonSuccess({
       WHERE pt.payment_reference = ${paymentReference}
         AND pt.registration_id = r.id
         AND r.payment_status <> 'REVERSED'
+      RETURNING r.id
     `;
-    return { paymentStatus: mapped };
+    return {
+      paymentStatus: mapped,
+      registrationId: reversedRegs[0]?.id || null,
+    };
   }
 
   await sql`
@@ -863,8 +896,9 @@ export async function markPaymentNonSuccess({
       AND status NOT IN ('SUCCESS', 'REVERSED')
   `;
 
+  let failedRegistrationId = null;
   if (mapped === 'FAILED') {
-    await sql`
+    const failedRegs = await sql`
       UPDATE registrations r
       SET
         payment_status = 'FAILED',
@@ -883,10 +917,12 @@ export async function markPaymentNonSuccess({
       WHERE pt.payment_reference = ${paymentReference}
         AND pt.registration_id = r.id
         AND r.payment_status NOT IN ('SUCCESS', 'REVERSED', 'NOT_REQUIRED')
+      RETURNING r.id
     `;
+    failedRegistrationId = failedRegs[0]?.id || null;
   }
 
-  return { paymentStatus: mapped };
+  return { paymentStatus: mapped, registrationId: failedRegistrationId };
 }
 
 export async function verifyPaymentReference(
@@ -940,7 +976,9 @@ export async function verifyPaymentReference(
       source: 'verify',
       config,
     });
-    await sendParticipationEmailSafe(result.registrationId, config);
+    await sendParticipationEmailSafe(result.registrationId, config, {
+      paymentReference,
+    });
     return {
       state: 'success',
       publicReference: result.publicReference,
@@ -975,28 +1013,52 @@ export async function verifyPaymentReference(
   }
 
   if (data.status === 'reversed') {
-    await markPaymentNonSuccess({
+    const reversed = await markPaymentNonSuccess({
       paymentReference,
       status: 'REVERSED',
       providerRaw: raw,
       source: 'verify',
       config,
     });
+    if (reversed.registrationId || tx.registration_id) {
+      try {
+        await sendPaymentReversedEmailSafe(
+          reversed.registrationId || tx.registration_id,
+          config
+        );
+      } catch {
+        // ignore
+      }
+    }
     return {
       state: 'reversed',
       publicReference: tx.public_reference,
       paymentStatus: 'REVERSED',
       applicationStatus: tx.application_status,
+      eventRegistrationStatus: tx.event_registration_status,
+      message:
+        'This payment was reversed. Paid participation is no longer confirmed.',
     };
   }
 
-  await markPaymentNonSuccess({
+  const failed = await markPaymentNonSuccess({
     paymentReference,
     status: 'FAILED',
     providerRaw: raw,
     source: 'verify',
     config,
   });
+  if (failed.registrationId || tx.registration_id) {
+    try {
+      await sendPaymentFailedEmailSafe(
+        failed.registrationId || tx.registration_id,
+        config,
+        { paymentReference, statusLabel: 'FAILED' }
+      );
+    } catch {
+      // ignore
+    }
+  }
   return {
     state: 'failed',
     publicReference: tx.public_reference,
@@ -1006,192 +1068,6 @@ export async function verifyPaymentReference(
     message:
       'Payment was not successful. Your free event registration remains if it was saved; paid participation is not confirmed.',
   };
-}
-
-async function deliverEmail({
-  registrationId,
-  emailType,
-  toEmail,
-  content,
-  config,
-  adminSubject,
-  adminText,
-}) {
-  const sql = getSql(config.databaseUrl);
-  const existing = await sql`
-    SELECT id, status, attempts
-    FROM email_deliveries
-    WHERE registration_id = ${registrationId}
-      AND email_type = ${emailType}
-    ORDER BY created_at DESC
-    LIMIT 1
-  `;
-  if (existing[0]?.status === 'SENT') {
-    return { sent: true, alreadySent: true };
-  }
-
-  let deliveryId = existing[0]?.id;
-  if (!deliveryId) {
-    const created = await sql`
-      INSERT INTO email_deliveries (
-        registration_id, email_type, to_email, status, attempts
-      ) VALUES (
-        ${registrationId},
-        ${emailType},
-        ${toEmail},
-        'PENDING',
-        0
-      )
-      RETURNING id
-    `;
-    deliveryId = created[0].id;
-  }
-
-  const provider = createEmailProvider(config);
-  try {
-    const result = await provider.send({
-      to: toEmail,
-      subject: content.subject,
-      text: content.text,
-      html: content.html,
-    });
-    await sql`
-      UPDATE email_deliveries
-      SET
-        status = 'SENT',
-        provider_message_id = ${result.messageId},
-        last_error = NULL,
-        attempts = attempts + 1,
-        updated_at = now()
-      WHERE id = ${deliveryId}
-    `;
-
-    if (config.adminNotificationEmail && adminSubject) {
-      try {
-        await provider.send({
-          to: config.adminNotificationEmail,
-          subject: adminSubject,
-          text: adminText,
-          html: `<p>${adminText}</p>`,
-        });
-      } catch {
-        // Admin notification failure must not affect applicant confirmation.
-      }
-    }
-
-    return { sent: true, messageId: result.messageId };
-  } catch (error) {
-    await sql`
-      UPDATE email_deliveries
-      SET
-        status = 'FAILED',
-        last_error = ${String(error.message || 'send failed').slice(0, 500)},
-        attempts = attempts + 1,
-        updated_at = now()
-      WHERE id = ${deliveryId}
-    `;
-    return { sent: false, reason: 'send_failed' };
-  }
-}
-
-export async function sendFreeRegistrationEmailSafe(
-  registrationId,
-  config = getEventConfig()
-) {
-  const sql = getSql(config.databaseUrl);
-  const rows = await sql`
-    SELECT id, public_reference, full_name, email_normalized, payment_status,
-           challenge_selected, exhibition_selected
-    FROM registrations
-    WHERE id = ${registrationId}
-    LIMIT 1
-  `;
-  const reg = rows[0];
-  if (!reg) return { sent: false, reason: 'not_found' };
-  if (reg.payment_status !== 'NOT_REQUIRED') {
-    return { sent: false, reason: 'not_free' };
-  }
-  if (!config.resendApiKey || !config.emailFrom) {
-    return { sent: false, reason: 'email_not_configured' };
-  }
-
-  const content = buildFreeRegistrationEmail({
-    publicReference: reg.public_reference,
-    fullName: reg.full_name,
-  });
-
-  return deliverEmail({
-    registrationId,
-    emailType: 'free_registration_confirmation',
-    toEmail: reg.email_normalized,
-    content,
-    config,
-    adminSubject: `New free registration: ${reg.public_reference}`,
-    adminText: `Free event registration ${reg.public_reference} for ${EVENT_NAME}.`,
-  });
-}
-
-export async function sendParticipationEmailSafe(
-  registrationId,
-  config = getEventConfig()
-) {
-  const sql = getSql(config.databaseUrl);
-  const rows = await sql`
-    SELECT id, public_reference, full_name, email_normalized, payment_status,
-           challenge_selected, exhibition_selected, challenge_status,
-           exhibition_status, expected_amount_kobo
-    FROM registrations
-    WHERE id = ${registrationId}
-    LIMIT 1
-  `;
-  const reg = rows[0];
-  if (!reg || reg.payment_status !== 'SUCCESS') {
-    return { sent: false, reason: 'not_paid' };
-  }
-  if (!config.resendApiKey || !config.emailFrom) {
-    return { sent: false, reason: 'email_not_configured' };
-  }
-
-  const content = buildParticipationConfirmationEmail({
-    publicReference: reg.public_reference,
-    fullName: reg.full_name,
-    challengeSelected: reg.challenge_selected,
-    exhibitionSelected: reg.exhibition_selected,
-    challengeStatus: reg.challenge_status,
-    exhibitionStatus: reg.exhibition_status,
-    expectedAmountKobo: reg.expected_amount_kobo,
-  });
-
-  return deliverEmail({
-    registrationId,
-    emailType: 'participation_confirmation',
-    toEmail: reg.email_normalized,
-    content,
-    config,
-    adminSubject: `New paid participation: ${reg.public_reference}`,
-    adminText: `Paid participation ${reg.public_reference} (${formatAmount(reg.expected_amount_kobo)}) for ${EVENT_NAME}.`,
-  });
-}
-
-function formatAmount(kobo) {
-  return `₦${(Number(kobo) / 100).toLocaleString('en-NG')}`;
-}
-
-/** Retry helper used by admin — routes to free or paid email by registration state. */
-export async function sendConfirmationEmailSafe(
-  registrationId,
-  config = getEventConfig()
-) {
-  const sql = getSql(config.databaseUrl);
-  const rows = await sql`
-    SELECT payment_status FROM registrations WHERE id = ${registrationId} LIMIT 1
-  `;
-  const reg = rows[0];
-  if (!reg) return { sent: false, reason: 'not_found' };
-  if (reg.payment_status === 'NOT_REQUIRED') {
-    return sendFreeRegistrationEmailSafe(registrationId, config);
-  }
-  return sendParticipationEmailSafe(registrationId, config);
 }
 
 export async function recordWebhookEvent({

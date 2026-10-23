@@ -1,11 +1,12 @@
 import { useState, useEffect, useId } from 'react';
 import { X, Mail, CheckCircle } from 'lucide-react';
-import { submitToAppsScript } from '../lib/submitToAppsScript';
+import { submitMembershipInterest } from '../lib/eventApi';
 import './MembershipPopup.css';
 
 const MembershipPopup = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [email, setEmail] = useState('');
+    const [website, setWebsite] = useState('');
     // idle | loading | sent | error
     const [status, setStatus] = useState('idle');
     const [errorMessage, setErrorMessage] = useState('');
@@ -46,24 +47,22 @@ const MembershipPopup = () => {
         setStatus('loading');
         setErrorMessage('');
 
-        const result = await submitToAppsScript({
-            name: 'Prospective Member',
-            email: trimmed,
-            subject: 'New Member Signup Request',
-            message: 'A website visitor requested to join the Network.',
-            type: 'Membership Signup'
-        });
-
-        if (result === 'sent') {
+        try {
+            await submitMembershipInterest({
+                name: 'Prospective Member',
+                email: trimmed,
+                website,
+            });
             setStatus('sent');
             setEmail('');
             setTimeout(() => {
                 handleClose();
             }, 4000);
-        } else {
+        } catch (err) {
             setStatus('error');
             setErrorMessage(
-                'We could not submit your request from this browser. Please try again or email info@shechampion-bbf.org.'
+                err.message ||
+                    'We could not submit your request. Please try again or email info@shechampion-bbf.org.'
             );
         }
     };
@@ -95,9 +94,9 @@ const MembershipPopup = () => {
                     {status === 'sent' ? (
                         <div className="popup-success animate-fade-in" role="status" aria-live="polite">
                             <CheckCircle size={48} className="success-icon" aria-hidden="true" />
-                            <h4>Request submitted</h4>
+                            <h4>Request received</h4>
                             <p>
-                                Your membership request was submitted from this page. We cannot confirm delivery here.
+                                Thank you. A confirmation email is sent when delivery succeeds.
                                 If you do not hear from us, email info@shechampion-bbf.org.
                             </p>
                         </div>
@@ -124,6 +123,18 @@ const MembershipPopup = () => {
                                 className="popup-input"
                                 disabled={status === 'loading'}
                             />
+                            <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                                <label htmlFor="membership-website">Website</label>
+                                <input
+                                    id="membership-website"
+                                    type="text"
+                                    name="website"
+                                    value={website}
+                                    onChange={(e) => setWebsite(e.target.value)}
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                />
+                            </div>
                             <button
                                 type="submit"
                                 className="btn btn-primary popup-btn"

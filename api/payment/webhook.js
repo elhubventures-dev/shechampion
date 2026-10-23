@@ -8,6 +8,8 @@ import {
   markPaymentNonSuccess,
   recordWebhookEvent,
   sendConfirmationEmailSafe,
+  sendPaymentFailedEmailSafe,
+  sendPaymentReversedEmailSafe,
 } from '../_lib/registrationService.js';
 
 export default async function handler(req, res) {
@@ -96,21 +98,38 @@ export default async function handler(req, res) {
         throw error;
       }
     } else if (paymentReference && isReversed) {
-      await markPaymentNonSuccess({
+      const reversed = await markPaymentNonSuccess({
         paymentReference,
         status: 'REVERSED',
         providerRaw: payload,
         source: 'webhook',
         config,
       });
+      if (reversed.registrationId) {
+        try {
+          await sendPaymentReversedEmailSafe(reversed.registrationId, config);
+        } catch {
+          // ignore
+        }
+      }
     } else if (paymentReference && isFailed) {
-      await markPaymentNonSuccess({
+      const failed = await markPaymentNonSuccess({
         paymentReference,
         status: 'FAILED',
         providerRaw: payload,
         source: 'webhook',
         config,
       });
+      if (failed.registrationId) {
+        try {
+          await sendPaymentFailedEmailSafe(failed.registrationId, config, {
+            paymentReference,
+            statusLabel: 'FAILED',
+          });
+        } catch {
+          // ignore
+        }
+      }
     }
 
     let recorded = { duplicate: false };

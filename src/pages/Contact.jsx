@@ -4,7 +4,7 @@ import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
 import Reveal from '../components/Reveal';
-import { submitToAppsScript } from '../lib/submitToAppsScript';
+import { submitContactForm } from '../lib/eventApi';
 import './Contact.css';
 
 const Contact = () => {
@@ -13,6 +13,7 @@ const Contact = () => {
         email: '',
         subject: '',
         message: '',
+        website: '',
     });
 
     // idle | loading | sent | error
@@ -38,8 +39,8 @@ const Contact = () => {
         if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
             return 'Please enter a valid email address.';
         }
-        if (!formData.message.trim()) {
-            return 'Please enter a message.';
+        if (!formData.message.trim() || formData.message.trim().length < 10) {
+            return 'Please enter a longer message.';
         }
         return '';
     };
@@ -58,21 +59,21 @@ const Contact = () => {
         setStatus('loading');
         setErrorMessage('');
 
-        const result = await submitToAppsScript({
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            subject: formData.subject.trim() || 'New Message from SheChampion Website',
-            message: formData.message.trim(),
-            type: 'Contact Form',
-        });
-
-        if (result === 'sent') {
+        try {
+            await submitContactForm({
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                subject: formData.subject.trim() || 'Website contact',
+                message: formData.message.trim(),
+                website: formData.website,
+            });
             setStatus('sent');
-            setFormData({ name: '', email: '', subject: '', message: '' });
-        } else {
+            setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+        } catch (err) {
             setStatus('error');
             setErrorMessage(
-                'We could not send your message from this browser. Please try again or email info@shechampion-bbf.org.'
+                err.message ||
+                    'We could not send your message. Please try again or email info@shechampion-bbf.org.'
             );
         }
     };
@@ -143,11 +144,10 @@ const Contact = () => {
                                     aria-live="polite"
                                 >
                                     <CheckCircle size={48} className="success-icon" aria-hidden="true" />
-                                    <h3>Message submitted</h3>
+                                    <h3>Message sent</h3>
                                     <p>
-                                        Your message was submitted from this page. Because of how our form service
-                                        works, we cannot confirm delivery here. If you do not hear from us within 24
-                                        hours, please email{' '}
+                                        Thank you. A confirmation has been sent to your email when delivery
+                                        succeeds. If you do not hear from us within 24 hours, please email{' '}
                                         <a href="mailto:info@shechampion-bbf.org">info@shechampion-bbf.org</a>.
                                     </p>
                                     <button
@@ -225,6 +225,19 @@ const Contact = () => {
                                             required
                                             placeholder="How can we help you?"
                                             disabled={status === 'loading'}
+                                        />
+                                    </div>
+
+                                    <div className="form-group" aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                                        <label htmlFor="website">Website</label>
+                                        <input
+                                            type="text"
+                                            id="website"
+                                            name="website"
+                                            value={formData.website}
+                                            onChange={handleChange}
+                                            tabIndex={-1}
+                                            autoComplete="off"
                                         />
                                     </div>
 

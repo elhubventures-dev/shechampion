@@ -65,6 +65,10 @@ const routes = {
   '/api/admin/registration': 'api/admin/registration.js',
   '/api/admin/export': 'api/admin/export.js',
   '/api/admin/retry-email': 'api/admin/retry-email.js',
+  '/api/admin/send-email': 'api/admin/send-email.js',
+  '/api/admin/announce': 'api/admin/announce.js',
+  '/api/contact': 'api/contact.js',
+  '/api/membership': 'api/membership.js',
 };
 
 function wrapRes(res) {
