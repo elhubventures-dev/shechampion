@@ -7,6 +7,7 @@ import AdminStatCard from '../../components/admin/AdminStatCard';
 import AdminStatusBadge from '../../components/admin/AdminStatusBadge';
 import {
   adminAnnounce,
+  adminDeleteRegistration,
   adminExportCsv,
   adminGetRegistration,
   adminListRegistrations,
@@ -256,6 +257,32 @@ export default function AdminDashboard() {
       await loadList();
     } catch (err) {
       setError(err.message || 'Withdraw failed.');
+    } finally {
+      setDetailBusy(false);
+    }
+  }
+
+  async function deleteRegistration() {
+    if (!selectedId || !detail?.registration) return;
+    const reference = detail.registration.public_reference;
+    const typed = window.prompt(
+      `Permanently delete ${reference}? This removes the registration, payment records, and email delivery history.\n\nType the reference ${reference} to confirm.`
+    );
+    if (typed == null) return;
+    if (String(typed).trim() !== reference) {
+      setError('Delete cancelled — reference did not match.');
+      return;
+    }
+    setDetailBusy(true);
+    setError('');
+    try {
+      await adminDeleteRegistration(selectedId);
+      setSelectedId(null);
+      setDetail(null);
+      setEditDraft(EMPTY_EDIT);
+      await loadList();
+    } catch (err) {
+      setError(err.message || 'Delete failed.');
     } finally {
       setDetailBusy(false);
     }
@@ -1025,6 +1052,14 @@ export default function AdminDashboard() {
                           disabled={detailBusy || reg.application_status === 'WITHDRAWN'}
                         >
                           Withdraw registration
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary admin-btn-danger"
+                          onClick={deleteRegistration}
+                          disabled={detailBusy}
+                        >
+                          Delete permanently
                         </button>
                       </div>
                     </form>

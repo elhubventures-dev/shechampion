@@ -185,6 +185,25 @@ export async function adminUpdateRegistration(id, body) {
   return data;
 }
 
+export async function adminDeleteRegistration(id) {
+  const response = await fetch(
+    `/api/admin/registration?id=${encodeURIComponent(id)}`,
+    {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+        ...csrfHeaders(),
+      },
+    }
+  );
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Delete failed.');
+  }
+  return data;
+}
+
 export async function adminRetryEmail(registrationId) {
   const response = await fetch('/api/admin/email', {
     method: 'POST',

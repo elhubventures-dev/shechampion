@@ -384,7 +384,51 @@ export default async function handler(req, res) {
       return;
     }
 
-    methodNotAllowed(res, ['GET', 'PATCH']);
+    if (req.method === 'DELETE') {
+      assertAdminMutation(req, config);
+      const admin = await requireAdmin(req, config);
+
+      const current = await sql`
+        SELECT id, public_reference, email_normalized, full_name, payment_status,
+               application_status
+        FROM registrations
+        WHERE id = ${id}
+        LIMIT 1
+      `;
+      if (!current[0]) {
+        sendError(res, 404, 'NOT_FOUND', 'Registration not found.');
+        return;
+      }
+
+      await writeAuditEvent({
+        actorEmail: admin.email,
+        action: 'registration.delete',
+        entityType: 'registration',
+        entityId: id,
+        detail: {
+          publicReference: current[0].public_reference,
+          email: current[0].email_normalized,
+          fullName: current[0].full_name,
+          paymentStatus: current[0].payment_status,
+          applicationStatus: current[0].application_status,
+        },
+        databaseUrl: config.databaseUrl,
+      });
+
+      // Child tables use ON DELETE RESTRICT — remove dependents first.
+      await sql`DELETE FROM email_deliveries WHERE registration_id = ${id}`;
+      await sql`DELETE FROM payment_transactions WHERE registration_id = ${id}`;
+      await sql`DELETE FROM registrations WHERE id = ${id}`;
+
+      sendJson(res, 200, {
+        ok: true,
+        deleted: true,
+        publicReference: current[0].public_reference,
+      });
+      return;
+    }
+
+    methodNotAllowed(res, ['GET', 'PATCH', 'DELETE']);
   } catch (error) {
     if (error.code === 'UNAUTHORIZED' || error.code === 'SESSION_EXPIRED') {
       sendError(res, 401, error.code, error.message);
