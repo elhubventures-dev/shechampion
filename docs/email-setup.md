@@ -48,10 +48,12 @@ Shared table-based layout in `api/_lib/emailLayout.js` (Outlook-safe): navy `#0b
 
 | `email_type` | Trigger |
 |---|---|
-| `contact_acknowledgement` | `POST /api/contact` accepted |
-| `membership_acknowledgement` | `POST /api/membership` accepted |
+| `contact_acknowledgement` | `POST /api/forms` with `form: "contact"` accepted |
+| `membership_acknowledgement` | `POST /api/forms` with `form: "membership"` accepted |
 
-Contact and membership no longer use Google Apps Script.
+Contact and membership share [`api/forms.js`](../api/forms.js) (Hobby serverless-function limit). They no longer use Google Apps Script.
+
+Admin confirmation retry, materials/exhibitor sends, and broadcasts share [`api/admin/email.js`](../api/admin/email.js) (`action: "retry" | "send" | "announce"`).
 
 ## Behaviour
 

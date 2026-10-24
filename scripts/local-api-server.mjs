@@ -54,21 +54,16 @@ if (
 /** @type {Record<string, string>} */
 const routes = {
   '/api/health': 'api/health.js',
+  '/api/forms': 'api/forms.js',
   '/api/registration/status': 'api/registration/status.js',
   '/api/registration/create': 'api/registration/create.js',
   '/api/payment/verify': 'api/payment/verify.js',
   '/api/payment/webhook': 'api/payment/webhook.js',
-  '/api/admin/login': 'api/admin/login.js',
-  '/api/admin/logout': 'api/admin/logout.js',
-  '/api/admin/me': 'api/admin/me.js',
+  '/api/admin/session': 'api/admin/session.js',
   '/api/admin/registrations': 'api/admin/registrations.js',
   '/api/admin/registration': 'api/admin/registration.js',
   '/api/admin/export': 'api/admin/export.js',
-  '/api/admin/retry-email': 'api/admin/retry-email.js',
-  '/api/admin/send-email': 'api/admin/send-email.js',
-  '/api/admin/announce': 'api/admin/announce.js',
-  '/api/contact': 'api/contact.js',
-  '/api/membership': 'api/membership.js',
+  '/api/admin/email': 'api/admin/email.js',
 };
 
 function wrapRes(res) {

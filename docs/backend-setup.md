@@ -100,13 +100,14 @@ Copy the printed hash into `ADMIN_PASSWORD_HASH`. Never commit plaintext passwor
 | POST | `/api/registration/create` | Create/reuse pending registration + Paystack init |
 | GET/POST | `/api/payment/verify` | Server-side Paystack verification |
 | POST | `/api/payment/webhook` | Paystack webhooks (signature required) |
-| POST | `/api/admin/login` | Admin session login |
-| POST | `/api/admin/logout` | Admin logout |
-| GET | `/api/admin/me` | Current admin session |
+| POST | `/api/admin/session` | Admin session login |
+| POST | `/api/admin/session?action=logout` | Admin logout |
+| GET | `/api/admin/session` | Current admin session |
 | GET | `/api/admin/registrations` | List + summary |
 | GET/PATCH | `/api/admin/registration?id=` | Detail / application status |
 | POST | `/api/admin/export` | CSV export (CSRF + session required) |
-| POST | `/api/admin/retry-email` | Retry confirmation email |
+| POST | `/api/admin/email` | Retry / send materials / announce (`action`) |
+| POST | `/api/forms` | Contact + membership (`form: "contact" \| "membership"`) |
 
 SPA rewrites in `vercel.json` exclude `/api/` so functions are not replaced by `index.html`.
 

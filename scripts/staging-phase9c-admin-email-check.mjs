@@ -36,7 +36,7 @@ if (!password) {
   process.exit(0);
 }
 
-const login = await fetch(`${API}/api/admin/login`, {
+const login = await fetch(`${API}/api/admin/session`, {
   method: 'POST',
   headers: { Origin: ORIGIN, 'Content-Type': 'application/json' },
   body: JSON.stringify({ email: process.env.ADMIN_EMAIL, password }),

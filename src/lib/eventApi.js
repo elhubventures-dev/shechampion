@@ -78,7 +78,7 @@ export async function verifyPayment(reference) {
 export async function adminLogin(email, password) {
   let response;
   try {
-    response = await fetch('/api/admin/login', {
+    response = await fetch('/api/admin/session', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -108,7 +108,7 @@ export async function adminLogin(email, password) {
 }
 
 export async function adminLogout() {
-  await fetch('/api/admin/logout', {
+  await fetch('/api/admin/session?action=logout', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -118,7 +118,7 @@ export async function adminLogout() {
 }
 
 export async function adminMe() {
-  const response = await fetch('/api/admin/me', {
+  const response = await fetch('/api/admin/session', {
     credentials: 'same-origin',
     headers: { Accept: 'application/json' },
   });
@@ -186,7 +186,7 @@ export async function adminUpdateRegistration(id, body) {
 }
 
 export async function adminRetryEmail(registrationId) {
-  const response = await fetch('/api/admin/retry-email', {
+  const response = await fetch('/api/admin/email', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -194,7 +194,7 @@ export async function adminRetryEmail(registrationId) {
       'Content-Type': 'application/json',
       ...csrfHeaders(),
     },
-    body: JSON.stringify({ registrationId }),
+    body: JSON.stringify({ action: 'retry', registrationId }),
   });
   const data = await parseJson(response);
   if (!response.ok) {
@@ -208,7 +208,7 @@ export async function adminSendRegistrationEmail({
   emailType,
   message = '',
 }) {
-  const response = await fetch('/api/admin/send-email', {
+  const response = await fetch('/api/admin/email', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -216,7 +216,12 @@ export async function adminSendRegistrationEmail({
       'Content-Type': 'application/json',
       ...csrfHeaders(),
     },
-    body: JSON.stringify({ registrationId, emailType, message }),
+    body: JSON.stringify({
+      action: 'send',
+      registrationId,
+      emailType,
+      message,
+    }),
   });
   const data = await parseJson(response);
   if (!response.ok) {
@@ -226,7 +231,7 @@ export async function adminSendRegistrationEmail({
 }
 
 export async function adminAnnounce({ announceType, message = '' }) {
-  const response = await fetch('/api/admin/announce', {
+  const response = await fetch('/api/admin/email', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
@@ -234,7 +239,7 @@ export async function adminAnnounce({ announceType, message = '' }) {
       'Content-Type': 'application/json',
       ...csrfHeaders(),
     },
-    body: JSON.stringify({ announceType, message }),
+    body: JSON.stringify({ action: 'announce', announceType, message }),
   });
   const data = await parseJson(response);
   if (!response.ok) {
@@ -244,14 +249,14 @@ export async function adminAnnounce({ announceType, message = '' }) {
 }
 
 export async function submitContactForm(payload) {
-  const response = await fetch('/api/contact', {
+  const response = await fetch('/api/forms', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     credentials: 'same-origin',
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ ...payload, form: 'contact' }),
   });
   const data = await parseJson(response);
   if (!response.ok) {
@@ -261,14 +266,14 @@ export async function submitContactForm(payload) {
 }
 
 export async function submitMembershipInterest(payload) {
-  const response = await fetch('/api/membership', {
+  const response = await fetch('/api/forms', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     credentials: 'same-origin',
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ ...payload, form: 'membership' }),
   });
   const data = await parseJson(response);
   if (!response.ok) {

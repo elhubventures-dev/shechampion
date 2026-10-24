@@ -133,11 +133,11 @@ const sql = neon(dbUrl);
 
 // Anonymous protected
 {
-  const { res, data } = await api('/api/admin/me');
+  const { res, data } = await api('/api/admin/session');
   if (res.status === 401 || data?.error?.code === 'UNAUTHORIZED' || data?.error?.code === 'FORBIDDEN_ORIGIN') {
     // Without cookie, after origin check should be 401 if origin ok
   }
-  const me = await api('/api/admin/me');
+  const me = await api('/api/admin/session');
   if ([401, 403].includes(me.res.status)) pass('anonymous_me_rejected', me.res.status);
   else fail('anonymous_me_rejected', me.res.status);
 
@@ -154,7 +154,7 @@ const sql = neon(dbUrl);
 
 // Bad origin
 {
-  const res = await fetch(`${API}/api/admin/login`, {
+  const res = await fetch(`${API}/api/admin/session`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ if (!password || !email) {
 // Invalid credentials
 {
   const jar = new Map();
-  const { res, data } = await api('/api/admin/login', {
+  const { res, data } = await api('/api/admin/session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password: 'definitely-wrong-password' }),
@@ -197,7 +197,7 @@ if (!password || !email) {
 const jar = new Map();
 // Valid login
 {
-  const { res, data, cache, setCookies } = await api('/api/admin/login', {
+  const { res, data, cache, setCookies } = await api('/api/admin/session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -217,7 +217,7 @@ const jar = new Map();
 
 // me + empty/list
 {
-  const me = await api('/api/admin/me', { jar });
+  const me = await api('/api/admin/session', { jar });
   if (me.res.status === 200 && me.data?.email === email.toLowerCase()) {
     pass('me_authenticated', true);
   } else fail('me_authenticated', me.res.status);
@@ -382,14 +382,14 @@ if (regId) {
   else fail('audit_status_update', 'missing audit row');
 
   // Email retry without Resend — must not claim SENT
-  const retry = await api('/api/admin/retry-email', {
+  const retry = await api('/api/admin/email', {
     method: 'POST',
     jar,
     headers: {
       'Content-Type': 'application/json',
       'X-CSRF-Token': csrf,
     },
-    body: JSON.stringify({ registrationId: regId }),
+    body: JSON.stringify({ action: 'retry', registrationId: regId }),
   });
   if (retry.res.status === 200 && retry.data?.ok && retry.data?.sent === false) {
     pass('email_retry_honest_failure', retry.data.reason || 'send_failed');
@@ -435,7 +435,7 @@ if (regId) {
 
 // Logout + revoked session
 {
-  const out = await api('/api/admin/logout', {
+  const out = await api('/api/admin/session?action=logout', {
     method: 'POST',
     jar,
     headers: { 'X-CSRF-Token': csrf },
@@ -443,7 +443,7 @@ if (regId) {
   if (out.res.status === 200 && out.data?.ok) pass('logout', true);
   else fail('logout', out.res.status);
 
-  const meAfter = await api('/api/admin/me', { jar });
+  const meAfter = await api('/api/admin/session', { jar });
   if ([401, 403].includes(meAfter.res.status)) pass('session_revoked_after_logout', meAfter.res.status);
   else fail('session_revoked_after_logout', meAfter.res.status);
 

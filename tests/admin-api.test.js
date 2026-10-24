@@ -1,10 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import meHandler from '../api/admin/me.js';
+import sessionHandler from '../api/admin/session.js';
 import registrationsHandler from '../api/admin/registrations.js';
 import registrationHandler from '../api/admin/registration.js';
 import exportHandler from '../api/admin/export.js';
-import retryEmailHandler from '../api/admin/retry-email.js';
-import logoutHandler from '../api/admin/logout.js';
+import emailHandler from '../api/admin/email.js';
 
 function createRes() {
   return {
@@ -59,8 +58,11 @@ describe('anonymous admin API access', () => {
 
   const trusted = { origin: 'https://shechampion-bbf.org' };
 
-  it('rejects /api/admin/me without session', async () => {
-    const res = await invoke(meHandler, { headers: trusted });
+  it('rejects /api/admin/session without session', async () => {
+    const res = await invoke(sessionHandler, {
+      url: '/api/admin/session',
+      headers: trusted,
+    });
     expect(res.statusCode).toBe(401);
     expect(res.parsed?.error?.code).toMatch(/UNAUTHORIZED|SESSION/);
   });
@@ -100,13 +102,15 @@ describe('anonymous admin API access', () => {
   });
 
   it('rejects email retry without auth/CSRF', async () => {
-    const res = await invoke(retryEmailHandler, {
+    const res = await invoke(emailHandler, {
       method: 'POST',
+      url: '/api/admin/email',
       headers: {
         ...trusted,
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        action: 'retry',
         registrationId: '550e8400-e29b-41d4-a716-446655440000',
       }),
     });
@@ -114,7 +118,8 @@ describe('anonymous admin API access', () => {
   });
 
   it('rejects cross-origin admin reads', async () => {
-    const res = await invoke(meHandler, {
+    const res = await invoke(sessionHandler, {
+      url: '/api/admin/session',
       headers: { origin: 'https://evil.example' },
     });
     expect(res.statusCode).toBe(403);
@@ -122,8 +127,9 @@ describe('anonymous admin API access', () => {
   });
 
   it('rejects logout CSRF failures', async () => {
-    const res = await invoke(logoutHandler, {
+    const res = await invoke(sessionHandler, {
       method: 'POST',
+      url: '/api/admin/session?action=logout',
       headers: trusted,
     });
     expect(res.statusCode).toBe(403);

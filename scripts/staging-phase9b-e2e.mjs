@@ -864,7 +864,7 @@ if (!adminPassword) {
     reason: 'ADMIN_PASSWORD not present in env (hash-only); use staging:admin-verify / browser',
   };
 } else {
-  const login = await api('/api/admin/login', {
+  const login = await api('/api/admin/session', {
     method: 'POST',
     body: { email: adminEmail, password: adminPassword },
   });

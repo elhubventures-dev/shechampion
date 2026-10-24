@@ -17,7 +17,7 @@ const pass = readFileSync('.admin-password.local.txt', 'utf8').match(
   /^Password:\s*(.+)$/m
 )[1].trim();
 
-const res = await fetch('http://127.0.0.1:3001/api/admin/login', {
+const res = await fetch('http://127.0.0.1:3001/api/admin/session', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
