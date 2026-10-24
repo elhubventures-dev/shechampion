@@ -54,7 +54,40 @@ const PAYMENT_STATUSES = [
   'FAILED',
   'REVERSED',
   'INITIALIZATION_FAILED',
+  'FAILED_GROUP',
 ];
+
+const EMPTY_FILTERS = {
+  q: '',
+  paymentStatus: '',
+  applicationStatus: '',
+  participation: '',
+  challengeStatus: '',
+  exhibitionStatus: '',
+  challengeEligible: '',
+  exhibitionCategory: '',
+  from: '',
+  to: '',
+};
+
+const OVERVIEW_FILTERS = {
+  total: {},
+  free: { participation: 'free' },
+  challenge: { participation: 'challenge_any' },
+  confirmedChallenge: {
+    participation: 'challenge_any',
+    challengeStatus: 'PIPELINE',
+  },
+  exhibition: { participation: 'exhibition_any' },
+  confirmedExhibitors: {
+    participation: 'exhibition_any',
+    exhibitionStatus: 'CONFIRMED',
+  },
+  both: { participation: 'both' },
+  pending: { paymentStatus: 'PENDING' },
+  verified: { paymentStatus: 'SUCCESS' },
+  failed: { paymentStatus: 'FAILED_GROUP' },
+};
 
 const SECTION_META = {
   overview: {
@@ -96,16 +129,7 @@ export default function AdminDashboard() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(true);
-  const [filters, setFilters] = useState({
-    q: '',
-    paymentStatus: '',
-    applicationStatus: '',
-    participation: '',
-    challengeEligible: '',
-    exhibitionCategory: '',
-    from: '',
-    to: '',
-  });
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [selectedId, setSelectedId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [detailBusy, setDetailBusy] = useState(false);
@@ -351,6 +375,13 @@ export default function AdminDashboard() {
     }
   }
 
+  function openRegistrationsWith(filterPatch) {
+    setFilters({ ...EMPTY_FILTERS, ...filterPatch });
+    setPage(1);
+    setFiltersOpen(true);
+    setSection('registrations');
+  }
+
   if (loading) {
     return (
       <div className="admin-loading">
@@ -398,41 +429,60 @@ export default function AdminDashboard() {
                 Registration snapshot
               </h2>
               <p className="admin-panel__lead">
-                Counts reflect the current filter set applied on the Registrations view (defaults to
-                all records). Figures come from the live registrations database.
+                Live totals from the registrations database. Select a card to open Registrations with
+                the matching filter applied.
               </p>
               {summary ? (
                 <div className="admin-stats" aria-label="Registration summary">
-                  <AdminStatCard value={summary.total_applications ?? 0} label="Total applications" />
+                  <AdminStatCard
+                    value={summary.total_applications ?? 0}
+                    label="Total applications"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.total)}
+                  />
                   <AdminStatCard
                     value={summary.free_event_registrations ?? 0}
                     label="Free event only"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.free)}
                   />
                   <AdminStatCard
                     value={summary.challenge_applicants ?? 0}
                     label="Challenge applicants"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.challenge)}
                   />
                   <AdminStatCard
                     value={summary.confirmed_challenge_participants ?? 0}
                     label="Confirmed challenge"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.confirmedChallenge)}
                   />
                   <AdminStatCard
                     value={summary.exhibition_applicants ?? 0}
                     label="Exhibition applicants"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.exhibition)}
                   />
                   <AdminStatCard
                     value={summary.confirmed_exhibitors ?? 0}
                     label="Confirmed exhibitors"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.confirmedExhibitors)}
                   />
-                  <AdminStatCard value={summary.both_activities ?? 0} label="Both activities" />
-                  <AdminStatCard value={summary.pending_payments ?? 0} label="Pending payments" />
+                  <AdminStatCard
+                    value={summary.both_activities ?? 0}
+                    label="Both activities"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.both)}
+                  />
+                  <AdminStatCard
+                    value={summary.pending_payments ?? 0}
+                    label="Pending payments"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.pending)}
+                  />
                   <AdminStatCard
                     value={summary.verified_payments ?? summary.paid_registrations ?? 0}
                     label="Verified payments"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.verified)}
                   />
                   <AdminStatCard
                     value={summary.failed_or_reversed ?? 0}
                     label="Failed / reversed"
+                    onClick={() => openRegistrationsWith(OVERVIEW_FILTERS.failed)}
                   />
                 </div>
               ) : (
@@ -528,29 +578,64 @@ export default function AdminDashboard() {
                         setFilters((f) => ({ ...f, participation: e.target.value }))
                       }
                     >
-                      <option value="">All</option>
-                      <option value="free">Free only</option>
-                      <option value="challenge">Challenge only</option>
-                      <option value="exhibition">Exhibition only</option>
-                      <option value="both">Challenge + exhibition</option>
-                    </select>
-                  </label>
-                  <label>
-                    Payment status
-                    <select
-                      value={filters.paymentStatus}
-                      onChange={(e) =>
-                        setFilters((f) => ({ ...f, paymentStatus: e.target.value }))
-                      }
-                    >
-                      <option value="">All</option>
-                      {PAYMENT_STATUSES.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <option value="">All</option>
+                    <option value="free">Free only</option>
+                    <option value="challenge">Challenge only</option>
+                    <option value="challenge_any">Any challenge</option>
+                    <option value="exhibition">Exhibition only</option>
+                    <option value="exhibition_any">Any exhibition</option>
+                    <option value="both">Challenge + exhibition</option>
+                  </select>
+                </label>
+                <label>
+                  Payment status
+                  <select
+                    value={filters.paymentStatus}
+                    onChange={(e) =>
+                      setFilters((f) => ({ ...f, paymentStatus: e.target.value }))
+                    }
+                  >
+                    <option value="">All</option>
+                    {PAYMENT_STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {s === 'FAILED_GROUP' ? 'FAILED / REVERSED / INIT FAILED' : s}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Challenge status
+                  <select
+                    value={filters.challengeStatus}
+                    onChange={(e) =>
+                      setFilters((f) => ({ ...f, challengeStatus: e.target.value }))
+                    }
+                  >
+                    <option value="">All</option>
+                    <option value="PIPELINE">Active pipeline</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="UNDER_REVIEW">UNDER_REVIEW</option>
+                    <option value="SHORTLISTED">SHORTLISTED</option>
+                    <option value="NOT_SHORTLISTED">NOT_SHORTLISTED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
+                  </select>
+                </label>
+                <label>
+                  Exhibition status
+                  <select
+                    value={filters.exhibitionStatus}
+                    onChange={(e) =>
+                      setFilters((f) => ({ ...f, exhibitionStatus: e.target.value }))
+                    }
+                  >
+                    <option value="">All</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="NOT_SELECTED">NOT_SELECTED</option>
+                  </select>
+                </label>
                   <label>
                     Application status
                     <select

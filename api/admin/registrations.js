@@ -108,9 +108,29 @@ export default async function handler(req, res) {
       FROM registrations r
       WHERE r.event_id = ${eventId}
         AND (${like}::text IS NULL OR r.public_reference ILIKE ${like} OR r.full_name ILIKE ${like})
-        AND (${paymentStatus || null}::text IS NULL OR r.payment_status = ${paymentStatus || null})
+        AND (
+          ${paymentStatus || null}::text IS NULL
+          OR (
+            ${paymentStatus} = 'FAILED_GROUP'
+            AND r.payment_status IN ('FAILED', 'REVERSED', 'INITIALIZATION_FAILED')
+          )
+          OR (
+            ${paymentStatus} <> 'FAILED_GROUP'
+            AND r.payment_status = ${paymentStatus || null}
+          )
+        )
         AND (${applicationStatus || null}::text IS NULL OR r.application_status = ${applicationStatus || null})
-        AND (${challengeStatus || null}::text IS NULL OR r.challenge_status = ${challengeStatus || null})
+        AND (
+          ${challengeStatus || null}::text IS NULL
+          OR (
+            ${challengeStatus} = 'PIPELINE'
+            AND r.challenge_status IN ('CONFIRMED', 'UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED')
+          )
+          OR (
+            ${challengeStatus} <> 'PIPELINE'
+            AND r.challenge_status = ${challengeStatus || null}
+          )
+        )
         AND (${exhibitionStatus || null}::text IS NULL OR r.exhibition_status = ${exhibitionStatus || null})
         AND (
           ${challengeEligible || null}::text IS NULL
@@ -133,6 +153,8 @@ export default async function handler(req, res) {
           OR (${participation} = 'challenge' AND COALESCE(r.challenge_selected, false) = true AND COALESCE(r.exhibition_selected, false) = false)
           OR (${participation} = 'exhibition' AND COALESCE(r.challenge_selected, false) = false AND COALESCE(r.exhibition_selected, false) = true)
           OR (${participation} = 'both' AND COALESCE(r.challenge_selected, false) = true AND COALESCE(r.exhibition_selected, false) = true)
+          OR (${participation} = 'challenge_any' AND COALESCE(r.challenge_selected, false) = true)
+          OR (${participation} = 'exhibition_any' AND COALESCE(r.exhibition_selected, false) = true)
         )
         AND (${from || null}::timestamptz IS NULL OR r.created_at >= ${from || null}::timestamptz)
         AND (${to || null}::timestamptz IS NULL OR r.created_at <= ${to || null}::timestamptz)
@@ -145,9 +167,29 @@ export default async function handler(req, res) {
       FROM registrations r
       WHERE r.event_id = ${eventId}
         AND (${like}::text IS NULL OR r.public_reference ILIKE ${like} OR r.full_name ILIKE ${like})
-        AND (${paymentStatus || null}::text IS NULL OR r.payment_status = ${paymentStatus || null})
+        AND (
+          ${paymentStatus || null}::text IS NULL
+          OR (
+            ${paymentStatus} = 'FAILED_GROUP'
+            AND r.payment_status IN ('FAILED', 'REVERSED', 'INITIALIZATION_FAILED')
+          )
+          OR (
+            ${paymentStatus} <> 'FAILED_GROUP'
+            AND r.payment_status = ${paymentStatus || null}
+          )
+        )
         AND (${applicationStatus || null}::text IS NULL OR r.application_status = ${applicationStatus || null})
-        AND (${challengeStatus || null}::text IS NULL OR r.challenge_status = ${challengeStatus || null})
+        AND (
+          ${challengeStatus || null}::text IS NULL
+          OR (
+            ${challengeStatus} = 'PIPELINE'
+            AND r.challenge_status IN ('CONFIRMED', 'UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED')
+          )
+          OR (
+            ${challengeStatus} <> 'PIPELINE'
+            AND r.challenge_status = ${challengeStatus || null}
+          )
+        )
         AND (${exhibitionStatus || null}::text IS NULL OR r.exhibition_status = ${exhibitionStatus || null})
         AND (
           ${challengeEligible || null}::text IS NULL
@@ -170,6 +212,8 @@ export default async function handler(req, res) {
           OR (${participation} = 'challenge' AND COALESCE(r.challenge_selected, false) = true AND COALESCE(r.exhibition_selected, false) = false)
           OR (${participation} = 'exhibition' AND COALESCE(r.challenge_selected, false) = false AND COALESCE(r.exhibition_selected, false) = true)
           OR (${participation} = 'both' AND COALESCE(r.challenge_selected, false) = true AND COALESCE(r.exhibition_selected, false) = true)
+          OR (${participation} = 'challenge_any' AND COALESCE(r.challenge_selected, false) = true)
+          OR (${participation} = 'exhibition_any' AND COALESCE(r.exhibition_selected, false) = true)
         )
         AND (${from || null}::timestamptz IS NULL OR r.created_at >= ${from || null}::timestamptz)
         AND (${to || null}::timestamptz IS NULL OR r.created_at <= ${to || null}::timestamptz)
