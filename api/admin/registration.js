@@ -1,6 +1,7 @@
 import { requireAdmin, writeAuditEvent } from '../_lib/auth.js';
 import { getEventConfig } from '../_lib/config.js';
 import {
+  APPLICANT_CATEGORIES,
   APPLICATION_STATUSES,
   CHALLENGE_ADMIN_STATUSES,
 } from '../_lib/constants.js';
@@ -27,6 +28,14 @@ const ASSESSMENT_EMAIL_STATUSES = new Set([
   'WITHDRAWN',
   'CANCELLED',
 ]);
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function optionalString(value, max) {
+  if (value === undefined) return undefined;
+  if (value === null) return '';
+  return String(value).trim().slice(0, max);
+}
 
 export default async function handler(req, res) {
   setNoStore(res);
@@ -106,6 +115,7 @@ export default async function handler(req, res) {
       assertJsonContentType(req);
       const admin = await requireAdmin(req, config);
       const { data } = await readJsonBody(req);
+
       const applicationStatus = data.applicationStatus
         ? String(data.applicationStatus)
         : null;
@@ -113,7 +123,38 @@ export default async function handler(req, res) {
         ? String(data.challengeStatus)
         : null;
       const adminNotes =
-        data.adminNotes !== undefined ? String(data.adminNotes).slice(0, 4000) : undefined;
+        data.adminNotes !== undefined
+          ? String(data.adminNotes).slice(0, 4000)
+          : undefined;
+
+      const fullName = optionalString(data.fullName, 120);
+      const emailRaw =
+        data.email !== undefined
+          ? String(data.email).trim().toLowerCase().slice(0, 254)
+          : undefined;
+      const phone = optionalString(data.phone, 40);
+      const stateOfResidence = optionalString(data.stateOfResidence, 80);
+      const applicantCategory =
+        data.applicantCategory !== undefined
+          ? String(data.applicantCategory)
+          : undefined;
+      const businessName =
+        data.businessName !== undefined
+          ? optionalString(data.businessName, 200)
+          : undefined;
+      const briefDescription = optionalString(data.briefDescription, 4000);
+      const exhibitionBusinessName =
+        data.exhibitionBusinessName !== undefined
+          ? optionalString(data.exhibitionBusinessName, 200)
+          : undefined;
+      const exhibitionCategory =
+        data.exhibitionCategory !== undefined
+          ? optionalString(data.exhibitionCategory, 120)
+          : undefined;
+      const exhibitionDescription =
+        data.exhibitionDescription !== undefined
+          ? optionalString(data.exhibitionDescription, 4000)
+          : undefined;
 
       if (applicationStatus && !APPLICATION_STATUSES.includes(applicationStatus)) {
         sendError(res, 400, 'INVALID_STATUS', 'Invalid application status.');
@@ -123,10 +164,46 @@ export default async function handler(req, res) {
         sendError(res, 400, 'INVALID_CHALLENGE_STATUS', 'Invalid challenge status.');
         return;
       }
+      if (
+        applicantCategory !== undefined &&
+        !APPLICANT_CATEGORIES.includes(applicantCategory)
+      ) {
+        sendError(res, 400, 'INVALID_CATEGORY', 'Invalid applicant category.');
+        return;
+      }
+      if (fullName !== undefined && fullName.length < 2) {
+        sendError(res, 400, 'INVALID_NAME', 'Full name must be at least 2 characters.');
+        return;
+      }
+      if (emailRaw !== undefined && !EMAIL_RE.test(emailRaw)) {
+        sendError(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+        return;
+      }
+      if (phone !== undefined && phone.length < 7) {
+        sendError(res, 400, 'INVALID_PHONE', 'Phone number looks too short.');
+        return;
+      }
+      if (stateOfResidence !== undefined && stateOfResidence.length < 2) {
+        sendError(res, 400, 'INVALID_STATE', 'State of residence is required.');
+        return;
+      }
+      if (briefDescription !== undefined && briefDescription.length < 10) {
+        sendError(
+          res,
+          400,
+          'INVALID_DESCRIPTION',
+          'Brief description must be at least 10 characters.'
+        );
+        return;
+      }
 
       const current = await sql`
-        SELECT id, application_status, challenge_status, admin_notes, payment_status,
-               challenge_selected
+        SELECT
+          id, event_id, application_status, challenge_status, admin_notes,
+          payment_status, challenge_selected, exhibition_selected,
+          full_name, email_normalized, phone, state_of_residence,
+          applicant_category, business_name, brief_description,
+          exhibition_business_name, exhibition_category, exhibition_description
         FROM registrations WHERE id = ${id} LIMIT 1
       `;
       if (!current[0]) {
@@ -134,10 +211,30 @@ export default async function handler(req, res) {
         return;
       }
 
+      const nextEmail =
+        emailRaw !== undefined ? emailRaw : current[0].email_normalized;
+      if (emailRaw !== undefined && emailRaw !== current[0].email_normalized) {
+        const clash = await sql`
+          SELECT id FROM registrations
+          WHERE event_id = ${current[0].event_id}
+            AND email_normalized = ${emailRaw}
+            AND id <> ${id}
+          LIMIT 1
+        `;
+        if (clash[0]) {
+          sendError(
+            res,
+            409,
+            'EMAIL_IN_USE',
+            'Another registration already uses this email for this event.'
+          );
+          return;
+        }
+      }
+
       const nextAppStatus = applicationStatus || current[0].application_status;
       let nextChallenge = challengeStatus || current[0].challenge_status;
 
-      // Keep challenge assessment aligned when admin updates legacy application_status.
       if (
         applicationStatus &&
         current[0].challenge_selected &&
@@ -149,32 +246,96 @@ export default async function handler(req, res) {
         else if (!challengeStatus) nextChallenge = applicationStatus;
       }
 
-      if (
-        challengeStatus &&
-        current[0].challenge_selected &&
-        ['UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED'].includes(challengeStatus) &&
-        !applicationStatus
-      ) {
-        // Mirror into application_status for legacy list filters.
-      }
-
-      const nextNotes = adminNotes !== undefined ? adminNotes : current[0].admin_notes;
+      const nextNotes =
+        adminNotes !== undefined ? adminNotes : current[0].admin_notes;
       const mirroredApp =
         challengeStatus &&
         ['UNDER_REVIEW', 'SHORTLISTED', 'NOT_SHORTLISTED'].includes(challengeStatus)
           ? challengeStatus
           : nextAppStatus;
 
+      const nextFullName =
+        fullName !== undefined ? fullName : current[0].full_name;
+      const nextPhone = phone !== undefined ? phone : current[0].phone;
+      const nextState =
+        stateOfResidence !== undefined
+          ? stateOfResidence
+          : current[0].state_of_residence;
+      const nextCategory =
+        applicantCategory !== undefined
+          ? applicantCategory
+          : current[0].applicant_category;
+      const nextBusinessName =
+        businessName !== undefined ? businessName || null : current[0].business_name;
+      const nextBrief =
+        briefDescription !== undefined
+          ? briefDescription
+          : current[0].brief_description;
+      const nextExhibBiz =
+        exhibitionBusinessName !== undefined
+          ? exhibitionBusinessName || null
+          : current[0].exhibition_business_name;
+      const nextExhibCat =
+        exhibitionCategory !== undefined
+          ? exhibitionCategory || null
+          : current[0].exhibition_category;
+      const nextExhibDesc =
+        exhibitionDescription !== undefined
+          ? exhibitionDescription || null
+          : current[0].exhibition_description;
+
+      const fieldChanges = {};
+      if (nextFullName !== current[0].full_name) fieldChanges.fullName = nextFullName;
+      if (nextEmail !== current[0].email_normalized) fieldChanges.email = nextEmail;
+      if (nextPhone !== current[0].phone) fieldChanges.phone = nextPhone;
+      if (nextState !== current[0].state_of_residence) {
+        fieldChanges.stateOfResidence = nextState;
+      }
+      if (nextCategory !== current[0].applicant_category) {
+        fieldChanges.applicantCategory = nextCategory;
+      }
+      if (nextBusinessName !== current[0].business_name) {
+        fieldChanges.businessName = nextBusinessName;
+      }
+      if (nextBrief !== current[0].brief_description) {
+        fieldChanges.briefDescription = nextBrief;
+      }
+      if (nextExhibBiz !== current[0].exhibition_business_name) {
+        fieldChanges.exhibitionBusinessName = nextExhibBiz;
+      }
+      if (nextExhibCat !== current[0].exhibition_category) {
+        fieldChanges.exhibitionCategory = nextExhibCat;
+      }
+      if (nextExhibDesc !== current[0].exhibition_description) {
+        fieldChanges.exhibitionDescription = nextExhibDesc;
+      }
+
       const updated = await sql`
         UPDATE registrations
         SET
+          full_name = ${nextFullName},
+          email_normalized = ${nextEmail},
+          phone = ${nextPhone},
+          state_of_residence = ${nextState},
+          applicant_category = ${nextCategory},
+          business_name = ${nextBusinessName},
+          brief_description = ${nextBrief},
+          exhibition_business_name = ${nextExhibBiz},
+          exhibition_category = ${nextExhibCat},
+          exhibition_description = ${nextExhibDesc},
           application_status = ${mirroredApp},
           challenge_status = ${nextChallenge},
           admin_notes = ${nextNotes},
           updated_at = now()
         WHERE id = ${id}
-        RETURNING id, public_reference, application_status, challenge_status,
-                  payment_status, admin_notes, updated_at
+        RETURNING
+          id, public_reference, event_id, full_name, email_normalized, phone,
+          state_of_residence, applicant_category, business_name, brief_description,
+          application_status, payment_status, event_registration_status,
+          challenge_selected, exhibition_selected, challenge_status,
+          exhibition_status, expected_amount_kobo, currency,
+          exhibition_business_name, exhibition_category, exhibition_description,
+          admin_notes, updated_at
       `;
 
       await writeAuditEvent({
@@ -188,6 +349,7 @@ export default async function handler(req, res) {
           previousChallengeStatus: current[0].challenge_status,
           challengeStatus: nextChallenge,
           notesUpdated: adminNotes !== undefined,
+          fieldChanges,
         },
         databaseUrl: config.databaseUrl,
       });

@@ -1045,6 +1045,57 @@ export function buildAdminMembershipSignupEmail({
   };
 }
 
+/** One-off branded message from admin to a registrant. */
+export function buildAdminCustomMessageEmail({
+  publicReference,
+  fullName,
+  subject: rawSubject,
+  message,
+  config = {},
+}) {
+  const safeSubject = String(rawSubject || 'Message from SHE CHAMPIONS')
+    .trim()
+    .slice(0, 200);
+  const subject = safeSubject.startsWith('SHE CHAMPIONS')
+    ? safeSubject
+    : `SHE CHAMPIONS — ${safeSubject}`;
+  const greeting = fullName ? `Dear ${fullName},` : 'Dear participant,';
+  const details = baseDetails(publicReference);
+  const bodyHtml = plainTextToHtmlParagraphs(message || '');
+  const primaryCta = {
+    label: 'Contact SHE CHAMPIONS',
+    href: absoluteUrl(config, '/contact'),
+  };
+  const secondaryCtas = defaultSecondary(config);
+  const html = renderBrandedEmail({
+    config,
+    preheader: safeSubject,
+    title: safeSubject,
+    greeting,
+    bodyHtml:
+      bodyHtml ||
+      `<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${EMAIL_BRAND.muted};">You have a new message from SHE CHAMPIONS.</p>`,
+    details,
+    primaryCta,
+    secondaryCtas,
+  });
+  const text = buildTextEmail({
+    greeting,
+    introLines: [
+      String(message || '').trim() || 'You have a new message from SHE CHAMPIONS.',
+    ],
+    details,
+    ctas: [primaryCta, ...secondaryCtas],
+  });
+  return {
+    subject,
+    text,
+    html,
+    emailType: 'admin_custom_message',
+    logoUrl: logoUrl(config),
+  };
+}
+
 /** @deprecated Prefer buildFreeRegistrationEmail / buildParticipationConfirmationEmail. */
 export function buildConfirmationEmail(args) {
   if (args?.paymentRequired === false || args?.freeOnly) {
@@ -1075,4 +1126,5 @@ export const EMAIL_TYPES = Object.freeze({
   ADMIN_CONTACT: 'admin_contact_message',
   MEMBER_ACK: 'membership_acknowledgement',
   ADMIN_MEMBER: 'admin_membership_signup',
+  ADMIN_CUSTOM: 'admin_custom_message',
 });

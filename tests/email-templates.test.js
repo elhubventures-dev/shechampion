@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildAdminContactMessageEmail,
+  buildAdminCustomMessageEmail,
   buildAdminMembershipSignupEmail,
   buildAdminNewFreeRegistrationEmail,
   buildAdminNewPaidParticipationEmail,
@@ -288,6 +289,23 @@ describe('branded email templates', () => {
     expect(content.html).toContain('&lt;img');
   });
 
+  it('builds admin custom notify email with escaped body', () => {
+    const content = buildAdminCustomMessageEmail({
+      publicReference: 'BEC-N1',
+      fullName: 'Ada',
+      subject: 'Booth reminder',
+      message: 'Bring your <script>alert(1)</script> materials.',
+      config,
+    });
+    expectBranded(content, {
+      emailType: EMAIL_TYPES.ADMIN_CUSTOM,
+      ctaPathFragment: '/contact',
+    });
+    expect(content.subject).toContain('Booth reminder');
+    expect(content.html).not.toContain('<script>');
+    expect(content.html).toContain('&lt;script&gt;');
+  });
+
   it('exposes the full catalogue of email_type keys', () => {
     expect(Object.values(EMAIL_TYPES)).toEqual(
       expect.arrayContaining([
@@ -310,6 +328,7 @@ describe('branded email templates', () => {
         'admin_payment_failed',
         'admin_contact_message',
         'admin_membership_signup',
+        'admin_custom_message',
         'contact_acknowledgement',
         'membership_acknowledgement',
       ])

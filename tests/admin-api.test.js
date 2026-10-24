@@ -117,6 +117,40 @@ describe('anonymous admin API access', () => {
     expect([401, 403]).toContain(res.statusCode);
   });
 
+  it('rejects custom notify without auth/CSRF', async () => {
+    const res = await invoke(emailHandler, {
+      method: 'POST',
+      url: '/api/admin/email',
+      headers: {
+        ...trusted,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'notify',
+        registrationId: '550e8400-e29b-41d4-a716-446655440000',
+        subject: 'Hello',
+        message: 'Please bring your booth materials tomorrow.',
+      }),
+    });
+    expect([401, 403]).toContain(res.statusCode);
+  });
+
+  it('rejects registration field PATCH without auth/CSRF', async () => {
+    const res = await invoke(registrationHandler, {
+      method: 'PATCH',
+      url: '/api/admin/registration?id=550e8400-e29b-41d4-a716-446655440000',
+      headers: {
+        ...trusted,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        fullName: 'Ada Lovelace',
+        applicationStatus: 'UNDER_REVIEW',
+      }),
+    });
+    expect([401, 403]).toContain(res.statusCode);
+  });
+
   it('rejects cross-origin admin reads', async () => {
     const res = await invoke(sessionHandler, {
       url: '/api/admin/session',

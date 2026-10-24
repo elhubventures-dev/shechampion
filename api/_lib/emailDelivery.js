@@ -2,6 +2,7 @@ import { getEventConfig } from './config.js';
 import { getSql } from './db.js';
 import {
   buildAdminContactMessageEmail,
+  buildAdminCustomMessageEmail,
   buildAdminMembershipSignupEmail,
   buildAdminNewFreeRegistrationEmail,
   buildAdminNewPaidParticipationEmail,
@@ -390,6 +391,30 @@ export async function sendExhibitionInstructionsEmailSafe(
   return deliverEmail({
     registrationId,
     emailType: EMAIL_TYPES.EXHIBITION,
+    toEmail: reg.email_normalized,
+    content,
+    config,
+    forceResend: true,
+  });
+}
+
+export async function sendAdminCustomMessageEmailSafe(
+  registrationId,
+  { subject, message },
+  config = getEventConfig()
+) {
+  const reg = await loadRegistration(registrationId, config);
+  if (!reg) return { sent: false, reason: 'not_found' };
+  const content = buildAdminCustomMessageEmail({
+    publicReference: reg.public_reference,
+    fullName: reg.full_name,
+    subject,
+    message,
+    config,
+  });
+  return deliverEmail({
+    registrationId,
+    emailType: EMAIL_TYPES.ADMIN_CUSTOM,
     toEmail: reg.email_normalized,
     content,
     config,

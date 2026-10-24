@@ -4,6 +4,7 @@ import { getSql } from '../_lib/db.js';
 import {
   broadcastAnnouncement,
   EMAIL_TYPES,
+  sendAdminCustomMessageEmailSafe,
   sendChallengeMaterialsEmailSafe,
   sendExhibitionInstructionsEmailSafe,
 } from '../_lib/emailDelivery.js';
@@ -175,6 +176,51 @@ async function handleAnnounce(req, res, config, admin, data) {
   sendJson(res, 200, { ok: true, ...result });
 }
 
+async function handleNotify(req, res, config, admin, data) {
+  const registrationId = String(data.registrationId || '');
+  const subject = String(data.subject || '').trim().slice(0, 200);
+  const message = String(data.message || '').trim().slice(0, 4000);
+
+  if (!isUuid(registrationId)) {
+    sendError(res, 400, 'MISSING_ID', 'A valid registration id is required.');
+    return;
+  }
+  if (subject.length < 3) {
+    sendError(res, 400, 'SUBJECT_REQUIRED', 'Subject must be at least 3 characters.');
+    return;
+  }
+  if (message.length < 10) {
+    sendError(
+      res,
+      400,
+      'MESSAGE_REQUIRED',
+      'Message must be at least 10 characters.'
+    );
+    return;
+  }
+
+  const result = await sendAdminCustomMessageEmailSafe(
+    registrationId,
+    { subject, message },
+    config
+  );
+
+  await writeAuditEvent({
+    actorEmail: admin.email,
+    action: 'registration.notify',
+    entityType: 'registration',
+    entityId: registrationId,
+    detail: {
+      subject,
+      sent: Boolean(result.sent),
+      reason: result.reason || null,
+    },
+    databaseUrl: config.databaseUrl,
+  });
+
+  sendJson(res, 200, { ok: true, ...result });
+}
+
 export default async function handler(req, res) {
   setNoStore(res);
   if (req.method !== 'POST') {
@@ -203,12 +249,16 @@ export default async function handler(req, res) {
       await handleAnnounce(req, res, config, admin, data);
       return;
     }
+    if (action === 'notify') {
+      await handleNotify(req, res, config, admin, data);
+      return;
+    }
 
     sendError(
       res,
       400,
       'INVALID_ACTION',
-      'Request must include action: "retry", "send", or "announce".'
+      'Request must include action: "retry", "send", "announce", or "notify".'
     );
   } catch (error) {
     if (error.code === 'RATE_LIMITED') {

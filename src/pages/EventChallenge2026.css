@@ -614,7 +614,7 @@
 .reg-form--success {
     padding: 1.25rem 1.35rem;
     border: var(--border-width) solid var(--color-border);
-    border-left: 3px solid var(--color-gold, #c4a35a);
+    border-left: 3px solid var(--color-brand);
     background: var(--color-surface);
 }
 
@@ -622,6 +622,11 @@
     margin: 0 0 0.5rem;
     font-family: var(--font-display);
     font-size: var(--text-h3, 1.35rem);
+    color: var(--color-navy);
+}
+
+.reg-form__success-reopen {
+    margin-top: 1rem;
 }
 
 .payment-result {

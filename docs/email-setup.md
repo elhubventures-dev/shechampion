@@ -43,6 +43,7 @@ Shared table-based layout in `api/_lib/emailLayout.js` (Outlook-safe): navy `#0b
 | `admin_payment_failed` | Payment fails or reverses |
 | `admin_contact_message` | Contact form |
 | `admin_membership_signup` | Membership popup |
+| `admin_custom_message` | Admin detail “Email applicant” (`POST /api/admin/email` `action: "notify"`) |
 
 ### Public forms
 

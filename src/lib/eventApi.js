@@ -248,6 +248,33 @@ export async function adminAnnounce({ announceType, message = '' }) {
   return data;
 }
 
+export async function adminNotifyApplicant({
+  registrationId,
+  subject,
+  message,
+}) {
+  const response = await fetch('/api/admin/email', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...csrfHeaders(),
+    },
+    body: JSON.stringify({
+      action: 'notify',
+      registrationId,
+      subject,
+      message,
+    }),
+  });
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.error?.message || 'Notification failed.');
+  }
+  return data;
+}
+
 export async function submitContactForm(payload) {
   const response = await fetch('/api/forms', {
     method: 'POST',

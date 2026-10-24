@@ -5,6 +5,7 @@ import {
   NIGERIA_STATES,
 } from '../data/nigeriaStates';
 import { submitRegistration } from '../lib/eventApi';
+import RegistrationSuccessModal from './RegistrationSuccessModal';
 
 const DEFAULT_PRICING = {
   currency: 'NGN',
@@ -115,6 +116,7 @@ export default function RegistrationForm({
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [success, setSuccess] = useState(null);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const idempotencyKey = useMemo(
     () =>
@@ -145,6 +147,7 @@ export default function RegistrationForm({
       return next;
     });
     setSuccess(null);
+    setSuccessModalOpen(false);
   }
 
   async function handleSubmit(event) {
@@ -204,6 +207,7 @@ export default function RegistrationForm({
           publicReference: result.publicReference,
           emailStatus: result.emailStatus,
         });
+        setSuccessModalOpen(true);
         return;
       }
 
@@ -234,25 +238,43 @@ export default function RegistrationForm({
 
   if (success) {
     return (
-      <div className="reg-form reg-form--success" role="status">
-        <h3 className="reg-form__success-title">Event registration confirmed</h3>
-        <p>
-          Your free event registration is confirmed. Reference:{' '}
-          <strong>{success.publicReference}</strong>
-        </p>
-        <p className="reg-form__note">
-          This does not confirm challenge or exhibition participation. Those require
-          a separate paid selection and verified payment.
-        </p>
-        {success.emailStatus === 'SENT' ? (
-          <p className="reg-form__note">A confirmation email has been sent.</p>
-        ) : (
-          <p className="reg-form__note">
-            A confirmation email could not be confirmed at this time. Keep your
-            registration reference for your records.
+      <>
+        {successModalOpen ? (
+          <RegistrationSuccessModal
+            publicReference={success.publicReference}
+            emailStatus={success.emailStatus}
+            onClose={() => setSuccessModalOpen(false)}
+          />
+        ) : null}
+        <div className="reg-form reg-form--success" role="status">
+          <h3 className="reg-form__success-title">Event registration confirmed</h3>
+          <p>
+            Your free event registration is confirmed. Reference:{' '}
+            <strong>{success.publicReference}</strong>
           </p>
-        )}
-      </div>
+          <p className="reg-form__note">
+            This does not confirm challenge or exhibition participation. Those
+            require a separate paid selection and verified payment.
+          </p>
+          {success.emailStatus === 'SENT' ? (
+            <p className="reg-form__note">A confirmation email has been sent.</p>
+          ) : (
+            <p className="reg-form__note">
+              A confirmation email could not be confirmed at this time. Keep your
+              registration reference for your records.
+            </p>
+          )}
+          {!successModalOpen ? (
+            <button
+              type="button"
+              className="btn btn-secondary reg-form__success-reopen"
+              onClick={() => setSuccessModalOpen(true)}
+            >
+              View confirmation
+            </button>
+          ) : null}
+        </div>
+      </>
     );
   }
 

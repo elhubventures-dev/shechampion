@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageMeta from '../../components/PageMeta';
 import { adminLogin } from '../../lib/eventApi';
+import logo from '../../assets/logo-horizontal.png';
 import './admin.css';
 
 export default function AdminLogin() {
@@ -27,15 +28,21 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="admin-shell">
+    <div className="admin-login-page">
       <PageMeta
         title="Admin sign in"
         description="SHE CHAMPIONS event registrations administration."
         noIndex
       />
       <div className="admin-login">
-        <h1>Event registrations</h1>
-        <p>Authorized staff only.</p>
+        <div className="admin-login__brand">
+          <img src={logo} alt="SHE CHAMPIONS" className="admin-login__logo" width={176} height={44} />
+          <p className="admin-login__eyebrow">Staff access</p>
+        </div>
+        <h1>Event admin</h1>
+        <p className="admin-login__lead">
+          Sign in to manage Business Empowerment Challenge 2026 registrations. Authorized staff only.
+        </p>
         <form onSubmit={handleSubmit} className="admin-login__form">
           <label htmlFor="admin-email">Email</label>
           <input
