@@ -8,6 +8,7 @@ import {
     telHref,
     whatsappHref,
 } from '../lib/contacts';
+import { EVENT_2026 } from '../lib/event2026';
 import Reveal from './Reveal';
 import WhatsAppIcon from './WhatsAppIcon';
 import './Footer.css';
@@ -38,7 +39,9 @@ const Footer = () => {
                             Business Empowerment Challenge 2026
                         </h2>
                         <p className="footer-cta-band__text">
-                            12 December 2026 · Abuja · Free registration · optional paid activities
+                            {EVENT_2026.dateDisplay} · {EVENT_2026.timeDisplay} ·{' '}
+                            {EVENT_2026.locationDisplay} · Free registration · optional paid
+                            activities
                         </p>
                     </div>
                     <Link to="/business-empowerment-challenge-2026" className="btn btn-light">

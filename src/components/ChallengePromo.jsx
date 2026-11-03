@@ -35,7 +35,8 @@ const ChallengePromo = ({ variant = 'banner' }) => {
               <div>
                 <strong>{EVENT_2026.dateDisplay}</strong>
                 <span>
-                  {EVENT_2026.locationDisplay} · {EVENT_2026.format}
+                  {EVENT_2026.timeDisplay} · {EVENT_2026.locationDisplay} ·{' '}
+                  {EVENT_2026.format}
                 </span>
               </div>
             </li>

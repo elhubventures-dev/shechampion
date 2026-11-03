@@ -207,6 +207,53 @@
     line-height: var(--leading-body);
 }
 
+.event-exhibition-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--stack-lg);
+    margin-top: var(--stack-lg);
+}
+
+.event-exhibition-card {
+    margin: 0;
+}
+
+.event-exhibition-card__media {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: var(--border-width) solid var(--color-border);
+    background: var(--color-surface);
+    margin-bottom: var(--stack-sm);
+}
+
+.event-exhibition-card__media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.event-exhibition-card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    color: var(--color-navy);
+}
+
+.event-exhibition-cta {
+    margin-top: var(--stack-xl);
+    display: flex;
+    justify-content: flex-start;
+}
+
+@media (min-width: 768px) {
+    .event-exhibition-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--stack-md);
+    }
+}
+
 .event-grant {
     max-width: 48rem;
 }
@@ -534,6 +581,13 @@
     font-size: var(--text-caption);
     color: var(--color-text-muted);
     max-width: 36rem;
+}
+
+.reg-form__hint {
+    margin: 0.35rem 0 0;
+    font-size: var(--text-caption);
+    color: var(--color-text-muted);
+    line-height: var(--leading-body);
 }
 
 .reg-form__intro {

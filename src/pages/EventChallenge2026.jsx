@@ -93,7 +93,7 @@ const faqs = [
     },
     {
         q: 'When and where will the event take place?',
-        a: `The event will take place on ${EVENT_2026.dateDisplay} at ${EVENT_2026.timeDisplay} at ${EVENT_2026.locationDisplay}, as a physical event.`,
+        a: `The event will take place on ${EVENT_2026.dateDisplay} at ${EVENT_2026.timeDisplay} at ${EVENT_2026.locationDisplay}, Nigeria, as a physical event.`,
     },
     {
         q: 'What activities are planned?',
@@ -184,7 +184,7 @@ const EventChallenge2026 = () => {
     const overlay =
         'linear-gradient(105deg, rgba(6, 21, 37, 0.9) 0%, rgba(11, 31, 58, 0.78) 50%, rgba(11, 31, 58, 0.62) 100%)';
     const heroStyle = {
-        backgroundImage: `${overlay}, image-set(url("${EVENT_2026.heroImage}") type("image/webp"), url("/assets/challenge_hero.png") type("image/png"))`,
+        backgroundImage: `${overlay}, image-set(url("${EVENT_2026.heroImage}") type("image/webp"), url("${EVENT_2026.heroImageFallback}") type("image/jpeg"))`,
     };
 
     return (
@@ -200,9 +200,6 @@ const EventChallenge2026 = () => {
                         <p className="event-hero__eyebrow">Flagship programme</p>
                         <h1 id="event-hero-heading">{EVENT_2026.officialName}</h1>
                         <p className="event-hero__tagline">{EVENT_2026.tagline}</p>
-                        <p className="event-hero__tagline-note">
-                            Proposed campaign tagline — subject to organisational approval.
-                        </p>
 
                         <EventCountdown variant="hero" />
                     </div>
@@ -352,6 +349,53 @@ const EventChallenge2026 = () => {
                             );
                         })}
                     </Reveal>
+                </div>
+            </Reveal>
+
+            <Reveal
+                as="section"
+                className="py-section band-muted"
+                id="exhibition"
+                aria-labelledby="exhibition-heading"
+            >
+                <div className="container">
+                    <div className="section-header">
+                        <p className="section-eyebrow">Business Exhibition</p>
+                        <h2 className="section-title" id="exhibition-heading">
+                            {EVENT_2026.exhibitionHeadline}
+                        </h2>
+                        <p className="section-lead">
+                            {EVENT_2026.exhibitionTagline}. {EVENT_2026.exhibitionIntro} Optional exhibition
+                            participation is {EVENT_2026.exhibitionFeeDisplay} for business owners and is confirmed
+                            only after verified payment.
+                        </p>
+                    </div>
+                    <Reveal as="div" className="event-exhibition-grid" stagger>
+                        {EVENT_2026.exhibitionCategories.map((category) => (
+                            <article key={category.title} className="event-exhibition-card">
+                                <div className="event-exhibition-card__media">
+                                    <picture>
+                                        <source srcSet={category.image} type="image/webp" />
+                                        <img
+                                            src={category.imageFallback}
+                                            alt=""
+                                            width="640"
+                                            height="420"
+                                            loading="lazy"
+                                            decoding="async"
+                                        />
+                                    </picture>
+                                </div>
+                                <h3>{category.title}</h3>
+                            </article>
+                        ))}
+                    </Reveal>
+                    <div className="event-exhibition-cta">
+                        <a href="#participation" className="btn btn-primary">
+                            Reserve your exhibition opportunity
+                            <ArrowRight size={18} aria-hidden="true" />
+                        </a>
+                    </div>
                 </div>
             </Reveal>
 

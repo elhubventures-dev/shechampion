@@ -71,18 +71,20 @@ const commitments = [
     'Advocacy for Inclusive Policies',
 ];
 
+const brandValues = ['Dream', 'Learn', 'Grow', 'Lead', 'Shero'];
+
 const Home = () => {
     return (
         <div className="home-page page-shell animate-fade-in">
             <PageMeta
                 title="Elevating Women Entrepreneurs"
-                description="SHE CHAMPIONS is a Women-Led Entrepreneurship, Market Access & Investment Platform. We identify, prepare, and position high-potential women-led businesses for long-term growth."
+                description="SHE CHAMPIONS — Empowering Women. Inspiring Leadership. Building Opportunity. A women-led entrepreneurship, market access, and investment platform."
             />
 
             <Hero
                 eyebrow="SHE CHAMPIONS"
                 title="Elevating Women Entrepreneurs"
-                subtitle="A women-led entrepreneurship, market access, and investment platform preparing high-potential businesses for long-term growth."
+                subtitle="Empowering Women. Inspiring Leadership. Building Opportunity."
                 bgImage="/assets/home_hero.webp"
             >
                 <Link to={EVENT_2026.path} className="btn btn-primary">
@@ -100,7 +102,7 @@ const Home = () => {
 
             <Reveal as="section" className="py-section" aria-labelledby="intro-heading">
                 <div className="container">
-                    <div className="split-layout">
+                    <div className="split-layout home-intro-split">
                         <div>
                             <p className="section-eyebrow">Who we are</p>
                             <h2 className="section-title" id="intro-heading">
@@ -108,16 +110,30 @@ const Home = () => {
                             </h2>
                             <div className="prose-block">
                                 <p>
-                                    Women entrepreneurs contribute significantly to economic growth, innovation,
-                                    and job creation. However, structural barriers such as limited access to
-                                    finance, weak market linkages, and low investor visibility continue to
-                                    constrain the growth of women-led enterprises.
+                                    SHE CHAMPIONS is committed to encouraging women to grow, lead, build
+                                    meaningful opportunities, and contribute to stronger communities through
+                                    empowerment, entrepreneurship, and purposeful action.
                                 </p>
                                 <p>
-                                    The SheChampions Network responds to these gaps through a structured,
-                                    inclusive, and partnership-driven approach.
+                                    Women entrepreneurs contribute significantly to economic growth, innovation,
+                                    and job creation. The SheChampions Network responds to structural barriers —
+                                    limited access to finance, weak market linkages, and low investor visibility —
+                                    through a structured, inclusive, and partnership-driven approach.
                                 </p>
                             </div>
+                            <figure className="home-brand-portrait">
+                                <picture>
+                                    <source srcSet="/assets/brand_portrait.webp" type="image/webp" />
+                                    <img
+                                        src="/assets/brand_portrait.jpg"
+                                        alt="A SHE CHAMPIONS entrepreneur at work"
+                                        width="960"
+                                        height="640"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                </picture>
+                            </figure>
                             <div className="home-inline-actions">
                                 <Link to="/challenge" className="btn btn-primary">
                                     Our strategy <ArrowRight size={18} aria-hidden="true" />
@@ -126,6 +142,9 @@ const Home = () => {
                         </div>
                         <aside className="callout-panel" aria-labelledby="commitment-heading">
                             <h3 id="commitment-heading">Our commitment</h3>
+                            <blockquote className="home-brand-quote">
+                                Every woman deserves the opportunity to rise, lead, and make an impact.
+                            </blockquote>
                             <p>
                                 At SheChampion, we do not just provide resources; we walk the journey with you.
                                 We are committed to fostering an ecosystem where African women-led businesses are
@@ -138,6 +157,16 @@ const Home = () => {
                             </ul>
                         </aside>
                     </div>
+                </div>
+            </Reveal>
+
+            <Reveal as="section" className="home-values-strip" aria-label="SHE CHAMPIONS values">
+                <div className="container">
+                    <ul className="home-values-list">
+                        {brandValues.map((value) => (
+                            <li key={value}>{value}</li>
+                        ))}
+                    </ul>
                 </div>
             </Reveal>
 

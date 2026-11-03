@@ -580,11 +580,19 @@ export default function RegistrationForm({
                 id={`${formId}-exhibit-cat`}
                 value={values.exhibitionCategory}
                 onChange={(e) => updateField('exhibitionCategory', e.target.value)}
+                placeholder="e.g. Technology & Retail, Arts & Creativity, Fashion & Apparel"
+                aria-describedby={`${formId}-exhibit-cat-hint${
+                  errors.exhibitionCategory ? ` ${formId}-exhibit-cat-err` : ''
+                }`}
                 disabled={submitting}
                 required
               />
+              <p className="reg-form__hint" id={`${formId}-exhibit-cat-hint`}>
+                Examples include Technology &amp; Retail, Arts &amp; Creativity, and Fashion &amp;
+                Apparel — other categories are welcome.
+              </p>
               {errors.exhibitionCategory ? (
-                <p className="reg-form__error" role="alert">
+                <p className="reg-form__error" id={`${formId}-exhibit-cat-err`} role="alert">
                   {errors.exhibitionCategory}
                 </p>
               ) : null}

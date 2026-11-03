@@ -116,6 +116,20 @@ const Contact = () => {
                                 reach us directly using the details below.
                             </p>
 
+                            <figure className="contact-portrait">
+                                <picture>
+                                    <source srcSet="/assets/contact_portrait.webp" type="image/webp" />
+                                    <img
+                                        src="/assets/contact_portrait.jpg"
+                                        alt=""
+                                        width="640"
+                                        height="480"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                </picture>
+                            </figure>
+
                             <ul className="contact-details">
                                 {SITE_CONTACTS.map((contact) => (
                                     <li key={contact.id}>

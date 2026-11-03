@@ -39,7 +39,23 @@
     color: var(--color-text-on-dark-muted);
     font-size: var(--text-body-sm);
     line-height: var(--leading-body);
-    margin-bottom: var(--stack-lg);
+    margin-bottom: var(--stack-md);
+}
+
+.contact-portrait {
+    margin: 0 0 var(--stack-lg);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: var(--border-width) solid rgba(255, 255, 255, 0.14);
+}
+
+.contact-portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: center top;
 }
 
 .contact-details {
