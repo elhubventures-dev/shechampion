@@ -86,12 +86,26 @@
 .footer-whatsapp {
     display: inline-flex;
     align-items: center;
+    gap: 0.45rem;
     min-height: 40px;
     font-size: var(--text-body-sm);
     font-weight: var(--font-weight-semibold);
     color: #7ddea3;
     text-decoration: underline;
     text-underline-offset: 3px;
+}
+
+.footer-contact__phone-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.footer-contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    font-size: var(--text-caption);
 }
 
 .footer-whatsapp:hover,

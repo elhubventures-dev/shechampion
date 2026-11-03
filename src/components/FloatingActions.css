@@ -38,13 +38,20 @@
 .floating-actions__btn--whatsapp {
   background-color: #25d366;
   color: #fff;
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.35);
 }
 
 .floating-actions__btn--whatsapp:hover,
 .floating-actions__btn--whatsapp:focus-visible {
-  background-color: #1ebe57;
+  background-color: #20bd5a;
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.45);
+}
+
+.floating-actions__btn--whatsapp svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .floating-actions__btn--top {

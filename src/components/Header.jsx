@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Mail, Menu, Phone, X } from 'lucide-react';
 import logo from '../assets/logo-horizontal.png';
+import {
+    PRIMARY_WHATSAPP_HREF,
+    SITE_CONTACTS,
+    telHref,
+} from '../lib/contacts';
+import WhatsAppIcon from './WhatsAppIcon';
 import './Header.css';
-
-const WHATSAPP_HREF =
-    'https://wa.me/2349043197743?text=' +
-    encodeURIComponent('Hello SHE CHAMPIONS, I would like to learn more about your programmes.');
 
 const navLinks = [
     { name: 'Home', path: '/' },
@@ -83,20 +85,27 @@ const Header = () => {
                         Women-Led Entrepreneurship · Market Access · Investment
                     </p>
                     <ul className="header-utility__contacts">
-                        <li>
-                            <a href="tel:+2347036316083">
-                                <Phone size={14} aria-hidden="true" />
-                                (+234) 703 631 6083
-                            </a>
-                        </li>
-                        <li>
+                        {SITE_CONTACTS.map((contact) => (
+                            <li key={contact.id}>
+                                <a href={telHref(contact)}>
+                                    <Phone size={14} aria-hidden="true" />
+                                    {contact.display}
+                                </a>
+                            </li>
+                        ))}
+                        <li className="header-utility__email">
                             <a href="mailto:info@shechampion-bbf.org">
                                 <Mail size={14} aria-hidden="true" />
                                 info@shechampion-bbf.org
                             </a>
                         </li>
                         <li className="header-utility__whatsapp">
-                            <a href={WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">
+                            <a
+                                href={PRIMARY_WHATSAPP_HREF}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <WhatsAppIcon size={14} />
                                 WhatsApp
                             </a>
                         </li>
@@ -180,12 +189,13 @@ const Header = () => {
                                 Challenge 2026
                             </Link>
                             <a
-                                href={WHATSAPP_HREF}
+                                href={PRIMARY_WHATSAPP_HREF}
                                 className="header-drawer__secondary"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={closeMobileMenu}
                             >
+                                <WhatsAppIcon size={16} />
                                 Chat on WhatsApp
                             </a>
                         </div>

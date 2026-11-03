@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
 import logo from '../assets/logo-horizontal.png';
+import {
+    PRIMARY_WHATSAPP_HREF,
+    SITE_CONTACTS,
+    smsHref,
+    telHref,
+    whatsappHref,
+} from '../lib/contacts';
 import Reveal from './Reveal';
+import WhatsAppIcon from './WhatsAppIcon';
 import './Footer.css';
-
-const WHATSAPP_HREF =
-    'https://wa.me/2349043197743?text=' +
-    encodeURIComponent('Hello SHE CHAMPIONS, I would like to learn more about your programmes.');
 
 const exploreLinks = [
     { name: 'Home', path: '/' },
@@ -62,11 +66,12 @@ const Footer = () => {
                         long-term growth.
                     </p>
                     <a
-                        href={WHATSAPP_HREF}
+                        href={PRIMARY_WHATSAPP_HREF}
                         className="footer-whatsapp"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
+                        <WhatsAppIcon size={18} />
                         Message us on WhatsApp
                     </a>
                 </div>
@@ -103,10 +108,25 @@ const Footer = () => {
                                 Abuja 900108, FCT, Nigeria
                             </span>
                         </li>
-                        <li>
-                            <Phone size={18} aria-hidden="true" />
-                            <a href="tel:+2347036316083">(+234) 703 631 6083</a>
-                        </li>
+                        {SITE_CONTACTS.map((contact) => (
+                            <li key={contact.id} className="footer-contact__phone">
+                                <Phone size={18} aria-hidden="true" />
+                                <span className="footer-contact__phone-links">
+                                    <a href={telHref(contact)}>{contact.display}</a>
+                                    <span className="footer-contact__actions" aria-label={`Contact options for ${contact.display}`}>
+                                        <a href={telHref(contact)}>Call</a>
+                                        <a href={smsHref(contact)}>Text</a>
+                                        <a
+                                            href={whatsappHref(contact)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            WhatsApp
+                                        </a>
+                                    </span>
+                                </span>
+                            </li>
+                        ))}
                         <li>
                             <Mail size={18} aria-hidden="true" />
                             <a href="mailto:info@shechampion-bbf.org">info@shechampion-bbf.org</a>

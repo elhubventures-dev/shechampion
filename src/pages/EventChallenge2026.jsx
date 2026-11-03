@@ -20,6 +20,7 @@ import PageMeta from '../components/PageMeta';
 import Reveal from '../components/Reveal';
 import EventCountdown from '../components/EventCountdown';
 import RegistrationForm from '../components/RegistrationForm';
+import { contactsDisplayList } from '../lib/contacts';
 import { EVENT_2026 } from '../lib/event2026';
 import { fetchRegistrationStatus } from '../lib/eventApi';
 import './EventChallenge2026.css';
@@ -124,7 +125,7 @@ const faqs = [
     },
     {
         q: 'How can interested participants contact the organisation?',
-        a: 'Use the Contact page on this website, email info@shechampion-bbf.org, or call (+234) 703 631 6083.',
+        a: `Use the Contact page on this website, email info@shechampion-bbf.org, or call / text / WhatsApp ${contactsDisplayList()}.`,
     },
 ];
 

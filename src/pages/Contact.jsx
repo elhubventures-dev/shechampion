@@ -4,6 +4,14 @@ import Hero from '../components/Hero';
 import PageMeta from '../components/PageMeta';
 import ChallengePromo from '../components/ChallengePromo';
 import Reveal from '../components/Reveal';
+import WhatsAppIcon from '../components/WhatsAppIcon';
+import {
+    SITE_CONTACTS,
+    contactsDisplayList,
+    smsHref,
+    telHref,
+    whatsappHref,
+} from '../lib/contacts';
 import { submitContactForm } from '../lib/eventApi';
 import './Contact.css';
 
@@ -82,7 +90,7 @@ const Contact = () => {
         <div className="contact-page page-shell animate-fade-in">
             <PageMeta
                 title="Contact"
-                description="Contact SHE CHAMPIONS in Abuja: phone (+234) 703 631 6083, email info@shechampion-bbf.org, or send a message through the website form."
+                description={`Contact SHE CHAMPIONS in Abuja: phone ${contactsDisplayList()}, email info@shechampion-bbf.org, or send a message through the website form.`}
             />
 
             <Hero
@@ -109,13 +117,28 @@ const Contact = () => {
                             </p>
 
                             <ul className="contact-details">
-                                <li>
-                                    <Phone className="info-icon" aria-hidden="true" />
-                                    <div>
-                                        <h3>Phone</h3>
-                                        <a href="tel:+2347036316083">(+234) 703 631 6083</a>
-                                    </div>
-                                </li>
+                                {SITE_CONTACTS.map((contact) => (
+                                    <li key={contact.id}>
+                                        <Phone className="info-icon" aria-hidden="true" />
+                                        <div>
+                                            <h3>Phone</h3>
+                                            <p className="contact-phone-number">{contact.display}</p>
+                                            <div className="contact-phone-actions">
+                                                <a href={telHref(contact)}>Call</a>
+                                                <a href={smsHref(contact)}>Text</a>
+                                                <a
+                                                    href={whatsappHref(contact)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="contact-phone-actions__whatsapp"
+                                                >
+                                                    <WhatsAppIcon size={14} />
+                                                    WhatsApp
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                ))}
                                 <li>
                                     <Mail className="info-icon" aria-hidden="true" />
                                     <div>
