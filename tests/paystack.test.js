@@ -70,16 +70,16 @@ describe('Paystack verification rules', () => {
     ).toBe(true);
     expect(
       validatePaystackSuccess({
-        data: { ...good, amount: 3500000 },
+        data: { ...good, amount: 4000000 },
         expectedReference: good.reference,
-        expectedAmountKobo: 3500000,
+        expectedAmountKobo: 4000000,
       }).ok
     ).toBe(true);
     expect(
       validatePaystackSuccess({
-        data: { ...good, amount: 500000 },
+        data: { ...good, amount: 1000000 },
         expectedReference: good.reference,
-        expectedAmountKobo: 3500000,
+        expectedAmountKobo: 4000000,
       }).ok
     ).toBe(false);
   });
@@ -89,7 +89,7 @@ describe('Paystack verification rules', () => {
       validatePaystackSuccess({
         data: {
           ...good,
-          amount: 517767,
+          amount: EVENT_FEE_KOBO + 17767,
           requested_amount: EVENT_FEE_KOBO,
           fees: 17767,
         },
@@ -104,7 +104,7 @@ describe('Paystack verification rules', () => {
       validatePaystackSuccess({
         data: {
           ...good,
-          amount: 517767,
+          amount: EVENT_FEE_KOBO + 17767,
           requested_amount: 3000000,
           fees: 17767,
         },
@@ -119,7 +119,7 @@ describe('Paystack verification rules', () => {
       validatePaystackSuccess({
         data: {
           ...good,
-          amount: 517767,
+          amount: EVENT_FEE_KOBO + 17767,
           fees: 17767,
         },
         expectedReference: good.reference,

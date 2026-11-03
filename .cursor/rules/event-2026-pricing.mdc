@@ -9,9 +9,9 @@ alwaysApply: false
 SHE CHAMPIONS Business Empowerment Challenge 2026 pricing:
 
 - General event registration: FREE for all applicants. No Paystack call.
-- Optional Challenge participation: ₦5,000 (`500000` kobo). Women-only via required attestation. Server sets amount.
+- Optional Challenge participation: ₦10,000 (`1000000` kobo). Women-only via required attestation. Server sets amount.
 - Optional Exhibition: ₦30,000 (`3000000` kobo). Business-owner attestation + business name, category, description required.
-- Combined Challenge+Exhibition: DISABLED unless `ALLOW_COMBINED_CHALLENGE_EXHIBITION=true` (then ₦35,000 / `3500000` kobo). Default is false.
+- Combined Challenge+Exhibition: DISABLED unless `ALLOW_COMBINED_CHALLENGE_EXHIBITION=true` (then ₦40,000 / `4000000` kobo). Default is false.
 - Never trust client-supplied amount, currency, or discounts.
 - Free registration must not be undone if paid checkout fails or is abandoned.
 - Paid participation confirmed only after server-side Paystack verify/webhook against stored `expected_amount_kobo`.
@@ -29,6 +29,6 @@ SHE CHAMPIONS Business Empowerment Challenge 2026 pricing:
 
 ## Agent behaviour
 
-- Extend the existing free + optional paid model; do not reintroduce a single hardcoded ₦5,000 registration fee.
+- Extend the existing free + optional paid model; do not reintroduce a single hardcoded registration fee for general event registration.
 - Prefer Plan mode for multi-file pricing changes; keep registration closed unless explicitly instructed.
 - Do not invent venue, grant amounts beyond existing copy, refund policy, or legal approvals.

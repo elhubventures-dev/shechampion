@@ -10,13 +10,13 @@ import RegistrationSuccessModal from './RegistrationSuccessModal';
 const DEFAULT_PRICING = {
   currency: 'NGN',
   generalRegistrationKobo: 0,
-  challengeKobo: 500000,
+  challengeKobo: 1000000,
   exhibitionKobo: 3000000,
-  combinedKobo: 3500000,
+  combinedKobo: 4000000,
   generalDisplay: 'Free',
-  challengeDisplay: '₦5,000',
+  challengeDisplay: '₦10,000',
   exhibitionDisplay: '₦30,000',
-  combinedDisplay: '₦35,000',
+  combinedDisplay: '₦40,000',
   allowCombinedChallengeExhibition: true,
 };
 

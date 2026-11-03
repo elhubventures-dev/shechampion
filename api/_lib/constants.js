@@ -2,13 +2,15 @@ export const EVENT_ID = 'bec-2026';
 export const EVENT_NAME =
   'SHE CHAMPIONS BUSINESS EMPOWERMENT CHALLENGE 2026';
 export const EVENT_DATE_DISPLAY = '12 December 2026';
-export const EVENT_LOCATION_DISPLAY = 'Abuja, Nigeria';
+export const EVENT_TIME_DISPLAY = '10:00 AM';
+export const EVENT_LOCATION_DISPLAY =
+  'Maryam Babangida National Centre for Women Development, Abuja';
 
 /** @deprecated Use PRICING.CHALLENGE_KOBO — kept for transitional imports. */
-export const EVENT_FEE_KOBO = 500000;
+export const EVENT_FEE_KOBO = 1000000;
 export const EVENT_CURRENCY = 'NGN';
 /** @deprecated Prefer PRICING_DISPLAY / getPublicPricingConfig. */
-export const EVENT_FEE_DISPLAY = '₦5,000';
+export const EVENT_FEE_DISPLAY = '₦10,000';
 
 export const REGISTRATION_CUTOFF_HOURS = 48;
 export const PAYSTACK_PROVIDER = 'paystack';

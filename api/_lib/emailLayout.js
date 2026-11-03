@@ -2,6 +2,7 @@ import {
   EVENT_DATE_DISPLAY,
   EVENT_LOCATION_DISPLAY,
   EVENT_NAME,
+  EVENT_TIME_DISPLAY,
 } from './constants.js';
 
 export const EMAIL_BRAND = Object.freeze({
@@ -172,7 +173,7 @@ export function renderBrandedEmail({
               ${primaryButton}
               ${secondaryLinks}
               <p style="margin:22px 0 0;font-size:13px;line-height:1.6;color:${EMAIL_BRAND.muted};">
-                ${escapeHtml(EVENT_NAME)} · ${escapeHtml(EVENT_DATE_DISPLAY)} · ${escapeHtml(EVENT_LOCATION_DISPLAY)}
+                ${escapeHtml(EVENT_NAME)} · ${escapeHtml(EVENT_DATE_DISPLAY)} · ${escapeHtml(EVENT_TIME_DISPLAY)} · ${escapeHtml(EVENT_LOCATION_DISPLAY)}
               </p>
             </td>
           </tr>

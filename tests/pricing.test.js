@@ -29,14 +29,14 @@ describe('authoritative pricing', () => {
     expect(result.paymentRequired).toBe(false);
   });
 
-  it('calculates challenge as 500000 kobo', () => {
+  it('calculates challenge as 1000000 kobo', () => {
     expect(
       calculateParticipationAmount({
         challengeSelected: true,
         exhibitionSelected: false,
       }).amountKobo
     ).toBe(PRICING.CHALLENGE_KOBO);
-    expect(PRICING.CHALLENGE_KOBO).toBe(500000);
+    expect(PRICING.CHALLENGE_KOBO).toBe(1000000);
   });
 
   it('calculates exhibition as 3000000 kobo', () => {
@@ -49,7 +49,7 @@ describe('authoritative pricing', () => {
     expect(PRICING.EXHIBITION_KOBO).toBe(3000000);
   });
 
-  it('calculates combined selection as 3500000 kobo', () => {
+  it('calculates combined selection as 4000000 kobo', () => {
     expect(
       calculateParticipationAmount({
         challengeSelected: true,
@@ -57,7 +57,7 @@ describe('authoritative pricing', () => {
         allowCombined: true,
       }).amountKobo
     ).toBe(PRICING.COMBINED_KOBO);
-    expect(PRICING.COMBINED_KOBO).toBe(3500000);
+    expect(PRICING.COMBINED_KOBO).toBe(4000000);
   });
 
   it('rejects combined selection when disabled', () => {
@@ -72,7 +72,7 @@ describe('authoritative pricing', () => {
 
   it('exposes a safe public pricing config', () => {
     const publicConfig = getPublicPricingConfig(true);
-    expect(publicConfig.challengeKobo).toBe(500000);
+    expect(publicConfig.challengeKobo).toBe(1000000);
     expect(publicConfig.exhibitionKobo).toBe(3000000);
     expect(publicConfig.allowCombinedChallengeExhibition).toBe(true);
   });
@@ -102,7 +102,7 @@ describe('participation eligibility validation', () => {
       challengeWomenEligibilityAttested: true,
     });
     expect(result.ok).toBe(true);
-    expect(result.value.expectedAmountKobo).toBe(500000);
+    expect(result.value.expectedAmountKobo).toBe(1000000);
   });
 
   it('requires business-owner confirmation and exhibition fields', () => {
@@ -141,7 +141,7 @@ describe('participation eligibility validation', () => {
       { allowCombinedChallengeExhibition: true }
     );
     expect(result.ok).toBe(true);
-    expect(result.value.expectedAmountKobo).toBe(3500000);
+    expect(result.value.expectedAmountKobo).toBe(4000000);
   });
 
   it('rejects combined selection by default when allowCombined is unset', () => {

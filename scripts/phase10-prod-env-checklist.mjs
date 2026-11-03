@@ -20,7 +20,7 @@ const required = [
   { name: 'SESSION_SECRET', expect: '≥32 chars, unique to production' },
   { name: 'EVENT_REGISTRATION_ENABLED', expect: 'false until intentional open' },
   { name: 'EVENT_REGISTRATION_OPEN_AT', expect: 'set only when opening window is confirmed' },
-  { name: 'EVENT_START_AT', expect: 'set only when exact start time confirmed (12 Dec 2026 day; time TBD)' },
+  { name: 'EVENT_START_AT', expect: '2026-12-12T10:00:00+01:00 (confirmed programme start)' },
   { name: 'EVENT_PRIVACY_NOTICE_APPROVED', expect: 'true only after genuine legal approval' },
   { name: 'EVENT_PARTICIPATION_TERMS_APPROVED', expect: 'true only after genuine legal approval' },
   {
@@ -51,7 +51,7 @@ console.log(
         'Do not put sk_live_ in .env.local or .env.staging.local',
         'Do not migrate using STAGING_DATABASE_URL',
         'Do not set EVENT_REGISTRATION_ENABLED=true in this phase',
-        'Do not invent EVENT_START_AT time',
+        'Do not change EVENT_START_AT away from 2026-12-12T10:00:00+01:00 without organiser confirmation',
         'Do not run live payment test charges in this phase',
       ],
     },

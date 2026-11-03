@@ -7,25 +7,24 @@ export const EVENT_2026 = {
     "Empowering women's skills, showcasing businesses, and creating opportunities for growth.",
   tagline: 'Empowering Her Skills. Elevating Her Business. Unlocking Her Potential.',
   dateDisplay: '12 December 2026',
-  /**
-   * Countdown target: start of event day in Africa/Lagos (+01:00).
-   * Exact clock time is not yet confirmed — do not treat this as the programme start time.
-   */
-  countdownAt: '2026-12-12T00:00:00+01:00',
-  countdownNote: 'Countdown to event day · exact start time to be announced',
-  locationDisplay: 'Abuja, Nigeria',
+  timeDisplay: '10:00 AM',
+  /** Countdown target: programme start in Africa/Lagos (+01:00). */
+  countdownAt: '2026-12-12T10:00:00+01:00',
+  countdownNote: 'Countdown to programme start · 10:00 AM',
+  locationDisplay:
+    'Maryam Babangida National Centre for Women Development, Abuja',
   format: 'Physical event',
   /** General event registration is free; paid options are optional. */
   feeDisplay: 'Free registration',
-  challengeFeeDisplay: '₦5,000',
+  challengeFeeDisplay: '₦10,000',
   exhibitionFeeDisplay: '₦30,000',
-  combinedFeeDisplay: '₦35,000',
+  combinedFeeDisplay: '₦40,000',
   pricingSummary:
-    'Free event registration; optional Challenge ₦5,000; optional Exhibition ₦30,000',
+    'Free event registration; optional Challenge ₦10,000; optional Exhibition ₦30,000',
   /** Structured pricing for scannable UI (hero / details). */
   pricingLines: [
     { label: 'Event registration', value: 'Free' },
-    { label: 'Challenge', value: '₦5,000', optional: true },
+    { label: 'Challenge', value: '₦10,000', optional: true },
     { label: 'Exhibition', value: '₦30,000', optional: true },
   ],
   grantTeaser: 'Opportunity to compete for business grants',
@@ -33,8 +32,9 @@ export const EVENT_2026 = {
   cutoffDateDisplay: '10 December 2026',
   cutoffRule: '48 hours before the event',
   cutoffTimeNote:
-    'The exact registration cutoff time will be confirmed once the event start time is announced by SHE CHAMPIONS.',
-  venueNote: 'Venue details will be announced by SHE CHAMPIONS.',
+    'Registration closes at 10:00 AM on 10 December 2026 (48 hours before the event).',
+  venueNote:
+    'Venue: Maryam Babangida National Centre for Women Development, Abuja.',
   heroImage: '/assets/challenge_hero.webp',
   path: '/business-empowerment-challenge-2026',
 };

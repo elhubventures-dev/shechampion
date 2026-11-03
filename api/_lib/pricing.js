@@ -6,17 +6,17 @@
 
 export const PRICING = Object.freeze({
   GENERAL_REGISTRATION_KOBO: 0,
-  CHALLENGE_KOBO: 500_000,
+  CHALLENGE_KOBO: 1_000_000,
   EXHIBITION_KOBO: 3_000_000,
-  COMBINED_KOBO: 3_500_000,
+  COMBINED_KOBO: 4_000_000,
   CURRENCY: 'NGN',
 });
 
 export const PRICING_DISPLAY = Object.freeze({
   general: 'Free',
-  challenge: '₦5,000',
+  challenge: '₦10,000',
   exhibition: '₦30,000',
-  combined: '₦35,000',
+  combined: '₦40,000',
 });
 
 /**

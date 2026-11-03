@@ -22,8 +22,8 @@ export default function EventParticipationTerms() {
           <h2>Participation fee</h2>
           <p>
             General event registration is free. Optional Business Empowerment Challenge
-            participation costs ₦5,000 (women only). Optional business exhibition costs
-            ₦30,000. Selecting both costs ₦35,000 when combined selection is enabled.
+            participation costs ₦10,000 (women only). Optional business exhibition costs
+            ₦30,000. Selecting both costs ₦40,000 when combined selection is enabled.
             Paying a selected participation fee enables you to take
             part in the programme registration process. It does not guarantee a
             grant award.
@@ -58,7 +58,6 @@ export default function EventParticipationTerms() {
           <h2>Outstanding items for owner review</h2>
           <ul>
             <li>Refund and cancellation policy</li>
-            <li>Exact venue and start time once confirmed</li>
             <li>Detailed eligibility criteria if any beyond this draft</li>
             <li>Final legal approval before public registration opens</li>
           </ul>

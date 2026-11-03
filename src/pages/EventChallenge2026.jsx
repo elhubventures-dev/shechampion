@@ -7,6 +7,7 @@ import {
     Briefcase,
     CalendarDays,
     CheckCircle2,
+    Clock,
     Lightbulb,
     MapPin,
     Presentation,
@@ -87,11 +88,11 @@ const faqs = [
     },
     {
         q: 'What does registration cost?',
-        a: 'General event registration is free. Optional Business Empowerment Challenge participation costs ₦5,000 (women only). Optional business exhibition costs ₦30,000 for business owners. Selecting both costs ₦35,000 when combined selection is enabled. Paid activities are confirmed only after verified payment.',
+        a: 'General event registration is free. Optional Business Empowerment Challenge participation costs ₦10,000 (women only). Optional business exhibition costs ₦30,000 for business owners. Selecting both costs ₦40,000 when combined selection is enabled. Paid activities are confirmed only after verified payment.',
     },
     {
         q: 'When and where will the event take place?',
-        a: 'The event will take place on 12 December 2026 in Abuja, Nigeria, as a physical event. The exact venue will be announced by SHE CHAMPIONS.',
+        a: `The event will take place on ${EVENT_2026.dateDisplay} at ${EVENT_2026.timeDisplay} at ${EVENT_2026.locationDisplay}, as a physical event.`,
     },
     {
         q: 'What activities are planned?',
@@ -114,8 +115,8 @@ const faqs = [
         a: `Registration closes ${EVENT_2026.cutoffRule}. The expected cutoff date is ${EVENT_2026.cutoffDateDisplay}. ${EVENT_2026.cutoffTimeNote}`,
     },
     {
-        q: 'When will the venue be announced?',
-        a: EVENT_2026.venueNote,
+        q: 'Where is the venue?',
+        a: `The venue is ${EVENT_2026.locationDisplay}.`,
     },
     {
         q: 'What does the SHE CHAMPIONS Ambassador do?',
@@ -189,7 +190,7 @@ const EventChallenge2026 = () => {
         <div className="event-2026 page-shell animate-fade-in">
             <PageMeta
                 title="SHE CHAMPIONS Business Empowerment Challenge 2026"
-                description="Join the SHE CHAMPIONS Business Empowerment Challenge 2026 in Abuja on 12 December 2026. Free event registration with optional paid challenge and exhibition participation, plus a competitive opportunity for business grants from ₦1 million to ₦5 million, subject to assessment and available funding."
+                description="Join the SHE CHAMPIONS Business Empowerment Challenge 2026 on 12 December 2026 at 10:00 AM at the Maryam Babangida National Centre for Women Development, Abuja. Free event registration with optional paid challenge and exhibition participation, plus a competitive opportunity for business grants from ₦1 million to ₦5 million, subject to assessment and available funding."
             />
 
             <section className="event-hero" style={heroStyle} aria-labelledby="event-hero-heading">
@@ -209,6 +210,10 @@ const EventChallenge2026 = () => {
                         <div>
                             <dt>Date</dt>
                             <dd>{EVENT_2026.dateDisplay}</dd>
+                        </div>
+                        <div>
+                            <dt>Time</dt>
+                            <dd>{EVENT_2026.timeDisplay}</dd>
                         </div>
                         <div>
                             <dt>Location</dt>
@@ -442,6 +447,15 @@ const EventChallenge2026 = () => {
                         <div>
                             <dt>
                                 <span className="event-details-grid__icon" aria-hidden="true">
+                                    <Clock size={18} />
+                                </span>
+                                Time
+                            </dt>
+                            <dd>{EVENT_2026.timeDisplay}</dd>
+                        </div>
+                        <div>
+                            <dt>
+                                <span className="event-details-grid__icon" aria-hidden="true">
                                     <MapPin size={18} />
                                 </span>
                                 Location
@@ -476,7 +490,6 @@ const EventChallenge2026 = () => {
                             </dd>
                         </div>
                     </dl>
-                    <p className="notice-banner event-venue-note">{EVENT_2026.venueNote}</p>
                 </div>
             </Reveal>
 

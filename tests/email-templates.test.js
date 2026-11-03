@@ -68,7 +68,7 @@ describe('branded email templates', () => {
       exhibitionSelected: false,
       challengeStatus: 'CONFIRMED',
       exhibitionStatus: null,
-      expectedAmountKobo: 500000,
+      expectedAmountKobo: 1000000,
       config,
     });
     expectBranded(challenge, {
@@ -85,7 +85,7 @@ describe('branded email templates', () => {
       exhibitionSelected: true,
       challengeStatus: 'CONFIRMED',
       exhibitionStatus: 'CONFIRMED',
-      expectedAmountKobo: 3500000,
+      expectedAmountKobo: 4000000,
       config,
     });
     expect(both.html.toLowerCase()).toContain('exhibition');
@@ -96,7 +96,7 @@ describe('branded email templates', () => {
     const pending = buildPaymentPendingEmail({
       publicReference: 'BEC-P1',
       fullName: 'Ada',
-      expectedAmountKobo: 500000,
+      expectedAmountKobo: 1000000,
       paymentReference: 'pay_ref_1',
       config,
     });
@@ -227,7 +227,7 @@ describe('branded email templates', () => {
         publicReference: 'BEC-P1',
         fullName: 'Ada',
         email: 'ada@example.com',
-        expectedAmountKobo: 500000,
+        expectedAmountKobo: 1000000,
         config,
       }),
       { emailType: EMAIL_TYPES.ADMIN_PAID }

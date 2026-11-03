@@ -49,10 +49,10 @@ describe('validateRegistrationInput', () => {
 });
 
 describe('payment reference and pricing constants', () => {
-  it('keeps challenge fee at 500000 kobo', () => {
-    expect(PRICING.CHALLENGE_KOBO).toBe(500000);
+  it('keeps challenge fee at 1000000 kobo', () => {
+    expect(PRICING.CHALLENGE_KOBO).toBe(1000000);
     expect(PRICING.EXHIBITION_KOBO).toBe(3000000);
-    expect(PRICING.COMBINED_KOBO).toBe(3500000);
+    expect(PRICING.COMBINED_KOBO).toBe(4000000);
   });
 
   it('validates payment reference format', () => {

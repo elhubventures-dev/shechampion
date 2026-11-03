@@ -2,6 +2,7 @@ import {
   EVENT_DATE_DISPLAY,
   EVENT_LOCATION_DISPLAY,
   EVENT_NAME,
+  EVENT_TIME_DISPLAY,
 } from './constants.js';
 import { formatNgnFromKobo } from './pricing.js';
 import {
@@ -106,11 +107,18 @@ function defaultSecondary(config) {
   ];
 }
 
+function scheduleDetails() {
+  return [
+    { label: 'Event date', value: EVENT_DATE_DISPLAY },
+    { label: 'Event time', value: EVENT_TIME_DISPLAY },
+    { label: 'Location', value: EVENT_LOCATION_DISPLAY },
+  ];
+}
+
 function baseDetails(publicReference) {
   return [
     { label: 'Registration reference', value: publicReference || '—' },
-    { label: 'Event date', value: EVENT_DATE_DISPLAY },
-    { label: 'Location', value: EVENT_LOCATION_DISPLAY },
+    ...scheduleDetails(),
   ];
 }
 
@@ -644,10 +652,7 @@ export function buildRegistrationOpenAnnouncementEmail({
     title: 'Registration is open',
     greeting,
     bodyHtml: bodyBlock,
-    details: [
-      { label: 'Event date', value: EVENT_DATE_DISPLAY },
-      { label: 'Location', value: EVENT_LOCATION_DISPLAY },
-    ],
+    details: scheduleDetails(),
     primaryCta,
     secondaryCtas,
   });
@@ -657,10 +662,7 @@ export function buildRegistrationOpenAnnouncementEmail({
       message ||
         `Official online registration for the ${EVENT_NAME} is now open.`,
     ],
-    details: [
-      { label: 'Event date', value: EVENT_DATE_DISPLAY },
-      { label: 'Location', value: EVENT_LOCATION_DISPLAY },
-    ],
+    details: scheduleDetails(),
     ctas: [primaryCta, ...secondaryCtas],
   });
   return {
@@ -682,10 +684,7 @@ export function buildRegistrationCutoffReminderEmail({
   const greeting = fullName ? `Dear ${fullName},` : 'Dear participant,';
   const details = publicReference
     ? baseDetails(publicReference)
-    : [
-        { label: 'Event date', value: EVENT_DATE_DISPLAY },
-        { label: 'Location', value: EVENT_LOCATION_DISPLAY },
-      ];
+    : scheduleDetails();
   const primaryCta = {
     label: 'Review participation',
     href: absoluteUrl(
@@ -735,10 +734,7 @@ export function buildEventDetailsUpdateEmail({
   const greeting = fullName ? `Dear ${fullName},` : 'Dear participant,';
   const details = publicReference
     ? baseDetails(publicReference)
-    : [
-        { label: 'Event date', value: EVENT_DATE_DISPLAY },
-        { label: 'Location', value: EVENT_LOCATION_DISPLAY },
-      ];
+    : scheduleDetails();
   const bodyBlock = message
     ? plainTextToHtmlParagraphs(message)
     : `<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${EMAIL_BRAND.muted};">SHE CHAMPIONS has shared an update about the event. Please review the message and the event page for the latest confirmed information.</p>`;
